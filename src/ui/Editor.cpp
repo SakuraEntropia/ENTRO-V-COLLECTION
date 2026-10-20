@@ -1,4 +1,5 @@
 #include "ui/Editor.h"
+#include "ui/Logo.h"
 
 #include <juce_gui_extra/juce_gui_extra.h>
 
@@ -122,31 +123,20 @@ public:
         g.setColour (juce::Colour (0xffffffff).withAlpha (0.07f));
         g.drawLine (0.0f, bounds.getBottom() - 1.0f, bounds.getWidth(), bounds.getBottom() - 1.0f, 1.0f);
 
-        // Analog Triad mark: three stacked triangles.
-        auto logo = juce::Rectangle<float> (26.0f, 14.0f, 26.0f, 22.0f);
-        g.setColour (accent_.withAlpha (0.85f));
-        for (int i = 0; i < 3; ++i)
-        {
-            const auto y = logo.getY() + (float) i * 6.0f;
-            juce::Path p;
-            p.addTriangle (logo.getX() + (float) i * 2.0f, y + 5.0f,
-                           logo.getRight() - (float) i * 2.0f, y + 5.0f,
-                           logo.getCentreX(), y);
-            g.strokePath (p, juce::PathStrokeType (1.2f));
-        }
+        const auto id = juce::String (host_.definition().id);
+        drawInstrumentMark (g, { 26.0f, 9.0f, 34.0f, 34.0f },
+                            logoKindForInstrument (id), accent_);
 
         g.setColour (juce::Colour (0xffe9e6df));
         g.setFont (juce::Font (juce::FontOptions (17.0f, juce::Font::bold)));
-        g.drawText (host_.instrumentName().toUpperCase(), 62, 8, 320, 22,
+        g.drawText (host_.instrumentName().toUpperCase(), 70, 8, 320, 22,
                     juce::Justification::centredLeft);
-
-        const auto id = juce::String (host_.definition().id);
         const auto subtitle = id == "matriarch" ? "SEMI-MODULAR ANALOG SYNTHESIZER"
                               : (id == "polybrute" ? "SIX-VOICE ANALOG SYNTHESIZER"
                                                    : "POLYPHONIC ANALOG SYNTHESIZER");
         g.setColour (juce::Colour (0xff9a968d));
         g.setFont (juce::Font (juce::FontOptions (8.5f)).withExtraKerningFactor (0.16f));
-        g.drawText (subtitle, 62, 27, 420, 12, juce::Justification::centredLeft);
+        g.drawText (subtitle, 70, 27, 420, 12, juce::Justification::centredLeft);
 
         g.setColour (accent_);
         g.fillRect (29.0f, bounds.getBottom() - 3.0f, bounds.getWidth() - 58.0f, 1.5f);

@@ -1,4 +1,9 @@
-# Analog Triad
+![ENTRO V COLLECTION](assets/logos/entro-v-collection.png)
+
+# ENTRO V COLLECTION
+
+**Inspired by Arturia V Collection.**
+
 
 三款独立发声的虚拟模拟合成器插件，共用一个 C++20 / JUCE 9.0.4 代码库：
 
@@ -8,7 +13,7 @@
 | **POLYBRUTE V** | 六声部、双 VCO + Sub、Metalizer、Steiner + Ladder 双滤波、三包络、三 LFO、调制矩阵、效果链 | VST3 / AU / Standalone |
 | **ONE V** | 三个 Synth 部分共享声部池、每声部三 VCO、SVF + Ladder、三个 DAHDSR 包络、四个 LFO、效果 | VST3 / AU / Standalone |
 
-本项目是**独立实现的软件乐器**，不是 Arturia 或 Moog 的官方产品，也不包含原厂固件、预设或界面素材。面板按公开手册与产品照片重绘，音频引擎全部自行实现。手册只描述操作与信号路径，不提供电路容差、非线性元件或专有数字效果的算法；因此本项目不声称“逐电路”或“与实机完全相同”。详见 [COVERAGE.md](docs/COVERAGE.md)。
+本项目是**独立实现的软件乐器**，不是 Arturia 或 Moog 的官方产品，也不包含原厂固件、预设或界面素材。"Inspired by Arturia V Collection" 只说明产品企划与音色组织上的参照，不表示任何隶属、授权或背书。面板按公开手册与产品照片重绘，音频引擎全部自行实现。手册只描述操作与信号路径，不提供电路容差、非线性元件或专有数字效果的算法；因此本项目不声称“逐电路”或“与实机完全相同”。详见 [COVERAGE.md](docs/COVERAGE.md)。
 
 ## 当前状态
 
@@ -17,7 +22,8 @@
 - 已完成并通过自动测试：三套引擎的确定性音频、音高、参数极值、延音/叠音/弯音/触后/All Notes Off、厂牌预设校验。
 - 已完成并通过验证器：三个 VST3 在 pluginval strictness 5 通过；三个 AU 通过 `auval`。
 - 已完成：Matriarch 虚拟接线（79 个插孔）、PolyBrute Morph A/B 与 8 槽调制矩阵、Moog One 三部分共享声部池与每部分 8 槽矩阵。
-- 未完成：实机音色校准、Windows 构建与 DAW 实测、Developer ID 签名/公证、GitHub 推送、以及覆盖表中列出的硬件细节（Matriarch 12×256 音序、PolyBrute Morphée/Ribbon/64 步音序、One 每部分独立琶音等）。
+- 已完成：GitHub Actions 的 macOS / Windows 构建；预设浏览器与按类别分组的 factory bank；三款原创 logo 与 app 图标。
+- 未完成：实机音色校准、DAW 实测、Developer ID 签名/公证、以及覆盖表中列出的硬件细节（Matriarch 12×256 音序、PolyBrute Morphée/Ribbon/64 步音序、One 每部分独立琶音等）。
 
 Matriarch 的键盘按原机 49 键 F1–F5 显示；音高以 A4 = 440 Hz 为基准，并有自动回归测试。
 
@@ -104,9 +110,14 @@ src/plugin     JUCE 处理器、参数树、状态、预设、宿主总线
 src/ui         矢量绘制的实体面板、控件、键盘、虚拟插线（不嵌入厂商图片）
 tests          确定性的离线音频与引擎契约测试
 scripts        打包与安装
+assets         三款 logo 的 SVG/PNG、macOS .icns 与 Windows .ico
 docs           覆盖表、验证记录、开发约定
 ```
 
 ## 许可与免责
 
-本仓库为自用项目，尚未选择开源许可证；在添加许可证前不要公开分发源码或二进制。JUCE 的许可随所选版本与分发方式决定（参见 JUCE 9 许可条款）。Arturia、Moog、PolyBrute、Matriarch、Moog One、Eventide 等名称属于各自权利人，仅用于说明参照对象。
+本仓库为自用项目，尚未选择开源许可证；在添加许可证前不要公开分发源码或二进制。JUCE 的许可随所选版本与分发方式决定（参见 JUCE 9 许可条款）。Arturia、Moog、PolyBrute、Matriarch、Moog One、Eventide 等名称属于各自权利人，仅用于说明参照对象。本项目 **Inspired by Arturia V Collection**，但与 Arturia、Moog 均无隶属、授权或背书关系。
+
+仓库：<https://github.com/SakuraEntropia/ENTRO-V-COLLECTION>
+
+Logo 源文件：`assets/logos/*.svg`；应用图标：`assets/icons/*.icns` / `*.ico`。重新生成使用 `python3 scripts/generate-logo-assets.py`。

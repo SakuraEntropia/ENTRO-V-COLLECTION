@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(AnalogTriad VERSION 0.1.0 LANGUAGES C CXX)
+project(EntroVCollection VERSION 0.1.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -59,6 +59,7 @@ target_compile_features(triad_engines PUBLIC cxx_std_20)
 # ---------------------------------------------------------------------------
 add_library(triad_ui STATIC
     src/ui/LookAndFeel.cpp
+    src/ui/Logo.cpp
     src/ui/Widgets.cpp
     src/ui/PanelBase.cpp
     src/ui/PresetBrowser.cpp
@@ -95,6 +96,19 @@ else()
 endif()
 
 function(triad_add_instrument target product_name plugin_code instrument_kind)
+    string(TOLOWER "${target}" _triad_icon_base)
+    if(_triad_icon_base STREQUAL "moogone")
+        set(_triad_icon_base "one")
+    endif()
+
+    if(APPLE)
+        set(_triad_icon "${CMAKE_CURRENT_SOURCE_DIR}/assets/icons/${_triad_icon_base}.icns")
+    elseif(WIN32)
+        set(_triad_icon "${CMAKE_CURRENT_SOURCE_DIR}/assets/icons/${_triad_icon_base}.ico")
+    else()
+        set(_triad_icon "")
+    endif()
+
     juce_add_plugin(${target}
         COMPANY_NAME "SakuraEntropia"
         BUNDLE_ID "com.sakuraentropia.${target}"
@@ -108,7 +122,8 @@ function(triad_add_instrument target product_name plugin_code instrument_kind)
         PLUGIN_CODE ${plugin_code}
         PLUGIN_NAME "${product_name}"
         PRODUCT_NAME "${product_name}"
-        DESCRIPTION "Independent virtual-analog instrument inspired by ${product_name}"
+        ICON_BIG "${_triad_icon}"
+        DESCRIPTION "Independent virtual-analog instrument in the ENTRO V COLLECTION"
         FORMATS ${TRIAD_PLUGIN_FORMATS}
         VST3_CATEGORIES "Instrument Synth"
         AU_MAIN_TYPE "kAudioUnitType_MusicDevice"

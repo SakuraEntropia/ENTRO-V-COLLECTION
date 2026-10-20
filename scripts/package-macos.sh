@@ -101,7 +101,7 @@ if [[ ${DO_INSTALL} -eq 1 ]]; then
 fi
 
 if [[ ${DO_ZIP} -eq 1 ]]; then
-    archive="${STAGE}/AnalogTriad-macOS-$(date +%Y%m%d).zip"
+    archive="${STAGE}/ENTRO-V-COLLECTION-macOS-$(date +%Y%m%d).zip"
     rm -f "${archive}"
     (cd "${STAGE}" && zip -qry "${archive}" ./*.vst3 ./*.component ./*.app 2>/dev/null) || true
     echo "wrote ${archive}"

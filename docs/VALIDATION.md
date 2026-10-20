@@ -97,9 +97,9 @@ Warnings emitted by `auval` about floating-point parameters “not retaining def
 Tool: pluginval 1.0.4 (`Tracktion/pluginval` release).
 
 ```bash
-pluginval --strictness-level 5 --output-dir /tmp/pv-mat "…/Matriarch.vst3"
-pluginval --strictness-level 5 --output-dir /tmp/pv-pb  "…/PolyBrute.vst3"
-pluginval --strictness-level 5 --output-dir /tmp/pv-one "…/Moog One.vst3"
+pluginval --strictness-level 5 --output-dir /tmp/pv-mat "…/MATRIARCH V.vst3"
+pluginval --strictness-level 5 --output-dir /tmp/pv-pb  "…/POLYBRUTE V.vst3"
+pluginval --strictness-level 5 --output-dir /tmp/pv-one "…/ONE V.vst3"
 ```
 
 Result: `SUCCESS` for all three at strictness level 5. Matriarch was additionally run with GUI tests enabled and passed. PolyBrute and Moog One were run with the default test set (GUI tests included) in the final pass.
@@ -113,14 +113,16 @@ Result: `SUCCESS` for all three at strictness level 5. Matriarch was additionall
 - Parameter changes update audio and survive project-style state calls (pluginval state tests).
 - The `INIT` button resets all parameters.
 - `BROWSE` opens the searchable preset browser; the category filter, text search, list, detail pane, Load and Escape/Close paths were exercised in the standalone build.
-- The PolyBrute and Moog One panels were re-laid out from the manual diagrams after the last screenshot pass; the rebuilt binaries compile and pass the engine tests, but the final visual pass on those two panels was interrupted by the machine locking. This is recorded as pending visual review.
+- The PolyBrute and ONE V panels were re-laid out from the manual diagrams and visually checked after the last build; both run with zero overlapping control bounds in the layout dump.
+- The header and panel-footer instrument marks render from the same vector grid as the SVG assets. Standalone bundles carry `AppIcon.icns`; `MATRIARCH V`, `POLYBRUTE V` and `ONE V` all resolve their icon in `Info.plist`.
+- The `BROWSE` browser opens with category headings (`Bass`, `Lead`, `Brass`, `Pad`, `Pluck`, `Keys`, `Organ`, `Arp`, `FX`) and prefixed names such as `BA - Reese Bass`.
 
 Screenshots were captured locally for layout review. They are not committed because they contain unrelated desktop content.
 
 ## Not verified
 
 - Loading the plugins inside Logic Pro, Ableton Live, Reaper, Cubase or Studio One. No DAW session was run.
-- Windows x64 builds. `.github/workflows/build.yml` is written but has never executed.
+- Windows x64 builds have been produced by GitHub Actions, but no Windows machine/DAW was available for a manual smoke test.
 - Universal (arm64 + x86_64) builds.
 - Hardware A/B: no recordings or measurements of a real Matriarch, PolyBrute or Moog One.
 - Code signing and notarisation.

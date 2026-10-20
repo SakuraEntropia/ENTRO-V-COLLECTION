@@ -1,4 +1,5 @@
 #include "ui/PanelBase.h"
+#include "ui/Logo.h"
 
 #include <algorithm>
 #include <cmath>
@@ -766,11 +767,7 @@ void PanelBase::paint (juce::Graphics& g)
                         brandArea.withTrimmedLeft (222).withHeight (48),
                         juce::Justification::centredLeft);
 
-            // Moog script mark at the right.
-            const auto logoArea = getLocalBounds().removeFromBottom (44).removeFromRight (110);
-            g.setColour (juce::Colour (0xfff0ece2).withAlpha (0.9f));
-            g.setFont (juce::Font (juce::FontOptions ("Helvetica Neue", 24.0f, juce::Font::bold | juce::Font::italic)));
-            g.drawText ("moog", logoArea, juce::Justification::centred);
+
         }
         else if (finish_ == Finish::PolyBrute)
         {
@@ -782,7 +779,7 @@ void PanelBase::paint (juce::Graphics& g)
 
             g.setColour (juce::Colour (0xff8f8c85));
             g.setFont (juce::Font (juce::FontOptions (8.0f)).withExtraKerningFactor (0.4f));
-            g.drawText ("ARTURIA  /  " + brandSub_.toUpperCase(),
+            g.drawText (brandSub_.toUpperCase(),
                         brandArea.withTrimmedTop (26), juce::Justification::centredLeft);
 
             g.setColour (juce::Colour (0xff3f93e8));
@@ -806,6 +803,10 @@ void PanelBase::paint (juce::Graphics& g)
             g.fillRect (juce::Rectangle<float> ((float) brandArea.getX(), (float) brandArea.getY() + 2.0f,
                                                 3.0f, 30.0f));
         }
+
+        const auto markArea = juce::Rectangle<float> ((float) getWidth() - 70.0f,
+                                                      (float) getHeight() - 52.0f, 44.0f, 44.0f);
+        drawInstrumentMark (g, markArea, logoKindForInstrument (host_.definition().id), accent_);
     }
 
     // ---- Screws and panel edge -------------------------------------------

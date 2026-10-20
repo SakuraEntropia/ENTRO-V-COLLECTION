@@ -75,3 +75,21 @@ When adding an engine feature, add a deterministic check that fails if the featu
 - Only write “tested” for commands actually run, with the date and build directory.
 - Distinguish “implemented” (code path exists), “tested” (automated/DAW evidence) and “calibrated” (compared against hardware recordings).
 - Do not use marketing copy for the sound; the manuals do not contain full circuit models and this project does not claim equivalence.
+
+
+## Brand assets
+
+The three instrument marks are defined twice from the same 128-unit grid:
+
+- vector UI: `src/ui/Logo.cpp`;
+- design/export source: `scripts/generate-logo-assets.py` and `assets/logos/*.svg`.
+
+Regenerate PNG, `.icns` and `.ico` files on macOS with:
+
+```bash
+python3 scripts/generate-logo-assets.py
+```
+
+The script uses headless Chrome for transparent SVG rasterisation, `sips` and
+`iconutil` for macOS icons, and Pillow for Windows `.ico` files. Generated
+assets are committed so CI does not need those tools.

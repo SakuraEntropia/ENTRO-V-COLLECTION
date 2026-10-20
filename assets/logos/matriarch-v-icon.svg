@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#24252a"/>
+      <stop offset="1" stop-color="#0c0d0f"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.45" r="0.5">
+      <stop offset="0" stop-color="#CF4B2E" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#CF4B2E" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="224" fill="url(#bg)"/>
+  <rect width="1024" height="1024" rx="224" fill="url(#glow)"/>
+  <rect x="26" y="26" width="972" height="972" rx="202" fill="none"
+        stroke="#ffffff" stroke-opacity="0.10" stroke-width="3"/>
+  <g transform="translate(192,192) scale(5)">
+xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 128 128">
+  <g stroke="#EDE7DC" stroke-width="10" stroke-linecap="round">
+    <line x1="30" y1="94" x2="30" y2="26"/>
+    <line x1="52" y1="94" x2="52" y2="48"/>
+    <line x1="76" y1="94" x2="76" y2="48"/>
+    <line x1="98" y1="94" x2="98" y2="26"/>
+  </g>
+  <path d="M16 96 H50 L64 106 L78 96 H112" fill="none" stroke="#CF4B2E" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

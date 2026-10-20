@@ -36,8 +36,8 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: AnalogTriad-macOS
-          path: dist/AnalogTriad-macOS-*.zip
+          name: ENTRO-V-COLLECTION-macOS
+          path: dist/ENTRO-V-COLLECTION-macOS-*.zip
           if-no-files-found: error
 
   windows:
@@ -80,6 +80,6 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: AnalogTriad-Windows
+          name: ENTRO-V-COLLECTION-Windows
           path: dist/**
           if-no-files-found: warn
