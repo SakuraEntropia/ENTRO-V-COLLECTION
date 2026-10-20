@@ -157,6 +157,12 @@ void TriadLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, int wi
         g.drawLine ({ p1, p2 }, 0.7f);
     }
 
+    // Soft specular highlight makes the knob read as a machined part.
+    g.setColour (juce::Colours::white.withAlpha (style == HardwareStyle::PolyBrute ? 0.16f : 0.10f));
+    g.fillEllipse (juce::Rectangle<float> (knobRadius * 0.90f, knobRadius * 0.58f)
+                       .withCentre ({ centre.x - knobRadius * 0.18f,
+                                      centre.y - knobRadius * 0.30f }));
+
     // Pointer.
     const auto pointerLength = knobRadius * 0.82f;
     const auto pointerStart = knobRadius * 0.18f;

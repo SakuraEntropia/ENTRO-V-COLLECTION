@@ -279,24 +279,26 @@ PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
         const auto x = matrixArea.getX() + 8;
         const auto width = matrixArea.getWidth() - 16;
 
-        auto& screen = addLcd ({ x, 24, width, 54 });
-        screen.setText ("MOD MATRIX", "SOURCE x SLOT", "CLICK A CELL TO ASSIGN");
+        auto& screen = addLcd ({ x, 28, width, 96 });
+        screen.setText ("POLYBRUTE V",
+                        "MOD MATRIX  /  SOURCE x SLOT",
+                        "A/B  ·  6 VOICE  ·  SLOT 1-8");
 
         std::vector<juce::String> sources;
         for (int slot = 1; slot <= 8; ++slot)
             sources.push_back ("poly.mod.slot" + juce::String (slot) + ".source");
 
-        addSourceMatrix (sources, 12, { x, 86, 190, 300 });
+        addSourceMatrix (sources, 12, { x, 134, 190, 300 });
 
         for (int slot = 1; slot <= 8; ++slot)
         {
-            const auto y = 406 + (slot - 1) * 54;
+            const auto y = 454 + (slot - 1) * 48;
             const auto stem = "poly.mod.slot" + juce::String (slot) + ".";
 
             addCaption (juce::String (slot), { x, y + 6, 16, 12 },
                         juce::Justification::centred, 8.0f, juce::Colour (0xff20262a));
             addChoice (stem + "dest", "", { x + 20, y, 160, 34 });
-            addKnob (stem + "amount", "AMT", { x + 186, y - 6, 48, 46 });
+            addKnob (stem + "amount", "AMT", { x + 186, y - 6, 48, 42 });
         }
     }
 
