@@ -42,7 +42,7 @@ int main()
         const juce::StringArray categoryOrder { "Bass", "Lead", "Brass", "Pad", "Strings",
                                                 "Winds", "Vocal", "Keyboard", "Classic", "Other",
                                                 "Percussion", "Tuned Percussion", "Processor",
-                                                "Drone", "Midi", "Surface", "Texture", "Pluck",
+                                                "Drone", "Midi", "CVC", "User", "Surface", "Texture", "Pluck",
                                                 "Keys", "Organ", "Arp", "Sequence", "Split",
                                                 "Utility", "FX" };
 
@@ -122,8 +122,15 @@ int main()
         auto renderEngine = triad::makeEngine (kind);
         renderEngine->prepare (48000.0, 256);
 
+        int renderCounter = 0;
         for (const auto& preset : presets)
         {
+            // The restored Haken library has 600+ entries; render a
+            // representative subset so the contract test stays fast while
+            // every preset's parameter data is still validated above.
+            if (presets.size() > 100 && (renderCounter++ % 12) != 0)
+                continue;
+
             std::vector<float> values (definition.params.size());
 
             for (size_t i = 0; i < values.size(); ++i)

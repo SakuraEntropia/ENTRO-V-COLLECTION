@@ -23,17 +23,19 @@ The factory bank is original sound design, grouped by the same kinds of categori
 | `LD` | Lead | 3 | 4 | 1 | 0 |
 | `BR` | Brass | 1 | 1 | 1 | 0 |
 | `PD` | Pad | 2 | 3 | 2 | 0 |
-| `ST` | Strings | 1 | 0 | 0 | 3 |
-| `WI` | Winds | 0 | 0 | 0 | 2 |
-| `VO` | Vocal | 0 | 0 | 0 | 2 |
-| `KY` | Keyboard | 0 | 1 | 1 | 2 |
-| `CL` | Classic | 0 | 0 | 0 | 2 |
-| `OT` | Other | 0 | 0 | 0 | 2 |
-| `PE` | Percussion | 0 | 0 | 0 | 1 |
-| `PT` | Tuned Percussion | 0 | 0 | 0 | 2 |
-| `PR` | Processor | 0 | 0 | 0 | 1 |
-| `DO` | Drone | 0 | 0 | 0 | 1 |
-| `MD` | Midi | 0 | 0 | 0 | 1 |
+| `ST` | Strings | 1 | 0 | 0 | 89 |
+| `WI` | Winds | 0 | 0 | 0 | 45 |
+| `VO` | Vocal | 0 | 0 | 0 | 34 |
+| `KY` | Keyboard | 0 | 1 | 1 | 31 |
+| `CL` | Classic | 0 | 0 | 0 | 69 |
+| `OT` | Other | 0 | 0 | 0 | 153 |
+| `PE` | Percussion | 0 | 0 | 0 | 12 |
+| `PT` | Tuned Percussion | 0 | 0 | 0 | 50 |
+| `PR` | Processor | 0 | 0 | 0 | 23 |
+| `DO` | Drone | 0 | 0 | 0 | 18 |
+| `MD` | Midi | 0 | 0 | 0 | 16 |
+| `CV` | CVC | 0 | 0 | 0 | 15 |
+| `USR` | User | 0 | 0 | 0 | 16 |
 | `SF` | Surface | 0 | 0 | 0 | 0 |
 | `TX` | Texture | 0 | 0 | 0 | 0 |
 | `PL` | Pluck | 1 | 1 | 1 | 0 |
@@ -42,13 +44,13 @@ The factory bank is original sound design, grouped by the same kinds of categori
 | `ARP` | Arp | 0 | 1 | 1 | 0 |
 | `SEQ` | Sequence | 1 | 0 | 0 | 0 |
 | `SPL` | Split | 0 | 0 | 1 | 0 |
-| `UT` | Utility | 0 | 0 | 0 | 1 |
+| `UT` | Utility | 0 | 0 | 0 | 41 |
 | `FX` | FX | 1 | 1 | 1 | 0 |
-| | **Total** | **15** | **17** | **15** | **22** |
+| | **Total** | **15** | **17** | **15** | **614** |
 
 ### CONTINUUM V
 
-22 presets use names and categories from the supplied Haken Slim Continuum soundlist (firmware 10.09); the parameter designs are original approximations, not the factory data. The public two-letter system categories are:
+614 presets use the complete names and categories from the supplied Haken Slim Continuum soundlist (firmware 10.09): 594 system entries plus 16 USR entries, plus four modern additions (`BA - Reese Surface`, `BA - Sub Surface`, `Kevin Penkin Style Eharp`, `PT - Glass Harp`). The PDF contains names and category numbers only; the parameter designs are original approximations, not the factory EaganMatrix data. The public two-letter system categories are:
 Strings `ST`, Winds `WI`, Vocal `VO`, Keyboard `KY`, Classic `CL`, Other `OT`,
 Percussion `PE`, Tuned Percussion `PT`, Processor `PR`, Drone `DO`, Midi `MD`,
 Utility `UT`, plus a small modern Bass group. The matrix cells are part of each

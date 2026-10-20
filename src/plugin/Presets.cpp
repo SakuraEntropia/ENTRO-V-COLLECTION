@@ -1,6 +1,7 @@
 #include "plugin/Presets.h"
 
 #include <algorithm>
+#include <set>
 
 namespace triad
 {
@@ -14,7 +15,7 @@ std::vector<FactoryPreset> sortedPresets (std::vector<FactoryPreset> presets)
     const juce::StringArray order { "Bass", "Lead", "Brass", "Pad", "Strings", "Winds",
                                      "Vocal", "Keyboard", "Classic", "Other", "Percussion",
                                      "Tuned Percussion", "Processor", "Drone", "Midi",
-                                     "Surface", "Texture", "Pluck", "Keys", "Organ", "Arp",
+                                     "CVC", "User", "Surface", "Texture", "Pluck", "Keys", "Organ", "Arp",
                                      "Sequence", "Split", "Utility", "FX" };
 
     std::stable_sort (presets.begin(), presets.end(),
@@ -882,7 +883,943 @@ std::vector<FactoryPreset> onePresets()
     });
 }
 
-std::vector<FactoryPreset> continuumPresets()
+
+// The supplied Haken soundlist contains names and two-letter categories only.
+// These presets reproduce that library structure with original sound design;
+// no EaganMatrix parameter data is present in the PDF.
+const char* hakenNamesRaw = R"HAKEN(
+MD|Kontakt 1 Mono
+MD|Kontakt 1 Perform
+MD|Kyma 1
+MD|Kyma 2 Round
+MD|Kyma 3 Initial Round
+MD|Kyma 4 Release Round
+MD|MPE 04 Voice
+MD|MPE 06 Voice
+MD|MPE 08 Voice
+MD|MPE 12 Voice
+MD|MPE+ 08 Voice
+MD|Omnisphere 1 Perform
+MD|Omnisphere 2 Round
+MD|Omnisphere 3 Initial Round
+MD|Omnisphere 4 Semitone
+MD|Omnisphere 5 Mono
+CV|CVC 10v Linear Z
+CV|CVC 10v Square Z
+CV|CVC 5v C0 Linear Z
+CV|CVC 5v C0 Square Z
+CV|CVC 5v C2 Linear Z
+CV|CVC 5v C2 Square Z
+CV|CVC 5v C4 Linear Z
+CV|CVC 5v C4 Square Z
+CV|CVC Buchla Linear Z
+CV|CVC Buchla Square Z
+CV|CVC Four Shape Generators
+CV|CVC Voyager Linear Z
+CV|CVC Voyager Square Z
+CV|CVC Y Shelf Linear Z
+CV|CVC Y Shelf Square Z
+UT|Audio Through
+UT|Basic Bowed Spring
+UT|Basic Jenny
+UT|Basic Spring Bell
+UT|BiqBank - Basic
+UT|BiqGraph - Basic
+UT|BiqMouth - Basic
+UT|Empty
+UT|Filter - The Ladder
+UT|HarMan - Basic
+UT|JennyBasic FixRes
+UT|Karplus - 1
+UT|Karplus - 2
+UT|Karplus - Pipe
+UT|Kinetic - Bouncing
+UT|Kinetic - Bowed Spring
+UT|Kinetic - Bowed Waveguide
+UT|Kinetic - Crackling Noise
+UT|Kinetic - Filter
+UT|Kinetic - Spring Bell
+UT|Kinetic - StickSlip Filter
+UT|Kinetic - Tracker
+UT|Kinetic - Vinyl
+UT|Kinetic - Waveguide
+UT|Kinetic as Filter
+UT|ModMan - Pulsed
+UT|Noise - Out of Phase
+UT|Noise - Pink
+UT|Noise - White Stereo
+UT|Noise - White at -35 RMS
+UT|Osc - A440 at -35
+UT|Osc - Formula Delay
+UT|Osc - Pitch via Z
+UT|Osc - Random Pitch
+UT|Osc - Sine Wave
+UT|Osc - Subtractive Synth
+UT|Osc - Waveshaping
+UT|Ring Mod - Basic
+UT|SineBank - Basic
+UT|SineSpray - Basic
+UT|WaveBank – Basic
+USR|FollowDly
+USR|CrossMod1
+USR|Woodwind
+USR|Jaymar Toy Piano
+USR|Snap Bass
+USR|Bass Monster
+USR|Choir
+USR|Cumulus
+USR|Shimmer
+USR|Living Pad
+USR|Bowed Mood
+USR|Ishango Bone
+USR|Marlin Perkins 1
+USR|Mojo of FDN
+USR|Zipper
+USR|SineSpray Rain via Surface
+ST|Bowed BiqBank
+ST|Bowed Double Reed
+ST|Bowed KinBanjo
+ST|Bowed Mood
+ST|BuzzStrings
+ST|Cimbalom - Continuous
+ST|Cimbalom - Z Pitch
+ST|Country Resonator
+ST|Dulcimer Ghost
+ST|Eastern Slider Ch1
+ST|Electric Guitar
+ST|Electric Guitar Saturated
+ST|Feedback String
+ST|Haegum
+ST|Harmonic Break
+ST|Harmonic Viol
+ST|Harmonoid Spark
+ST|Harp
+ST|Hoop Lute
+ST|Hyper Pizz
+ST|Jupiter Mission
+ST|Karplus & ModMan
+ST|Kinetic Cabinet
+ST|Kinetic Kokyu
+ST|Kinetic Soundboard
+ST|Kinetic WG AkouBass
+ST|Kinetic WG AkouBass - Var1
+ST|Koto
+ST|Lap Steel
+ST|Melow Pedal Steel
+ST|MicroDelay WaveGuide v1
+ST|MicroDelay WaveGuide v2
+ST|MicroDelay WaveGuide v3
+ST|Model String Wind
+ST|Mountain Slider
+ST|Mountain Slider Ch1
+ST|NGoni
+ST|NGoni - Kinetic
+ST|Northern Lights
+ST|Plucked Soup Can
+ST|Pusher
+ST|Resizable Guitar
+ST|Resodynamic
+ST|Rhythm And Bass
+ST|Roto String
+ST|Rub
+ST|Rub String
+ST|SiTan
+ST|SiloString Pizz
+ST|Silver Mirror
+ST|SineBank FM String
+ST|Singing Bamboo
+ST|Singing Bamboo 2
+ST|Sinseong-ri
+ST|SlideyPizz
+ST|Small Steel
+ST|Snap Bass
+ST|Snap String
+ST|Spiccato Tremolo Dual
+ST|Spiccato Tremolo Single
+ST|Squeaky Balloon String
+ST|Stellar Bowls
+ST|Stretch String m1 T
+ST|Stretch String m2 T
+ST|Stretch String m3 T
+ST|Stretch String v2 T
+ST|Strummed Gtr 3HRSolo
+ST|Strummed Gtr Rythm T 950
+ST|Sympathy String
+ST|Synchronous Orbits
+ST|Tap Sitar
+ST|Tapestry
+ST|The Touch Guitar
+ST|Tunable Tanpura
+ST|Uki Pizz 1
+ST|Uki Pizz 2
+ST|Uki Pizz w Snap
+ST|Vln Vla Cel Bass 1
+ST|Vln Vla Cel Bass 2
+ST|Vln Vla Cel Bass 2 Ch1
+ST|Vln Vla Cel Bass 3
+ST|Vln Vla Cel Bass 4
+ST|Vln Vla Cel Bass Bridge
+ST|Vln Vla Cel Bass KeySwitch
+ST|VlnVlaVlcCbFull
+ST|VlnVlaVlcCbPlus
+ST|Waterphone Strings
+ST|xpStrings
+WI|Bagpipes
+WI|Brass Mute
+WI|Calliope
+WI|Chinese Clarinet
+WI|Clarinet
+WI|Crumb Horn
+WI|Double Reed
+WI|Empyrean
+WI|Flip Tube
+WI|Fragaria Fields
+WI|French Sax
+WI|GrainSilo Woodwind
+WI|Jemonica
+WI|Jenny Trumpet
+WI|JennyDo
+WI|Jerrys Horn
+WI|Metal Reed
+WI|MicroDelay PipeWG
+WI|Miles
+WI|MilesBird
+WI|Morphing Reed
+WI|OvertoneWind
+WI|PanPipe Solo
+WI|Panpipe Loops
+WI|Pipedreams
+WI|Saxmosis
+WI|Sine2Sax
+WI|SineBank Horn
+WI|Single Reed
+WI|Slide Wind
+WI|Slide Wind EM
+WI|Soprano Recorder
+WI|Space Flute
+WI|Spinning Oboe
+WI|Spit Tube
+WI|Tin Whistle
+WI|Touch Reed T
+WI|VBrass 1
+WI|VBrass 2
+WI|Wind
+WI|Windtube Air Reed
+WI|Windtube Double Reed
+WI|Windtube Single Reed
+WI|Woodwind
+WI|ZawiFlute8
+VO|Additive Gnilham
+VO|Additive Vocal 1
+VO|Additive Vocal 1 Transform
+VO|Choir
+VO|Choir on Kepler-452b
+VO|Choir-Ah
+VO|Distant Transmission Choir
+VO|Dual Spectra Voice
+VO|FOF FixRes
+VO|FOF VariableRes
+VO|Funny Voice
+VO|Instant Reich
+VO|Jenny Voice
+VO|Kinetic - Vinyl
+VO|Larynx Horn
+VO|Lost Choir
+VO|Mahling 1
+VO|Mahling 2
+VO|Mahling 3
+VO|Mantra Voice
+VO|Morphing Voice
+VO|Mouth Sequence Ch1
+VO|Ring Mod - Voice
+VO|Ring Mod - Voice - Var1
+VO|Ring Mod - Voice 1
+VO|Ring Mod - Voice 2
+VO|Should I Stay or Should I Go
+VO|Singing Oscillators
+VO|Tibetan Throat Stick
+VO|Touch Voice T
+VO|Two Handed Voice
+VO|Vocalise
+VO|Vocalized Buzzard
+VO|Vowel
+KY|Anthophila Organ
+KY|Apiary
+KY|Electric Harpsychord
+KY|FM DreamPiano
+KY|FM DreamPiano - Var1
+KY|Grinding Stone Calliope
+KY|Heavenly Corporation Ch1
+KY|Ice Calliope
+KY|Jaymar Toy Piano
+KY|Jenerator T
+KY|Kinetic - Clavinet
+KY|Kinetic - Clavinet - Var1
+KY|Kinetic Contioline
+KY|LegacyDX EP
+KY|Morphing Church Organ
+KY|Morphing Organ
+KY|Music Box Because
+KY|Music Box Because Ch1
+KY|Musica Minima
+KY|Old Pad Machine
+KY|Organo Espressivo
+KY|Organzilla
+KY|PCS Fixed
+KY|Plane Tiv Organ
+KY|Portable Reed
+KY|Positiv Organ
+KY|Quaverer
+KY|Simple Organ
+KY|Tine
+KY|Vibrato Organ T
+KY|Vintage Electro
+CL|Ambiant Analog
+CL|Analog ADSR
+CL|Analog ADSR - Var1
+CL|Analog Overload
+CL|Another Big One
+CL|Arpeggiator 4 Step
+CL|Arpeggiator Resonant
+CL|Autocille
+CL|Bass DistoSine
+CL|Bass Monster
+CL|Bass Pad
+CL|Boson Particles
+CL|CS80+Ladder
+CL|CS80+Ladder II
+CL|CZ Dirt Bass
+CL|CZ Dirt Bass - Var1
+CL|Celestial Following
+CL|Chord Generator
+CL|Chrono Z
+CL|Clinical Oscillator 1
+CL|Clinical Oscillator 2
+CL|CrossMod2
+CL|CrossMod3
+CL|Dirty Oscillator v2
+CL|Distortion Man
+CL|Dual 24
+CL|Dual Resonators
+CL|Dual Sinespray
+CL|Echo 8va
+CL|FM 1
+CL|FM 2
+CL|FM Trails
+CL|Follower
+CL|Four Point FM
+CL|Jenny Pulse
+CL|Jenny Shepard Down
+CL|JennyBasicPad
+CL|Kinetic - Dirty Osc
+CL|Kinetic - Dirty Osc - Var1
+CL|Kinetic - U-Bass
+CL|Kinetic AnaSeq
+CL|Kinetic SatPad
+CL|Ladder Bass
+CL|Lain Heart
+CL|Living Pad
+CL|Music Box Bells
+CL|NFS Train 900
+CL|Noisy Old Oscillator
+CL|Notch Lightning
+CL|Pleasantness
+CL|Plutonium
+CL|Sawz
+CL|Sine Chaser
+CL|Sineysitus
+CL|Square Bass
+CL|Square FM
+CL|Squaresville
+CL|Synth 01 T
+CL|Synth Brass
+CL|Synth Lead 1
+CL|Synth Lead 2
+CL|Synth Lead 3
+CL|Synth Lead 4
+CL|Synth Lead 5
+CL|Synth Lead 6
+CL|Three Saws
+CL|Voice Jumper
+CL|Zwei Baende
+CL|Zwei Baende with Noise
+OT|Acrylic Clock
+OT|Acrylic Clock 2
+OT|Around the Periapsis
+OT|Around the Periapsis Ch1
+OT|Bacteria
+OT|Bajaron Light Ship
+OT|Beautiful Pursuit
+OT|Beautiful Pursuit Ch1
+OT|Belle Isle
+OT|Bird Echoer
+OT|Bird Whistler
+OT|Bullroarer
+OT|Buzzard
+OT|Celestial Basin
+OT|Centrifuge
+OT|Cork the Bottle
+OT|Cowell Triangles
+OT|CrossMod1
+OT|Cyncro Ecro
+OT|Echo Star
+OT|Electric Comb T
+OT|Electric Wazoo
+OT|Entanglement
+OT|Explosion in A
+OT|Explosion in A Minus
+OT|Explosion in A.3
+OT|Exposure Ensemble
+OT|FDN Crazyness
+OT|Falling Brook
+OT|Fluter
+OT|Flutter Blossom T
+OT|FollowDly
+OT|GaBuZoMeu
+OT|Geiger Insects
+OT|Ghost Moth
+OT|Glass Chorus
+OT|Glass Chorus Reverse
+OT|Golliclock
+OT|Happy Birthday Ed 20
+OT|Harman Morph
+OT|Harmonic Board
+OT|Harmonic Looper
+OT|HarmonicSkin
+OT|Helix T
+OT|Jenny Attack
+OT|Jenny Dark Acid
+OT|Jenny Dark Acid - Var1
+OT|Jenny FromTo
+OT|Jenny FromTo - Var1
+OT|Jenny Loops
+OT|Jenny Random
+OT|Jenny Shepard Down
+OT|Jenny Shepard Down - Var1
+OT|Jenny Shepard Up
+OT|Kinetic - Overtones
+OT|Kinetic Bowed FDN
+OT|Kinetic Disto Analog
+OT|Kinetic Dragon
+OT|Kinetic MicroMotor
+OT|Kinetic Rubber Skin
+OT|Kinetic-Wavebank Morph
+OT|Lisithean Motor
+OT|Lonely Data
+OT|Lost Beacon
+OT|M-220
+OT|Major Vision
+OT|Maple Key
+OT|Martian Beach
+OT|Martian Landing Pad
+OT|Meccano
+OT|Mini Shepard
+OT|Mini Shepard Breathing
+OT|Mini Shepard Resonant
+OT|Mojo of FDN
+OT|Moon Witch
+OT|Morphing Wavebank Pad 1
+OT|Morphing Wavebank Pad 2
+OT|Mr Kyte
+OT|Mutate Looper
+OT|Natural Law
+OT|Octavator
+OT|Octave Phases
+OT|Orchester
+OT|Overtones
+OT|PCS Dandelion
+OT|Pad Tie
+OT|Patville
+OT|Phase Controled ModMan
+OT|Philco Chromatic
+OT|Pinched FM
+OT|Ping Pong
+OT|Polychromatic
+OT|Pterodactyl
+OT|Pulse
+OT|Random Fun
+OT|Random Texture
+OT|Random Trigger
+OT|Razor Loops
+OT|Rosin Oscillator
+OT|Rubber Band Stars
+OT|Scratching FDN
+OT|Seasons Ch1
+OT|Sequencer 1 Ch1
+OT|Shimmer
+OT|Simple and Nice
+OT|Sine Wave T
+OT|SinePhases
+OT|SineSpray Rain via Surface
+OT|Singing Noise
+OT|Slip Zen
+OT|Slow Evolver
+OT|Sonogram
+OT|Soundboard
+OT|Space
+OT|Space Async
+OT|Spectrum with MidiClock
+OT|Spiritus Subteranne
+OT|Sputnik's Dream
+OT|Stasis Field T
+OT|Sub-Harmonic Generator
+OT|Submit Job to Mainframe
+OT|SuperWave
+OT|Sweet Triangle
+OT|Swept Delay
+OT|Swirl
+OT|Synthetic Cathedral
+OT|Tesla Coil
+OT|Tesla's Dream
+OT|The Long Goodbye
+OT|The Slow Descent
+OT|The Wind on Callisto
+OT|Three Cycles
+OT|Three Sines
+OT|Through the Photodiode
+OT|Tick Bodies
+OT|Transistor
+OT|Transporter
+OT|TriMod
+OT|Unanswered Question
+OT|Unstable Wave
+OT|Venusian Beach
+OT|Victrola
+OT|Victrola 2
+OT|Voice of the Woods
+OT|Voyager
+OT|Waterphonie
+OT|WaveShaped
+OT|Whirligigs
+OT|Wind Beach
+OT|Winter Skipping Pond
+OT|Wobble Plate
+OT|Zazipad
+OT|Zipper
+PE|Creaker
+PE|Drum-Machine Windowed
+PE|Drum-Set
+PE|Icicles 1
+PE|Icicles 2
+PE|Jaw Stick 1
+PE|Jaw Stick 2
+PE|Kinetic - Kick
+PE|Metal Rainstick
+PE|Resonant Drum 1
+PE|Resonant Drum 2
+PE|Wind Drum
+PT|Bell Rub
+PT|Bells in the Fields
+PT|Bells of Digul
+PT|Bouncer
+PT|Bowed Bells
+PT|Carbon Marimba
+PT|Cumulus
+PT|Cycle Kalimba
+PT|Dolce Cristallo
+PT|Dolce Cristallo Space
+PT|Dripaphone
+PT|Dueling BiqBanks
+PT|Echo of a Marimba
+PT|FM Bell T
+PT|FM Bells
+PT|Gamelan Spinner
+PT|Genie Bottle
+PT|Glas Pfeifen
+PT|Glass Rings
+PT|Grandfather Clock
+PT|Ishango Bone
+PT|JPR Marimba
+PT|Marlin Perkins 1
+PT|Marlin Perkins 2
+PT|Metal Bar
+PT|Metallic Glass
+PT|Metallic Pattern Gen
+PT|Mutable Bowl
+PT|Mutable Bowl.9
+PT|OvertoneBar
+PT|Plinklies
+PT|Pluck Tine
+PT|Pulsar
+PT|Remembrance Bells
+PT|Sine Kalimba
+PT|Small Cloud Gamelan
+PT|Spectral Marimba
+PT|Spinning Metal Rings
+PT|Spring Shimming Bell
+PT|Steel Pan Kalimba
+PT|Sympathetica
+PT|Tick Tube
+PT|Timbre Morph
+PT|Tremolo Resonator
+PT|Tubular Bells
+PT|Uki Bells
+PT|Zuie
+PT|mBiraski
+PT|mBiraski Ch1
+PR|Ambient Delay
+PR|Analog Echo
+PR|Analog Echo Ext
+PR|Chorus1
+PR|Chorus2
+PR|Chorus3
+PR|Effect Modman
+PR|Effect Modman 1
+PR|FDN Base
+PR|FDN Space
+PR|Flanger
+PR|Harmonic Resonator
+PR|Karplus Effect
+PR|Kinetic Friction
+PR|Leslie
+PR|MtoStereo Delay
+PR|Multitap
+PR|Phaser
+PR|Pitch Shifter
+PR|RingMod Voice
+PR|Shaper
+PR|The Satur
+PR|Tuned Reverb
+DO|Bad Weather
+DO|Countdown
+DO|Drum-Machine
+DO|Earthquake
+DO|Feelings Drone
+DO|Hal Dreams
+DO|Hals Meditation
+DO|Kinetic Evil Bell
+DO|Magic Carillon
+DO|Magic Carillon - Var1
+DO|Magic Carillon - Var2
+DO|Roller
+DO|Rosetta Alarm
+DO|SineSpray Rain
+DO|Splat
+DO|Throat Battle
+DO|Two Chords
+DO|TwoOneDrone
+)HAKEN";
+
+juce::String hakenCategory (const juce::String& code)
+{
+    if (code == "MD") return "Midi";
+    if (code == "CV") return "CVC";
+    if (code == "UT") return "Utility";
+    if (code == "USR") return "User";
+    if (code == "ST") return "Strings";
+    if (code == "WI") return "Winds";
+    if (code == "VO") return "Vocal";
+    if (code == "KY") return "Keyboard";
+    if (code == "CL") return "Classic";
+    if (code == "PE") return "Percussion";
+    if (code == "PT") return "Tuned Percussion";
+    if (code == "PR") return "Processor";
+    if (code == "DO") return "Drone";
+    return "Other";
+}
+
+void setPresetValue (Values& values, const char* id, float value)
+{
+    const juce::String key (id);
+    for (auto& entry : values)
+    {
+        if (entry.first == key)
+        {
+            entry.second = value;
+            return;
+        }
+    }
+    values.emplace_back (key, value);
+}
+
+Values hakenValues (const juce::String& code, const juce::String& name)
+{
+    Values values;
+    const auto hash = (uint32_t) name.hashCode();
+    const auto vary = [hash] (int range)
+    {
+        return (float) (hash % (uint32_t) juce::jmax (1, range));
+    };
+
+    setPresetValue (values, "con.master.volume", 0.58f + 0.04f * vary (3));
+    setPresetValue (values, "con.master.yDepth", 0.65f);
+    setPresetValue (values, "con.master.zDepth", 0.82f);
+    setPresetValue (values, "con.master.reverbMix", 0.26f + 0.008f * vary (6));
+    setPresetValue (values, "con.master.reverbSize", 0.72f);
+    setPresetValue (values, "con.master.delayMix", 0.10f);
+    setPresetValue (values, "con.master.delayTime", 0.28f);
+    setPresetValue (values, "con.master.delayFeedback", 0.28f);
+    setPresetValue (values, "con.osc1.wave", 0.0f);
+    setPresetValue (values, "con.osc1.level", 0.58f);
+    setPresetValue (values, "con.osc2.wave", 1.0f);
+    setPresetValue (values, "con.osc2.ratio", 2.0f);
+    setPresetValue (values, "con.osc2.level", 0.28f);
+    setPresetValue (values, "con.osc3.wave", 0.0f);
+    setPresetValue (values, "con.osc3.ratio", 3.0f);
+    setPresetValue (values, "con.osc3.level", 0.16f);
+    setPresetValue (values, "con.osc4.level", 0.0f);
+    setPresetValue (values, "con.osc5.level", 0.0f);
+    setPresetValue (values, "con.noise.level", 0.0f);
+    setPresetValue (values, "con.flt1.cutoff", 3200.0f + 200.0f * vary (8));
+    setPresetValue (values, "con.flt2.cutoff", 3800.0f);
+    setPresetValue (values, "con.flt3.cutoff", 4400.0f);
+    setPresetValue (values, "con.flt4.cutoff", 5000.0f);
+    setPresetValue (values, "con.flt5.cutoff", 5600.0f);
+    setPresetValue (values, "con.bank1.freq", 440.0f);
+    setPresetValue (values, "con.bank1.spread", 0.55f);
+    setPresetValue (values, "con.bank1.bandwidth", 0.16f);
+    setPresetValue (values, "con.bank1.mix", 0.22f);
+    setPresetValue (values, "con.bank1.level", 0.72f);
+    setPresetValue (values, "con.bank2.freq", 880.0f);
+    setPresetValue (values, "con.bank2.bandwidth", 0.14f);
+    setPresetValue (values, "con.bank2.mix", 0.14f);
+    setPresetValue (values, "con.bank2.level", 0.65f);
+    setPresetValue (values, "con.env1.attack", 0.006f + 0.004f * vary (5));
+    setPresetValue (values, "con.env1.decay", 0.55f + 0.08f * vary (5));
+    setPresetValue (values, "con.env1.sustain", 0.45f);
+    setPresetValue (values, "con.env1.release", 1.1f);
+    setPresetValue (values, "con.env2.attack", 0.004f);
+    setPresetValue (values, "con.env2.decay", 0.45f);
+    setPresetValue (values, "con.env2.sustain", 0.15f);
+    setPresetValue (values, "con.env2.release", 0.9f);
+
+    if (name.containsIgnoreCase ("harp"))
+    {
+        // Full-bodied plucked/electric harp base: sub-octave body, two
+        // resonant banks and a short amplitude envelope.
+        setPresetValue (values, "con.master.volume", 0.68f);
+        setPresetValue (values, "con.master.yDepth", 0.68f);
+        setPresetValue (values, "con.master.zDepth", 0.9f);
+        setPresetValue (values, "con.master.reverbMix", 0.34f);
+        setPresetValue (values, "con.master.reverbSize", 0.84f);
+        setPresetValue (values, "con.master.delayMix", 0.14f);
+        setPresetValue (values, "con.master.delayTime", 0.25f);
+        setPresetValue (values, "con.osc1.wave", 0.0f);
+        setPresetValue (values, "con.osc1.level", 0.68f);
+        setPresetValue (values, "con.osc2.wave", 1.0f);
+        setPresetValue (values, "con.osc2.ratio", 1.0f);
+        setPresetValue (values, "con.osc2.fine", 0.06f);
+        setPresetValue (values, "con.osc2.level", 0.48f);
+        setPresetValue (values, "con.osc3.wave", 0.0f);
+        setPresetValue (values, "con.osc3.ratio", 0.5f);
+        setPresetValue (values, "con.osc3.level", 0.42f);
+        setPresetValue (values, "con.osc4.wave", 1.0f);
+        setPresetValue (values, "con.osc4.ratio", 2.0f);
+        setPresetValue (values, "con.osc4.level", 0.22f);
+        setPresetValue (values, "con.osc5.wave", 0.0f);
+        setPresetValue (values, "con.osc5.ratio", 3.0f);
+        setPresetValue (values, "con.osc5.level", 0.12f);
+        setPresetValue (values, "con.noise.level", 0.008f);
+        setPresetValue (values, "con.flt1.cutoff", 4200.0f);
+        setPresetValue (values, "con.flt1.res", 0.16f);
+        setPresetValue (values, "con.flt2.cutoff", 5000.0f);
+        setPresetValue (values, "con.flt3.cutoff", 5800.0f);
+        setPresetValue (values, "con.flt4.cutoff", 6600.0f);
+        setPresetValue (values, "con.flt5.cutoff", 7400.0f);
+        setPresetValue (values, "con.bank1.freq", 261.63f);
+        setPresetValue (values, "con.bank1.spread", 0.55f);
+        setPresetValue (values, "con.bank1.bandwidth", 0.18f);
+        setPresetValue (values, "con.bank1.mix", 0.50f);
+        setPresetValue (values, "con.bank1.level", 0.85f);
+        setPresetValue (values, "con.bank2.freq", 523.25f);
+        setPresetValue (values, "con.bank2.spread", 0.52f);
+        setPresetValue (values, "con.bank2.bandwidth", 0.14f);
+        setPresetValue (values, "con.bank2.mix", 0.38f);
+        setPresetValue (values, "con.bank2.level", 0.76f);
+        setPresetValue (values, "con.env1.attack", 0.002f);
+        setPresetValue (values, "con.env1.decay", 0.78f);
+        setPresetValue (values, "con.env1.sustain", 0.12f);
+        setPresetValue (values, "con.env1.release", 1.9f);
+        setPresetValue (values, "con.env2.attack", 0.001f);
+        setPresetValue (values, "con.env2.decay", 0.35f);
+        setPresetValue (values, "con.env2.sustain", 0.0f);
+        setPresetValue (values, "con.env2.release", 1.0f);
+        return values;
+    }
+
+    if (code == "ST")
+    {
+        setPresetValue (values, "con.osc1.wave", 1.0f);
+        setPresetValue (values, "con.osc1.level", 0.58f);
+        setPresetValue (values, "con.osc2.wave", 2.0f);
+        setPresetValue (values, "con.osc2.fine", 0.05f);
+        setPresetValue (values, "con.osc2.level", 0.34f);
+        setPresetValue (values, "con.osc3.ratio", 2.0f);
+        setPresetValue (values, "con.osc3.level", 0.2f);
+        setPresetValue (values, "con.flt1.cutoff", 1800.0f + 120.0f * vary (6));
+        setPresetValue (values, "con.flt1.res", 0.22f);
+        setPresetValue (values, "con.bank1.freq", 440.0f);
+        setPresetValue (values, "con.bank1.mix", 0.28f);
+        setPresetValue (values, "con.env1.attack", 0.20f + 0.10f * vary (5));
+        setPresetValue (values, "con.env1.decay", 1.1f);
+        setPresetValue (values, "con.env1.sustain", 0.72f);
+        setPresetValue (values, "con.env1.release", 2.5f);
+        setPresetValue (values, "con.master.reverbMix", 0.38f);
+    }
+    else if (code == "WI")
+    {
+        setPresetValue (values, "con.noise.level", 0.15f);
+        setPresetValue (values, "con.noise.color", 0.32f);
+        setPresetValue (values, "con.osc1.wave", 0.0f);
+        setPresetValue (values, "con.osc2.wave", 4.0f);
+        setPresetValue (values, "con.osc2.ratio", 2.0f);
+        setPresetValue (values, "con.osc2.level", 0.18f);
+        setPresetValue (values, "con.flt1.type", 2.0f);
+        setPresetValue (values, "con.flt1.cutoff", 2200.0f);
+        setPresetValue (values, "con.flt1.res", 0.28f);
+        setPresetValue (values, "con.env1.attack", 0.10f);
+        setPresetValue (values, "con.env1.sustain", 0.82f);
+        setPresetValue (values, "con.env1.release", 1.2f);
+    }
+    else if (code == "VO")
+    {
+        setPresetValue (values, "con.osc1.wave", 0.0f);
+        setPresetValue (values, "con.osc2.wave", 0.0f);
+        setPresetValue (values, "con.osc2.ratio", 2.0f);
+        setPresetValue (values, "con.osc2.level", 0.22f);
+        setPresetValue (values, "con.bank1.freq", 500.0f);
+        setPresetValue (values, "con.bank1.bandwidth", 0.15f);
+        setPresetValue (values, "con.bank1.mix", 0.48f);
+        setPresetValue (values, "con.bank2.freq", 1500.0f);
+        setPresetValue (values, "con.bank2.mix", 0.38f);
+        setPresetValue (values, "con.env1.attack", 0.30f);
+        setPresetValue (values, "con.env1.sustain", 0.86f);
+        setPresetValue (values, "con.env1.release", 2.0f);
+        setPresetValue (values, "con.master.reverbMix", 0.42f);
+    }
+    else if (code == "KY" || code == "CL")
+    {
+        setPresetValue (values, "con.osc1.wave", code == "KY" ? 0.0f : 2.0f);
+        setPresetValue (values, "con.osc2.wave", code == "KY" ? 1.0f : 3.0f);
+        setPresetValue (values, "con.osc2.ratio", 2.0f);
+        setPresetValue (values, "con.osc2.level", 0.3f);
+        setPresetValue (values, "con.flt1.cutoff", code == "KY" ? 6500.0f : 1800.0f);
+        setPresetValue (values, "con.flt1.res", 0.18f);
+        setPresetValue (values, "con.env1.attack", code == "KY" ? 0.004f : 0.005f);
+        setPresetValue (values, "con.env1.decay", code == "KY" ? 0.65f : 0.42f);
+        setPresetValue (values, "con.env1.sustain", code == "KY" ? 0.18f : 0.4f);
+        setPresetValue (values, "con.env1.release", code == "KY" ? 1.0f : 0.7f);
+        setPresetValue (values, "con.master.reverbMix", 0.26f);
+    }
+    else if (code == "PE")
+    {
+        setPresetValue (values, "con.noise.level", 0.14f);
+        setPresetValue (values, "con.noise.color", 0.56f);
+        setPresetValue (values, "con.osc1.wave", 2.0f);
+        setPresetValue (values, "con.osc2.wave", 3.0f);
+        setPresetValue (values, "con.osc2.level", 0.22f);
+        setPresetValue (values, "con.flt1.cutoff", 3600.0f);
+        setPresetValue (values, "con.flt1.res", 0.35f);
+        setPresetValue (values, "con.env1.attack", 0.001f);
+        setPresetValue (values, "con.env1.decay", 0.22f);
+        setPresetValue (values, "con.env1.sustain", 0.0f);
+        setPresetValue (values, "con.env1.release", 0.35f);
+        setPresetValue (values, "con.master.reverbMix", 0.3f);
+    }
+    else if (code == "PT")
+    {
+        setPresetValue (values, "con.osc1.wave", 0.0f);
+        setPresetValue (values, "con.osc2.wave", 0.0f);
+        setPresetValue (values, "con.osc2.ratio", 2.0f);
+        setPresetValue (values, "con.osc2.level", 0.28f);
+        setPresetValue (values, "con.bank1.freq", 880.0f);
+        setPresetValue (values, "con.bank1.bandwidth", 0.09f);
+        setPresetValue (values, "con.bank1.mix", 0.36f);
+        setPresetValue (values, "con.flt1.cutoff", 7200.0f);
+        setPresetValue (values, "con.env1.attack", 0.001f);
+        setPresetValue (values, "con.env1.decay", 0.65f);
+        setPresetValue (values, "con.env1.sustain", 0.0f);
+        setPresetValue (values, "con.env1.release", 1.2f);
+        setPresetValue (values, "con.master.reverbMix", 0.38f);
+    }
+    else if (code == "PR")
+    {
+        setPresetValue (values, "con.osc1.wave", 2.0f);
+        setPresetValue (values, "con.osc2.wave", 4.0f);
+        setPresetValue (values, "con.flt1.cutoff", 1600.0f);
+        setPresetValue (values, "con.flt1.res", 0.52f);
+        setPresetValue (values, "con.master.reverbMix", 0.52f);
+        setPresetValue (values, "con.master.delayMix", 0.32f);
+        setPresetValue (values, "con.env1.attack", 0.02f);
+        setPresetValue (values, "con.env1.sustain", 0.55f);
+        setPresetValue (values, "con.env1.release", 2.0f);
+    }
+    else if (code == "DO")
+    {
+        setPresetValue (values, "con.osc1.wave", 1.0f);
+        setPresetValue (values, "con.osc1.level", 0.5f);
+        setPresetValue (values, "con.osc2.wave", 2.0f);
+        setPresetValue (values, "con.osc2.level", 0.28f);
+        setPresetValue (values, "con.flt1.cutoff", 850.0f);
+        setPresetValue (values, "con.flt1.res", 0.34f);
+        setPresetValue (values, "con.env1.attack", 1.8f);
+        setPresetValue (values, "con.env1.sustain", 0.9f);
+        setPresetValue (values, "con.env1.release", 4.0f);
+        setPresetValue (values, "con.master.reverbMix", 0.5f);
+    }
+    else if (code == "MD" || code == "CV")
+    {
+        setPresetValue (values, "con.osc1.wave", 0.0f);
+        setPresetValue (values, "con.osc2.level", 0.0f);
+        setPresetValue (values, "con.osc3.level", 0.0f);
+        setPresetValue (values, "con.flt1.cutoff", 9000.0f);
+        setPresetValue (values, "con.env1.attack", 0.005f);
+        setPresetValue (values, "con.env1.sustain", 1.0f);
+        setPresetValue (values, "con.env1.release", 0.2f);
+        setPresetValue (values, "con.master.reverbMix", 0.0f);
+        setPresetValue (values, "con.master.delayMix", 0.0f);
+    }
+    else if (code == "UT" || code == "USR")
+    {
+        setPresetValue (values, "con.osc1.wave", 2.0f);
+        setPresetValue (values, "con.osc2.wave", 1.0f);
+        setPresetValue (values, "con.osc2.ratio", 2.0f);
+        setPresetValue (values, "con.env1.attack", 0.01f);
+        setPresetValue (values, "con.env1.sustain", 0.75f);
+        setPresetValue (values, "con.env1.release", 1.2f);
+    }
+    else // OT and any unclassified names
+    {
+        setPresetValue (values, "con.osc1.wave", (float) (hash % 5));
+        setPresetValue (values, "con.osc2.ratio", 1.0f + 0.5f * vary (4));
+        setPresetValue (values, "con.osc2.level", 0.24f);
+        setPresetValue (values, "con.flt1.cutoff", 1200.0f + 300.0f * vary (10));
+        setPresetValue (values, "con.flt1.res", 0.28f);
+        setPresetValue (values, "con.env1.attack", 0.02f + 0.05f * vary (8));
+        setPresetValue (values, "con.env1.decay", 0.8f);
+        setPresetValue (values, "con.env1.sustain", 0.55f);
+        setPresetValue (values, "con.env1.release", 2.2f);
+        setPresetValue (values, "con.master.reverbMix", 0.4f);
+    }
+
+    return values;
+}
+
+std::vector<FactoryPreset> makeHakenBank()
+{
+    std::vector<FactoryPreset> presets;
+    juce::StringArray lines;
+    lines.addLines (hakenNamesRaw);
+
+    for (const auto& line : lines)
+    {
+        const auto split = line.indexOfChar ('|');
+        if (split <= 0)
+            continue;
+
+        const auto code = line.substring (0, split).trim();
+        const auto name = line.substring (split + 1).trim();
+        if (code.isEmpty() || name.isEmpty())
+            continue;
+
+        const auto fullName = code + " - " + name;
+        presets.push_back ({ fullName, hakenCategory (code), hakenValues (code, name) });
+    }
+
+    return presets;
+}
+
+std::vector<FactoryPreset> continuumCustomPresets()
 {
     return sortedPresets ({
         { "BA - Reese Surface", "Bass",
@@ -1261,34 +2198,34 @@ std::vector<FactoryPreset> continuumPresets()
           } },
         { "Kevin Penkin Style Eharp", "Strings",
           Values {
-              { "con.master.volume", 0.56f }, { "con.master.glide", 0.008f },
-              { "con.master.yDepth", 0.58f }, { "con.master.zDepth", 0.9f },
-              { "con.master.reverbMix", 0.56f }, { "con.master.reverbSize", 0.94f },
-              { "con.master.delayMix", 0.30f }, { "con.master.delayTime", 0.41f },
-              { "con.master.delayFeedback", 0.42f },
-              { "con.osc1.wave", 0.0f }, { "con.osc1.level", 0.52f },
-              { "con.osc2.wave", 1.0f }, { "con.osc2.ratio", 2.0f },
-              { "con.osc2.fine", 0.06f }, { "con.osc2.level", 0.24f },
-              { "con.osc3.wave", 0.0f }, { "con.osc3.ratio", 3.0f },
-              { "con.osc3.level", 0.18f }, { "con.osc4.wave", 0.0f },
-              { "con.osc4.ratio", 4.0f }, { "con.osc4.level", 0.10f },
-              { "con.osc5.wave", 0.0f }, { "con.osc5.ratio", 7.0f },
-              { "con.osc5.level", 0.07f }, { "con.noise.level", 0.018f },
-              { "con.noise.color", 0.72f },
-              { "con.flt1.cutoff", 6200.0f }, { "con.flt1.res", 0.18f },
-              { "con.flt2.cutoff", 7600.0f }, { "con.flt3.cutoff", 9000.0f },
-              { "con.flt4.cutoff", 10500.0f }, { "con.flt5.cutoff", 12000.0f },
-              { "con.bank1.freq", 440.0f }, { "con.bank1.spread", 0.72f },
-              { "con.bank1.bandwidth", 0.10f }, { "con.bank1.mix", 0.40f },
-              { "con.bank1.level", 0.72f }, { "con.bank2.freq", 1760.0f },
-              { "con.bank2.spread", 0.66f }, { "con.bank2.bandwidth", 0.09f },
-              { "con.bank2.mix", 0.24f }, { "con.bank2.level", 0.62f },
-              { "con.env1.attack", 0.008f }, { "con.env1.decay", 0.95f },
-              { "con.env1.sustain", 0.10f }, { "con.env1.release", 3.2f },
-              { "con.env2.attack", 0.003f }, { "con.env2.decay", 0.55f },
-              { "con.env2.sustain", 0.05f }, { "con.env2.release", 2.2f },
-              { "con.sg1.rate", 0.08f }, { "con.sg1.level", 0.10f },
-              { "con.sg2.rate", 0.13f }, { "con.sg2.level", 0.06f }
+              { "con.master.volume", 0.64f }, { "con.master.glide", 0.008f },
+              { "con.master.yDepth", 0.64f }, { "con.master.zDepth", 0.9f },
+              { "con.master.reverbMix", 0.48f }, { "con.master.reverbSize", 0.92f },
+              { "con.master.delayMix", 0.24f }, { "con.master.delayTime", 0.36f },
+              { "con.master.delayFeedback", 0.38f },
+              { "con.osc1.wave", 0.0f }, { "con.osc1.level", 0.64f },
+              { "con.osc2.wave", 1.0f }, { "con.osc2.ratio", 1.0f },
+              { "con.osc2.fine", 0.06f }, { "con.osc2.level", 0.42f },
+              { "con.osc3.wave", 0.0f }, { "con.osc3.ratio", 0.5f },
+              { "con.osc3.level", 0.36f }, { "con.osc4.wave", 1.0f },
+              { "con.osc4.ratio", 2.0f }, { "con.osc4.level", 0.24f },
+              { "con.osc5.wave", 0.0f }, { "con.osc5.ratio", 3.0f },
+              { "con.osc5.level", 0.12f }, { "con.noise.level", 0.010f },
+              { "con.noise.color", 0.70f },
+              { "con.flt1.cutoff", 4800.0f }, { "con.flt1.res", 0.16f },
+              { "con.flt2.cutoff", 5600.0f }, { "con.flt3.cutoff", 6400.0f },
+              { "con.flt4.cutoff", 7200.0f }, { "con.flt5.cutoff", 8000.0f },
+              { "con.bank1.freq", 261.63f }, { "con.bank1.spread", 0.58f },
+              { "con.bank1.bandwidth", 0.18f }, { "con.bank1.mix", 0.48f },
+              { "con.bank1.level", 0.85f }, { "con.bank2.freq", 523.25f },
+              { "con.bank2.spread", 0.52f }, { "con.bank2.bandwidth", 0.14f },
+              { "con.bank2.mix", 0.36f }, { "con.bank2.level", 0.76f },
+              { "con.env1.attack", 0.006f }, { "con.env1.decay", 0.85f },
+              { "con.env1.sustain", 0.12f }, { "con.env1.release", 3.0f },
+              { "con.env2.attack", 0.002f }, { "con.env2.decay", 0.45f },
+              { "con.env2.sustain", 0.05f }, { "con.env2.release", 2.0f },
+              { "con.sg1.rate", 0.08f }, { "con.sg1.level", 0.06f },
+              { "con.sg2.rate", 0.13f }, { "con.sg2.level", 0.04f }
           } },
         { "PT - Glass Harp", "Tuned Percussion",
           Values {
@@ -1318,6 +2255,22 @@ std::vector<FactoryPreset> continuumPresets()
           } }
     });
 }
+std::vector<FactoryPreset> continuumPresets()
+{
+    auto presets = continuumCustomPresets();
+
+    std::set<juce::String> names;
+    for (const auto& preset : presets)
+        names.insert (preset.name);
+
+    for (auto& preset : makeHakenBank())
+    {
+        if (names.insert (preset.name).second)
+            presets.push_back (std::move (preset));
+    }
+
+    return sortedPresets (std::move (presets));
+}
 } // namespace
 
 std::vector<FactoryPreset> factoryPresetsFor (const std::string& instrumentId)
@@ -1336,5 +2289,6 @@ std::vector<FactoryPreset> factoryPresetsFor (const std::string& instrumentId)
 
     return {};
 }
+
 
 } // namespace triad
