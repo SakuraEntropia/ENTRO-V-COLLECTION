@@ -61,6 +61,7 @@ add_library(triad_ui STATIC
     src/ui/LookAndFeel.cpp
     src/ui/Widgets.cpp
     src/ui/PanelBase.cpp
+    src/ui/PresetBrowser.cpp
     src/ui/KeyboardPanel.cpp
     src/ui/MatriarchPanel.cpp
     src/ui/PolyBrutePanel.cpp

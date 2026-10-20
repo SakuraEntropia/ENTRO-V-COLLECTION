@@ -11,8 +11,8 @@ using Values = std::vector<std::pair<juce::String, float>>;
 
 std::vector<FactoryPreset> sortedPresets (std::vector<FactoryPreset> presets)
 {
-    const juce::StringArray order { "Bass", "Lead", "Brass", "Pad", "Keys",
-                                     "Sequence", "Split", "FX" };
+    const juce::StringArray order { "Bass", "Lead", "Brass", "Pad", "Pluck", "Keys", "Organ",
+                                     "Strings", "Arp", "Sequence", "Split", "FX" };
 
     std::stable_sort (presets.begin(), presets.end(),
                       [&order] (const FactoryPreset& a, const FactoryPreset& b)
@@ -26,7 +26,7 @@ std::vector<FactoryPreset> sortedPresets (std::vector<FactoryPreset> presets)
 std::vector<FactoryPreset> matriarchPresets()
 {
     return sortedPresets ({
-        { "Sub Bass", "Bass",
+        { "BA - Sub Bass", "Bass",
           Values {
               { "mat.master.volume", 0.78f }, { "mat.master.vcaMode", 0.0f },
               { "mat.master.paraphony", 0.0f }, { "mat.output.velocity", 0.4f },
@@ -45,7 +45,7 @@ std::vector<FactoryPreset> matriarchPresets()
               { "mat.env2.sustain", 0.15f }, { "mat.env2.release", 0.18f },
               { "mat.delay.mix", 0.04f }
           } },
-        { "Rubber Bass", "Bass",
+        { "BA - Rubber Bass", "Bass",
           Values {
               { "mat.master.volume", 0.8f }, { "mat.master.paraphony", 0.0f },
               { "mat.vco1.octave", 0.0f }, { "mat.vco1.wave", 1.0f },
@@ -62,7 +62,7 @@ std::vector<FactoryPreset> matriarchPresets()
               { "mat.env2.sustain", 0.1f }, { "mat.env2.release", 0.2f },
               { "mat.delay.mix", 0.06f }
           } },
-        { "Sync Lead", "Lead",
+        { "LD - Sync Lead", "Lead",
           Values {
               { "mat.master.volume", 0.66f },
               { "mat.vco.syncEnable", 1.0f },
@@ -78,7 +78,7 @@ std::vector<FactoryPreset> matriarchPresets()
               { "mat.env2.sustain", 0.25f }, { "mat.env2.release", 0.25f },
               { "mat.delay.mix", 0.22f }, { "mat.delay.time", 0.2f }
           } },
-        { "Solo Saw", "Lead",
+        { "LD - Solo Saw", "Lead",
           Values {
               { "mat.master.volume", 0.68f }, { "mat.master.paraphony", 0.0f },
               { "mat.vco1.wave", 1.0f }, { "mat.vco2.octave", 1.0f },
@@ -93,7 +93,7 @@ std::vector<FactoryPreset> matriarchPresets()
               { "mat.env2.sustain", 0.4f }, { "mat.env2.release", 0.4f },
               { "mat.delay.mix", 0.2f }, { "mat.delay.feedback", 0.28f }
           } },
-        { "Paraphonic Brass", "Brass",
+        { "BR - Paraphonic Brass", "Brass",
           Values {
               { "mat.master.volume", 0.72f }, { "mat.master.paraphony", 2.0f },
               { "mat.vco1.octave", 1.0f }, { "mat.vco1.wave", 1.0f },
@@ -116,7 +116,7 @@ std::vector<FactoryPreset> matriarchPresets()
               { "mat.delay.sync", 0.0f }, { "mat.delay.time", 0.29f },
               { "mat.delay.feedback", 0.24f }, { "mat.delay.mix", 0.16f }
           } },
-        { "Drone Cathedral", "Pad",
+        { "PD - Drone Cathedral", "Pad",
           Values {
               { "mat.master.volume", 0.6f }, { "mat.master.vcaMode", 2.0f },
               { "mat.master.paraphony", 2.0f },
@@ -140,7 +140,7 @@ std::vector<FactoryPreset> matriarchPresets()
               { "mat.delay.feedback", 0.58f }, { "mat.delay.mix", 0.45f },
               { "mat.delay.pingPong", 1.0f }
           } },
-        { "Slow Strings", "Pad",
+        { "STR - Slow Strings", "Strings",
           Values {
               { "mat.master.volume", 0.68f }, { "mat.master.paraphony", 2.0f },
               { "mat.vco1.wave", 1.0f }, { "mat.vco2.octave", 1.0f },
@@ -162,7 +162,7 @@ std::vector<FactoryPreset> matriarchPresets()
               { "mat.delay.mix", 0.3f }, { "mat.delay.feedback", 0.4f },
               { "mat.delay.pingPong", 1.0f }
           } },
-        { "Sequence Pluck", "Sequence",
+        { "SEQ - Sequence Pluck", "Sequence",
           Values {
               { "mat.master.volume", 0.7f },
               { "mat.arp.enabled", 1.0f }, { "mat.arp.mode", 0.0f },
@@ -181,7 +181,7 @@ std::vector<FactoryPreset> matriarchPresets()
               { "mat.delay.mix", 0.3f }, { "mat.delay.feedback", 0.4f },
               { "mat.delay.pingPong", 1.0f }
           } },
-        { "Space Drone", "FX",
+        { "FX - Space Drone", "FX",
           Values {
               { "mat.master.volume", 0.55f }, { "mat.master.vcaMode", 2.0f },
               { "mat.master.paraphony", 2.0f },
@@ -201,7 +201,7 @@ std::vector<FactoryPreset> matriarchPresets()
               { "mat.delay.time", 0.5f }, { "mat.delay.feedback", 0.62f },
               { "mat.delay.mix", 0.5f }, { "mat.delay.pingPong", 1.0f }
           } },
-        { "Reese Bass", "Bass",
+        { "BA - Reese Bass", "Bass",
           Values {
               { "mat.master.volume", 0.7f }, { "mat.master.paraphony", 0.0f },
               { "mat.vco1.octave", 1.0f }, { "mat.vco1.wave", 1.0f },
@@ -224,7 +224,7 @@ std::vector<FactoryPreset> matriarchPresets()
               { "mat.lfo.rate", 0.12f }, { "mat.lfo.cutoffAmt", 0.06f },
               { "mat.delay.mix", 0.05f }
           } },
-        { "Acid Bass", "Bass",
+        { "BA - Acid Bass", "Bass",
           Values {
               { "mat.master.volume", 0.65f }, { "mat.master.paraphony", 0.0f },
               { "mat.vco1.octave", 1.0f }, { "mat.vco1.wave", 1.0f },
@@ -241,7 +241,7 @@ std::vector<FactoryPreset> matriarchPresets()
               { "mat.env2.sustain", 0.0f }, { "mat.env2.release", 0.18f },
               { "mat.delay.mix", 0.1f }
           } },
-        { "Supersaw Lead", "Lead",
+        { "LD - Supersaw Lead", "Lead",
           Values {
               { "mat.master.volume", 0.65f }, { "mat.master.paraphony", 2.0f },
               { "mat.vco1.octave", 1.0f }, { "mat.vco1.wave", 1.0f },
@@ -264,7 +264,7 @@ std::vector<FactoryPreset> matriarchPresets()
               { "mat.delay.sync", 1.0f }, { "mat.delay.mix", 0.25f },
               { "mat.delay.feedback", 0.35f }, { "mat.delay.pingPong", 1.0f }
           } },
-        { "Warm Analog Pad", "Pad",
+        { "PD - Warm Analog Pad", "Pad",
           Values {
               { "mat.master.volume", 0.6f }, { "mat.master.paraphony", 2.0f },
               { "mat.vco1.wave", 0.0f }, { "mat.vco2.freq", 0.08f },
@@ -284,7 +284,7 @@ std::vector<FactoryPreset> matriarchPresets()
               { "mat.delay.sync", 1.0f }, { "mat.delay.mix", 0.35f },
               { "mat.delay.feedback", 0.4f }
           } },
-        { "Organ", "Keys",
+        { "OR - Organ", "Organ",
           Values {
               { "mat.master.volume", 0.6f }, { "mat.master.paraphony", 2.0f },
               { "mat.vco1.octave", 1.0f }, { "mat.vco1.wave", 2.0f },
@@ -301,7 +301,7 @@ std::vector<FactoryPreset> matriarchPresets()
               { "mat.env2.sustain", 1.0f }, { "mat.env2.release", 0.05f },
               { "mat.delay.mix", 0.08f }
           } },
-        { "Analog Pluck", "Keys",
+        { "PL - Analog Pluck", "Pluck",
           Values {
               { "mat.master.volume", 0.65f }, { "mat.master.paraphony", 2.0f },
               { "mat.vco1.wave", 1.0f }, { "mat.vco2.freq", 7.0f },
@@ -325,7 +325,7 @@ std::vector<FactoryPreset> matriarchPresets()
 std::vector<FactoryPreset> polyBrutePresets()
 {
     return sortedPresets ({
-        { "Metalizer Bass", "Bass",
+        { "BA - Metalizer Bass", "Bass",
           Values {
               { "poly.voice.mode", 1.0f },
               { "poly.vcoA.octave", 0.0f }, { "poly.vcoA.wave", 0.1f },
@@ -344,7 +344,7 @@ std::vector<FactoryPreset> polyBrutePresets()
               { "poly.fx.dist.type", 0.0f }, { "poly.fx.dist.drive", 1.8f },
               { "poly.fx.dist.mix", 0.2f }
           } },
-        { "Sub Bass", "Bass",
+        { "BA - Sub Bass", "Bass",
           Values {
               { "poly.voice.mode", 1.0f },
               { "poly.vcoA.octave", 0.0f }, { "poly.vcoA.wave", 0.0f },
@@ -361,7 +361,7 @@ std::vector<FactoryPreset> polyBrutePresets()
               { "poly.env2.attack", 0.002f }, { "poly.env2.decay", 0.3f },
               { "poly.env2.sustain", 0.2f }, { "poly.env2.release", 0.2f }
           } },
-        { "Metalizer Mono", "Lead",
+        { "LD - Metalizer Mono", "Lead",
           Values {
               { "poly.voice.mode", 1.0f },
               { "poly.vcoA.metalizer", 0.65f }, { "poly.vcoA.wave", 0.05f },
@@ -378,7 +378,7 @@ std::vector<FactoryPreset> polyBrutePresets()
               { "poly.fx.delay.time", 0.22f }, { "poly.fx.delay.mix", 0.18f },
               { "poly.fx.delay.pingPong", 1.0f }
           } },
-        { "Blue Lead", "Lead",
+        { "LD - Blue Lead", "Lead",
           Values {
               { "poly.voice.mode", 0.0f },
               { "poly.vcoA.wave", 0.2f }, { "poly.vcoA.level", 0.8f },
@@ -393,7 +393,7 @@ std::vector<FactoryPreset> polyBrutePresets()
               { "poly.fx.delay.time", 0.3f }, { "poly.fx.delay.feedback", 0.35f },
               { "poly.fx.delay.mix", 0.25f }, { "poly.fx.delay.sync", 1.0f }
           } },
-        { "Palace Brass", "Brass",
+        { "BR - Palace Brass", "Brass",
           Values {
               { "poly.voice.mode", 0.0f }, { "poly.voice.spread", 0.35f },
               { "poly.voice.analog", 0.5f },
@@ -418,7 +418,7 @@ std::vector<FactoryPreset> polyBrutePresets()
               { "poly.fx.delay.time", 0.35f }, { "poly.fx.delay.feedback", 0.28f },
               { "poly.fx.delay.mix", 0.12f }, { "poly.fx.delay.sync", 1.0f }
           } },
-        { "Morph Pad", "Pad",
+        { "PD - Morph Pad", "Pad",
           Values {
               { "poly.voice.spread", 0.55f }, { "poly.voice.analog", 0.6f },
               { "poly.vcoA.wave", 0.65f }, { "poly.vcoA.pulse", 0.4f },
@@ -434,7 +434,7 @@ std::vector<FactoryPreset> polyBrutePresets()
               { "poly.fx.chorus.mix", 0.45f }, { "poly.fx.reverb.size", 0.8f },
               { "poly.fx.reverb.mix", 0.4f }
           } },
-        { "Chorus Pad", "Pad",
+        { "PD - Chorus Pad", "Pad",
           Values {
               { "poly.voice.spread", 0.45f }, { "poly.voice.analog", 0.5f },
               { "poly.vcoA.wave", 0.7f }, { "poly.vcoA.pulse", 0.35f },
@@ -451,7 +451,7 @@ std::vector<FactoryPreset> polyBrutePresets()
               { "poly.fx.chorus.mix", 0.5f }, { "poly.fx.reverb.mix", 0.35f },
               { "poly.fx.reverb.size", 0.8f }, { "poly.fx.delay.mix", 0.15f }
           } },
-        { "Brute Keys", "Keys",
+        { "KY - Brute Keys", "Keys",
           Values {
               { "poly.vcoA.wave", 0.1f }, { "poly.vcoA.pw", 0.4f },
               { "poly.vcoA.pulse", 0.35f }, { "poly.vcoA.level", 0.8f },
@@ -466,7 +466,7 @@ std::vector<FactoryPreset> polyBrutePresets()
               { "poly.env2.sustain", 0.2f }, { "poly.env2.release", 0.25f },
               { "poly.fx.chorus.mix", 0.2f }, { "poly.fx.reverb.mix", 0.15f }
           } },
-        { "Glass Arp", "Sequence",
+        { "ARP - Glass Arp", "Arp",
           Values {
               { "poly.arp.enabled", 1.0f }, { "poly.arp.mode", 0.0f },
               { "poly.arp.rate", 3.0f }, { "poly.arp.octaves", 1.0f },
@@ -485,7 +485,7 @@ std::vector<FactoryPreset> polyBrutePresets()
               { "poly.fx.delay.sync", 1.0f },
               { "poly.fx.reverb.size", 0.55f }, { "poly.fx.reverb.mix", 0.25f }
           } },
-        { "Ribbon Drift", "FX",
+        { "FX - Ribbon Drift", "FX",
           Values {
               { "poly.voice.spread", 0.5f }, { "poly.voice.analog", 0.6f },
               { "poly.vcoA.wave", 0.8f }, { "poly.vcoB.tune", 12.0f },
@@ -500,7 +500,7 @@ std::vector<FactoryPreset> polyBrutePresets()
               { "poly.fx.delay.mix", 0.4f }, { "poly.fx.delay.pingPong", 1.0f },
               { "poly.fx.reverb.size", 0.85f }, { "poly.fx.reverb.mix", 0.45f }
           } },
-        { "Reese Bass", "Bass",
+        { "BA - Reese Bass", "Bass",
           Values {
               { "poly.voice.mode", 1.0f }, { "poly.voice.spread", 0.1f },
               { "poly.voice.analog", 0.4f },
@@ -523,7 +523,7 @@ std::vector<FactoryPreset> polyBrutePresets()
               { "poly.fx.dist.type", 0.0f }, { "poly.fx.dist.drive", 1.4f },
               { "poly.fx.dist.mix", 0.15f }
           } },
-        { "Acid Bass", "Bass",
+        { "BA - Acid Bass", "Bass",
           Values {
               { "poly.voice.mode", 1.0f }, { "poly.voice.glide", 0.045f },
               { "poly.vcoA.wave", 0.0f }, { "poly.vcoA.level", 0.8f },
@@ -542,7 +542,7 @@ std::vector<FactoryPreset> polyBrutePresets()
               { "poly.fx.dist.type", 3.0f }, { "poly.fx.dist.drive", 2.2f },
               { "poly.fx.dist.mix", 0.3f }
           } },
-        { "Supersaw Lead", "Lead",
+        { "LD - Supersaw Lead", "Lead",
           Values {
               { "poly.voice.mode", 2.0f }, { "poly.voice.unison", 2.0f },
               { "poly.voice.spread", 0.7f },
@@ -559,7 +559,7 @@ std::vector<FactoryPreset> polyBrutePresets()
               { "poly.fx.delay.sync", 1.0f },
               { "poly.fx.reverb.mix", 0.2f }
           } },
-        { "Hoover Lead", "Lead",
+        { "LD - Hoover Lead", "Lead",
           Values {
               { "poly.voice.mode", 1.0f }, { "poly.voice.glide", 0.06f },
               { "poly.vcoA.wave", 0.0f }, { "poly.vcoA.pulse", 0.6f },
@@ -576,7 +576,7 @@ std::vector<FactoryPreset> polyBrutePresets()
               { "poly.fx.chorus.mix", 0.3f },
               { "poly.fx.delay.time", 0.28f }, { "poly.fx.delay.mix", 0.2f }
           } },
-        { "Warm Analog Pad", "Pad",
+        { "PD - Warm Analog Pad", "Pad",
           Values {
               { "poly.voice.spread", 0.5f }, { "poly.voice.analog", 0.5f },
               { "poly.vcoA.wave", 0.7f }, { "poly.vcoA.pulse", 0.3f },
@@ -595,7 +595,7 @@ std::vector<FactoryPreset> polyBrutePresets()
               { "poly.fx.chorus.mix", 0.4f }, { "poly.fx.reverb.mix", 0.35f },
               { "poly.fx.reverb.size", 0.75f }, { "poly.fx.delay.mix", 0.15f }
           } },
-        { "Organ", "Keys",
+        { "OR - Organ", "Organ",
           Values {
               { "poly.vcoA.octave", 1.0f }, { "poly.vcoA.pulse", 0.7f },
               { "poly.vcoA.pw", 0.5f }, { "poly.vcoA.level", 0.8f },
@@ -610,7 +610,7 @@ std::vector<FactoryPreset> polyBrutePresets()
               { "poly.env2.sustain", 1.0f }, { "poly.env2.release", 0.08f },
               { "poly.fx.chorus.mix", 0.3f }, { "poly.fx.reverb.mix", 0.15f }
           } },
-        { "Analog Pluck", "Keys",
+        { "PL - Analog Pluck", "Pluck",
           Values {
               { "poly.vcoA.wave", 0.0f }, { "poly.vcoA.level", 0.8f },
               { "poly.vcoB.tune", 12.0f }, { "poly.vcoB.level", 0.4f },
@@ -633,7 +633,7 @@ std::vector<FactoryPreset> polyBrutePresets()
 std::vector<FactoryPreset> onePresets()
 {
     return sortedPresets ({
-        { "One Bass", "Bass",
+        { "BA - One Bass", "Bass",
           Values {
               { "one.p1.enabled", 1.0f },
               { "one.p1.vco1.octave", 0.0f }, { "one.p1.vco1.waveAngle", 0.1f },
@@ -653,7 +653,7 @@ std::vector<FactoryPreset> onePresets()
               { "one.p1.fx.dist.type", 0.0f }, { "one.p1.fx.dist.drive", 0.2f },
               { "one.p1.fx.dist.mix", 0.15f }
           } },
-        { "Sub One", "Bass",
+        { "BA - Sub One", "Bass",
           Values {
               { "one.p1.enabled", 1.0f },
               { "one.p1.vco1.octave", 0.0f }, { "one.p1.vco1.level", 0.75f },
@@ -667,7 +667,7 @@ std::vector<FactoryPreset> onePresets()
               { "one.p1.env1.sustain", 0.5f }, { "one.p1.env1.release", 0.25f },
               { "one.p1.env3.attack", 0.003f }, { "one.p1.env3.sustain", 0.8f }
           } },
-        { "One Lead", "Lead",
+        { "LD - One Lead", "Lead",
           Values {
               { "one.p1.enabled", 1.0f },
               { "one.p1.vco1.waveAngle", 0.2f }, { "one.p1.vco3.tune", 12.0f },
@@ -681,7 +681,7 @@ std::vector<FactoryPreset> onePresets()
               { "one.p1.fx.delay.time", 0.28f }, { "one.p1.fx.delay.feedback", 0.35f },
               { "one.p1.fx.delay.mix", 0.2f }
           } },
-        { "Poly Brass", "Brass",
+        { "BR - Poly Brass", "Brass",
           Values {
               { "one.p1.enabled", 1.0f }, { "one.p1.vco1.waveAngle", 0.2f },
               { "one.p1.vco2.waveAngle", 0.1f }, { "one.p1.vco3.shape", 0.35f },
@@ -694,7 +694,7 @@ std::vector<FactoryPreset> onePresets()
               { "one.p1.fx.chorus.mix", 0.2f }, { "one.p1.fx.reverb.send", 0.2f },
               { "one.master.reverbMix", 0.18f }
           } },
-        { "Big Pad", "Pad",
+        { "PD - Big Pad", "Pad",
           Values {
               { "one.p1.enabled", 1.0f },
               { "one.p1.vco1.waveAngle", 0.4f }, { "one.p1.vco2.waveAngle", 0.55f },
@@ -711,7 +711,7 @@ std::vector<FactoryPreset> onePresets()
               { "one.p1.fx.reverb.send", 0.5f },
               { "one.master.reverbSize", 0.8f }, { "one.master.reverbMix", 0.4f }
           } },
-        { "One Keys", "Keys",
+        { "KY - One Keys", "Keys",
           Values {
               { "one.p1.enabled", 1.0f },
               { "one.p1.vco1.waveAngle", 0.4f }, { "one.p1.vco1.shape", 0.5f },
@@ -725,7 +725,7 @@ std::vector<FactoryPreset> onePresets()
               { "one.p1.env2.sustain", 0.3f }, { "one.p1.env2.release", 0.4f },
               { "one.p1.fx.chorus.mix", 0.25f }, { "one.p1.fx.reverb.send", 0.2f }
           } },
-        { "Glass Arp", "Sequence",
+        { "ARP - Glass Arp", "Arp",
           Values {
               { "one.p1.arp.enabled", 1.0f }, { "one.p1.arp.mode", 0.0f },
               { "one.p1.arp.rate", 3.0f }, { "one.p1.arp.octaves", 1.0f },
@@ -741,7 +741,7 @@ std::vector<FactoryPreset> onePresets()
               { "one.p1.fx.delay.mix", 0.3f },
               { "one.master.reverbMix", 0.22f }
           } },
-        { "Three-Zone Split", "Split",
+        { "SPL - Three-Zone Split", "Split",
           Values {
               { "one.p1.enabled", 1.0f }, { "one.p1.keyboardLow", 0.0f },
               { "one.p1.keyboardHigh", 47.0f }, { "one.p1.vco1.octave", 0.0f },
@@ -755,7 +755,7 @@ std::vector<FactoryPreset> onePresets()
               { "one.p3.svf.cutoff", 2600.0f }, { "one.p3.fx.delay.mix", 0.25f },
               { "one.master.reverbMix", 0.2f }
           } },
-        { "Deep Space", "FX",
+        { "FX - Deep Space", "FX",
           Values {
               { "one.p1.enabled", 1.0f }, { "one.p1.vco1.octave", 0.0f },
               { "one.p1.vco1.waveAngle", 0.6f }, { "one.p1.vco3.tune", -12.0f },
@@ -771,7 +771,7 @@ std::vector<FactoryPreset> onePresets()
               { "one.p1.fx.reverb.send", 0.6f },
               { "one.master.reverbSize", 0.9f }, { "one.master.reverbMix", 0.5f }
           } },
-        { "Reese Bass", "Bass",
+        { "BA - Reese Bass", "Bass",
           Values {
               { "one.p1.enabled", 1.0f },
               { "one.p1.vco1.waveAngle", 0.0f }, { "one.p1.vco1.level", 0.75f },
@@ -791,7 +791,7 @@ std::vector<FactoryPreset> onePresets()
               { "one.p1.fx.dist.type", 0.0f }, { "one.p1.fx.dist.drive", 0.3f },
               { "one.p1.fx.dist.mix", 0.15f }
           } },
-        { "Acid Bass", "Bass",
+        { "BA - Acid Bass", "Bass",
           Values {
               { "one.p1.enabled", 1.0f },
               { "one.p1.vco1.waveAngle", 0.0f }, { "one.p1.vco1.level", 0.8f },
@@ -809,7 +809,7 @@ std::vector<FactoryPreset> onePresets()
               { "one.p1.fx.dist.mix", 0.25f },
               { "one.master.glide", 0.05f }
           } },
-        { "Supersaw Lead", "Lead",
+        { "LD - Supersaw Lead", "Lead",
           Values {
               { "one.p1.enabled", 1.0f },
               { "one.p1.vco1.waveAngle", 0.0f }, { "one.p1.vco2.tune", 0.12f },
@@ -822,7 +822,7 @@ std::vector<FactoryPreset> onePresets()
               { "one.p1.fx.delay.time", 0.25f }, { "one.p1.fx.delay.mix", 0.2f },
               { "one.p1.fx.reverb.send", 0.25f }, { "one.master.reverbMix", 0.2f }
           } },
-        { "Warm Analog Pad", "Pad",
+        { "PD - Warm Analog Pad", "Pad",
           Values {
               { "one.p1.enabled", 1.0f },
               { "one.p1.vco1.waveAngle", 0.5f }, { "one.p1.vco2.waveAngle", 0.6f },
@@ -841,7 +841,7 @@ std::vector<FactoryPreset> onePresets()
               { "one.p1.fx.reverb.send", 0.4f },
               { "one.master.reverbSize", 0.8f }, { "one.master.reverbMix", 0.3f }
           } },
-        { "Organ", "Keys",
+        { "OR - Organ", "Organ",
           Values {
               { "one.p1.enabled", 1.0f },
               { "one.p1.vco1.shape", 0.8f }, { "one.p1.vco1.level", 0.8f },
@@ -858,7 +858,7 @@ std::vector<FactoryPreset> onePresets()
               { "one.p1.env3.sustain", 1.0f }, { "one.p1.env3.release", 0.05f },
               { "one.p1.fx.chorus.mix", 0.3f }, { "one.p1.fx.reverb.send", 0.15f }
           } },
-        { "Analog Pluck", "Keys",
+        { "PL - Analog Pluck", "Pluck",
           Values {
               { "one.p1.enabled", 1.0f },
               { "one.p1.vco1.waveAngle", 0.0f }, { "one.p1.vco1.level", 0.8f },

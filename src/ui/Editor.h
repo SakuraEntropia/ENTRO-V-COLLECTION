@@ -4,6 +4,7 @@
 #include "ui/KeyboardPanel.h"
 #include "ui/LookAndFeel.h"
 #include "ui/Panels.h"
+#include "ui/PresetBrowser.h"
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
@@ -23,6 +24,7 @@ private:
     class HeaderBar;
 
     void timerCallback() override;
+    bool keyPressed (const juce::KeyPress&) override;
 
 public:
     void setZoom (float zoom);
@@ -31,7 +33,18 @@ private:
     EditorHost& host_;
     TriadLookAndFeel lookAndFeel_;
     std::unique_ptr<HeaderBar> header_;
+    class Backdrop final : public juce::Component
+    {
+    public:
+        void paint (juce::Graphics&) override;
+    };
+
+    void openPresetBrowser();
+    void closePresetBrowser();
+
     std::unique_ptr<PanelBase> panel_;
+    std::unique_ptr<PresetBrowser> presetBrowser_;
+    Backdrop browserBackdrop_;
     juce::Viewport viewport_;
     juce::Component canvas_;
     KeyboardPanel keyboard_;

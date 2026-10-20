@@ -75,7 +75,7 @@ Reference: original 6-voice PolyBrute, manual 3.0.1; firmware 3.1.1 differences 
 | Effects | Implemented, partial | distortion (4 types), chorus, stereo delay with sync/ping-pong, FDN reverb; not the proprietary algorithms or the full v3 effect list |
 | Morphée / ribbon | Not implemented | no XYZ pad or ribbon surface in this build |
 | Sequencer / Motion | Not implemented | host-wrapper arp only; no 64-step sequencer or Motion recorder |
-| Factory presets | Implemented, categorized | 17 presets in Bass / Lead / Brass / Pad / Keys / Sequence / FX, incl. Reese, Acid, Supersaw and Hoover; not hardware preset data |
+| Factory presets | Implemented, categorized | 17 presets in Bass / Lead / Brass / Pad / Pluck / Keys / Organ / Arp / FX, incl. Reese, Acid, Supersaw and Hoover; not hardware preset data |
 | Oversampling | Not implemented | PolyBLEP oscillators and host-rate nonlinear stages; hard sync is a phase reset without BLEP |
 
 ## ONE V
@@ -94,7 +94,7 @@ Reference: 2019 manual + 1.8.2 release notes; later firmware not audited page by
 | Effects | Implemented, partial | per-part distortion/chorus/delay/send + master FDN reverb; **not** an Eventide algorithm or equivalent claim |
 | Performance | Implemented, partial | pitch bend, wheels, aftertouch, sustain, glide, drift; no chord memory or unison |
 | Arpeggiator / sequencer | Partial | host-wrapper arp uses part 1's arp parameters; no per-part 64-step poly sequencer |
-| Factory presets | Implemented, categorized | 15 presets in Bass / Lead / Brass / Pad / Keys / Sequence / FX, incl. Reese, Acid and Supersaw; not hardware preset data |
+| Factory presets | Implemented, categorized | 15 presets in Bass / Lead / Brass / Pad / Pluck / Keys / Organ / Arp / Split / FX, incl. Reese, Acid and Supersaw; not hardware preset data |
 | External audio | Not implemented | engine has a setter; plugin exposes no input bus |
 
 ## Platform and delivery

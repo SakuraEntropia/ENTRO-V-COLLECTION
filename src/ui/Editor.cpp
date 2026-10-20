@@ -52,6 +52,11 @@ public:
 
         addAndMakeVisible (presetBox_);
 
+        browseButton_.setButtonText ("BROWSE");
+        browseButton_.setTooltip ("Open the searchable factory preset browser");
+        browseButton_.onClick = [this] { if (onBrowse != nullptr) onBrowse(); };
+        addAndMakeVisible (browseButton_);
+
         initButton_.setButtonText ("INIT");
         initButton_.setTooltip ("Reset every parameter to its default value");
         initButton_.onClick = [this]
@@ -156,6 +161,7 @@ public:
         loadButton_.setBounds (area.removeFromRight (54).reduced (2, 0));
         saveButton_.setBounds (area.removeFromRight (58).reduced (2, 0));
         initButton_.setBounds (area.removeFromRight (50).reduced (2, 0));
+        browseButton_.setBounds (area.removeFromRight (68).reduced (2, 0));
         presetBox_.setBounds (area.removeFromRight (190).reduced (4, 0));
 
         auto zoomArea = area.removeFromRight (154).reduced (4, 0);
@@ -195,6 +201,7 @@ public:
 
     std::function<void (int)> onZoomStep;
     std::function<void()> onFit;
+    std::function<void()> onBrowse;
 
 private:
     void timerCallback() override
@@ -204,7 +211,7 @@ private:
 
     EditorHost& host_;
     juce::ComboBox presetBox_;
-    juce::TextButton initButton_, saveButton_, loadButton_;
+    juce::TextButton initButton_, saveButton_, loadButton_, browseButton_;
     juce::TextButton zoomOutButton_, fitButton_, zoomInButton_;
     juce::Label zoomLabel_;
     juce::Colour accent_ { 0xffcf4b2e };
@@ -262,6 +269,11 @@ TriadEditor::TriadEditor (EditorHost& host)
         setZoom (base + 0.1f * (float) direction);
     };
     header_->onFit = [this] { setZoom (0.0f); };
+    header_->onBrowse = [this] { openPresetBrowser(); };
+
+    browserBackdrop_.setVisible (false);
+    browserBackdrop_.setInterceptsMouseClicks (true, true);
+    addChildComponent (browserBackdrop_);
 
     addAndMakeVisible (keyboard_);
 
@@ -298,6 +310,16 @@ TriadEditor::TriadEditor (EditorHost& host)
     getConstrainer()->setMinimumOnscreenAmounts (300, 300, 300, 300);
 
     startTimerHz (8);
+
+    if (std::getenv ("TRIAD_BROWSER") != nullptr)
+    {
+        juce::Component::SafePointer<TriadEditor> safe (this);
+        juce::Timer::callAfterDelay (500, [safe]
+        {
+            if (safe != nullptr)
+                safe->openPresetBrowser();
+        });
+    }
 }
 
 TriadEditor::~TriadEditor()
@@ -351,6 +373,15 @@ void TriadEditor::resized()
 
     viewport_.setViewPosition (0, 0);
 
+    if (presetBrowser_ != nullptr)
+    {
+        browserBackdrop_.setBounds (getLocalBounds());
+        const auto width = juce::jmin (840, getWidth() - 80);
+        const auto height = juce::jmin (580, getHeight() - 100);
+        presetBrowser_->setBounds ((getWidth() - width) / 2,
+                                   (getHeight() - height) / 2, width, height);
+    }
+
     if (header_ != nullptr)
         header_->setZoomText (scale);
 
@@ -358,6 +389,47 @@ void TriadEditor::resized()
         std::fprintf (stderr, "EDITOR %dx%d viewport %dx%d design %dx%d scale %.4f\n",
                       getWidth(), getHeight(), panelArea.getWidth(), panelArea.getHeight(),
                       panel_->designWidth(), panel_->designHeight(), scale);
+}
+
+void TriadEditor::Backdrop::paint (juce::Graphics& g)
+{
+    g.fillAll (juce::Colours::black.withAlpha (0.58f));
+}
+
+void TriadEditor::openPresetBrowser()
+{
+    if (presetBrowser_ != nullptr)
+        return;
+
+    presetBrowser_ = std::make_unique<PresetBrowser> (host_, [this] { closePresetBrowser(); });
+    browserBackdrop_.setVisible (true);
+    browserBackdrop_.setBounds (getLocalBounds());
+    addAndMakeVisible (*presetBrowser_);
+    browserBackdrop_.toFront (false);
+    presetBrowser_->toFront (true);
+
+    const auto width = juce::jmin (840, getWidth() - 80);
+    const auto height = juce::jmin (580, getHeight() - 100);
+    presetBrowser_->setBounds ((getWidth() - width) / 2, (getHeight() - height) / 2,
+                               width, height);
+    presetBrowser_->grabKeyboardFocus();
+}
+
+void TriadEditor::closePresetBrowser()
+{
+    presetBrowser_.reset();
+    browserBackdrop_.setVisible (false);
+}
+
+bool TriadEditor::keyPressed (const juce::KeyPress& key)
+{
+    if (presetBrowser_ != nullptr && key == juce::KeyPress::escapeKey)
+    {
+        closePresetBrowser();
+        return true;
+    }
+
+    return false;
 }
 
 void TriadEditor::setZoom (float zoom)

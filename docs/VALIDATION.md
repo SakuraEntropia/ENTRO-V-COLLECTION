@@ -112,6 +112,7 @@ Result: `SUCCESS` for all three at strictness level 5. Matriarch was additionall
   - Moog One window shows the three-part console, per-part VCOs/filters/envelopes/LFOs/matrix/effects and the 61-key keyboard.
 - Parameter changes update audio and survive project-style state calls (pluginval state tests).
 - The `INIT` button resets all parameters.
+- `BROWSE` opens the searchable preset browser; the category filter, text search, list, detail pane, Load and Escape/Close paths were exercised in the standalone build.
 - The PolyBrute and Moog One panels were re-laid out from the manual diagrams after the last screenshot pass; the rebuilt binaries compile and pass the engine tests, but the final visual pass on those two panels was interrupted by the machine locking. This is recorded as pending visual review.
 
 Screenshots were captured locally for layout review. They are not committed because they contain unrelated desktop content.

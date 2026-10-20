@@ -37,7 +37,8 @@ int main()
         int bassCount = 0;
         bool hasReese = false;
 
-        const juce::StringArray categoryOrder { "Bass", "Lead", "Brass", "Pad", "Keys",
+        const juce::StringArray categoryOrder { "Bass", "Lead", "Brass", "Pad", "Pluck",
+                                                "Keys", "Organ", "Strings", "Arp",
                                                 "Sequence", "Split", "FX" };
 
         for (const auto& preset : presets)
