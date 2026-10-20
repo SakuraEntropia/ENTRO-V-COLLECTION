@@ -615,16 +615,17 @@ void PanelBase::paint (juce::Graphics& g)
             g.drawHorizontalLine ((int) y, 0.0f, bounds.getWidth());
         }
 
-        // Black wooden end cheeks.
-        for (const auto& side : { juce::Rectangle<float> (0.0f, 0.0f, 6.0f, bounds.getHeight()),
-                                  juce::Rectangle<float> (bounds.getRight() - 6.0f, 0.0f, 6.0f,
+        // Dark stained wooden end cheeks, as on the hardware.
+        drawWood (g, { 0.0f, 0.0f, 12.0f, bounds.getHeight() }, true, 301);
+        drawWood (g, { bounds.getRight() - 12.0f, 0.0f, 12.0f, bounds.getHeight() }, true, 302);
+        for (const auto& side : { juce::Rectangle<float> (0.0f, 0.0f, 12.0f, bounds.getHeight()),
+                                  juce::Rectangle<float> (bounds.getRight() - 12.0f, 0.0f, 12.0f,
                                                           bounds.getHeight()) })
         {
-            g.setColour (juce::Colour (0xff040405));
+            g.setColour (juce::Colour (0xff050403).withAlpha (0.62f));
             g.fillRect (side);
-            g.setColour (juce::Colour (0xff1b1b1d).withAlpha (0.5f));
-            for (float x = side.getX() + 1.0f; x < side.getRight(); x += 2.0f)
-                g.drawVerticalLine ((int) x, 0.0f, bounds.getHeight());
+            g.setColour (juce::Colours::white.withAlpha (0.08f));
+            g.drawVerticalLine ((int) side.getRight(), 0.0f, bounds.getHeight());
         }
     }
     else if (finish_ == Finish::PolyBrute)
@@ -656,14 +657,16 @@ void PanelBase::paint (juce::Graphics& g)
         g.fillRect (bounds);
 
         // Moog One sits in a wooden cabinet.
-        const auto frame = 8.0f;
+        const auto frame = 12.0f;
         drawWood (g, { 0.0f, 0.0f, bounds.getWidth(), frame }, false, 201);
         drawWood (g, { 0.0f, bounds.getBottom() - frame, bounds.getWidth(), frame }, false, 202);
         drawWood (g, { 0.0f, 0.0f, frame, bounds.getHeight() }, true, 203);
         drawWood (g, { bounds.getRight() - frame, 0.0f, frame, bounds.getHeight() }, true, 204);
 
-        g.setColour (juce::Colour (0xffc4bfb2).withAlpha (0.35f));
-        g.drawRect (bounds.reduced (frame + 1.0f, frame + 1.0f), 1.0f);
+        g.setColour (juce::Colour (0xffc4bfb2).withAlpha (0.5f));
+        g.drawRect (bounds.reduced (frame + 1.0f, frame + 1.0f), 1.2f);
+        g.setColour (juce::Colours::black.withAlpha (0.5f));
+        g.drawRect (bounds.reduced (frame - 1.0f, frame - 1.0f), 1.0f);
 
         // Left / console / right panel separators.
         juce::ColourGradient trim (juce::Colour (0xffb9b6ad), 0.0f, 0.0f,
@@ -704,6 +707,9 @@ void PanelBase::paint (juce::Graphics& g)
             subtitleColour = juce::Colour (0xffb5b0a6);
         }
 
+        g.setColour (juce::Colours::black.withAlpha (0.52f));
+        g.fillRoundedRectangle (area.translated (0.0f, 2.0f), 2.5f);
+
         if (module.tone == ModuleTone::Light && finish_ != Finish::PolyBrute)
         {
             juce::ColourGradient plate (juce::Colour (0xff414648), area.getX(), area.getY(),
@@ -714,14 +720,17 @@ void PanelBase::paint (juce::Graphics& g)
         {
             g.setColour (fill);
         }
+
         g.fillRoundedRectangle (area, 2.0f);
         g.setColour (border.withAlpha (finish_ == Finish::PolyBrute ? 0.58f : 0.62f));
         g.drawRoundedRectangle (area.reduced (0.5f), 2.0f,
                                 finish_ == Finish::PolyBrute ? 1.2f : 1.0f);
 
-        // Engraved plate edge.
-        g.setColour (juce::Colours::white.withAlpha (0.035f));
+        // Engraved plate edge / inner bevel.
+        g.setColour (juce::Colours::white.withAlpha (finish_ == Finish::PolyBrute ? 0.16f : 0.06f));
         g.drawHorizontalLine ((int) area.getY() + 1, area.getX() + 3.0f, area.getRight() - 3.0f);
+        g.setColour (juce::Colours::black.withAlpha (0.35f));
+        g.drawHorizontalLine ((int) area.getBottom() - 2, area.getX() + 3.0f, area.getRight() - 3.0f);
 
         auto titleFont = juce::Font (juce::FontOptions (13.0f, juce::Font::bold))
                              .withExtraKerningFactor (0.12f);
@@ -730,11 +739,14 @@ void PanelBase::paint (juce::Graphics& g)
 
         const auto titleArea = module.bounds.withHeight (16).reduced (5, 0);
 
-        if (finish_ == Finish::PolyBrute && module.title.containsIgnoreCase ("FILTER"))
+        if (finish_ == Finish::PolyBrute
+            && module.title.containsIgnoreCase ("STEINER"))
         {
+            // The single orange filter tab is the focal point in the
+            // Minibrute V panel language.
             const auto tab = juce::Rectangle<float> (area.getX() + 3.0f, area.getY() + 2.0f,
                                                      area.getWidth() - 6.0f, 16.0f);
-            g.setColour (accent_.withAlpha (0.9f));
+            g.setColour (juce::Colour (0xffff7a1a));
             g.fillRoundedRectangle (tab, 2.0f);
             g.setColour (juce::Colours::white);
         }
