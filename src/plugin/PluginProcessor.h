@@ -112,6 +112,7 @@ private:
     std::unique_ptr<std::atomic<float>[]> morphValues_;
     std::vector<float> morphScratch_;
     int morphParameterIndex_ = -1;
+    int selectedPartIndex_ = -1;
 
     juce::MidiKeyboardState keyboardState_;
     PatternSequencer sequencer_;

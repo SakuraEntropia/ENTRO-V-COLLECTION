@@ -309,11 +309,12 @@ MatriarchPanel::MatriarchPanel (EditorHost& host)
         const auto x = outArea.getX() + 6;
         const auto width = outArea.getWidth() - 12;
 
-        addKnob ("mat.master.volume", "MAIN VOLUME", { x, y + 4, width, 58 });
-        addKnob ("mat.output.velocity", "VELOCITY", { x, y + 66, width, 58 });
-        addKnob ("mat.output.aftertouch", "AFTERTOUCH", { x, y + 128, width, 58 });
-        addSwitch ("mat.master.vcaMode", "VCA MODE", { x, y + 190, width, 44 });
-        addSwitch ("mat.master.paraphony", "PARAPHONY", { x, y + 240, width, 44 });
+        addKnob ("mat.master.volume", "MAIN VOLUME", { x, y + 4, width, 54 });
+        addKnob ("mat.output.velocity", "VELOCITY", { x, y + 62, width, 54 });
+        addKnob ("mat.output.aftertouch", "AFTERTOUCH", { x, y + 120, width, 54 });
+        addKnob ("mat.global.fine", "FINE TUNE", { x, y + 180, width, 54 });
+        addSwitch ("mat.master.vcaMode", "VCA MODE", { x, y + 240, width, 42 }); 
+        addSwitch ("mat.master.paraphony", "PARAPHONY", { x, y + 290, width, 42 });
     }
 
     onPatchChanged = [this] { refreshPatchCables(); };

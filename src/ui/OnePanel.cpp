@@ -235,6 +235,12 @@ void OnePanel::rebuildForPart()
             addKnob (stem + "sustain", "SUSTAIN", { x, y, columnWidth, 50 }); y += 54;
             addKnob (stem + "release", "RELEASE", { x, y, columnWidth, 50 }); y += 54;
             addKnob (stem + "velocity", "VELOCITY", { x, y, columnWidth, 50 });
+
+            if (env < 3)
+            {
+                auto& loop = addLed (stem + "loop", "LOOP", { x, 438, columnWidth, 20 });
+                loop.setAccent (accent);
+            }
         }
     }
 

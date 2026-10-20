@@ -153,6 +153,7 @@ TriadAudioProcessor::TriadAudioProcessor()
     arpLengthIndex_ = findParameterBySuffix (".arp.length");
     arpSwingIndex_ = findParameterBySuffix (".arp.swing");
     morphParameterIndex_ = findMorphParameter();
+    selectedPartIndex_ = findParameterBySuffix (".master.selectedPart");
 
     sequencer_.prepare (44100.0);
     setLatencySamples (0);
@@ -461,6 +462,13 @@ void TriadAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
             transport.ppqPosition = position->getPpqPosition().orFallback (0.0);
             transport.isPlaying = position->getIsPlaying();
         }
+    }
+
+    if (hasParts() && selectedPartIndex_ >= 0)
+    {
+        const auto part = juce::jlimit (1, 3, (int) std::lround (naturalValues_[(size_t) selectedPartIndex_]));
+        if (part != selectedPart_.load())
+            selectedPart_.store (part);
     }
 
     engine_->setTransport (transport);
