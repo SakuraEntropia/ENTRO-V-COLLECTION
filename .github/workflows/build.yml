@@ -1,0 +1,83 @@
+name: build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  macos:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout JUCE 9.0.4
+        run: |
+          git clone --branch 9.0.4 --depth 1 https://github.com/juce-framework/JUCE.git "${{ runner.temp }}/JUCE"
+
+      - name: Configure
+        run: |
+          cmake -S . -B "${{ runner.temp }}/build" -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DTRIAD_JUCE_PATH="${{ runner.temp }}/JUCE"
+
+      - name: Build VST3, AU and standalone
+        run: cmake --build "${{ runner.temp }}/build" --target
+          Matriarch_VST3 Matriarch_AU Matriarch_Standalone
+          PolyBrute_VST3 PolyBrute_AU PolyBrute_Standalone
+          MoogOne_VST3 MoogOne_AU MoogOne_Standalone
+
+      - name: Engine tests
+        run: ctest --test-dir "${{ runner.temp }}/build" --output-on-failure
+
+      - name: Package bundles
+        run: ./scripts/package-macos.sh --build "${{ runner.temp }}/build" --zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AnalogTriad-macOS
+          path: dist/AnalogTriad-macOS-*.zip
+          if-no-files-found: error
+
+  windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout JUCE 9.0.4
+        run: git clone --branch 9.0.4 --depth 1 https://github.com/juce-framework/JUCE.git "${{ runner.temp }}\JUCE"
+
+      - name: Configure
+        shell: pwsh
+        run: |
+          cmake -S . -B "${{ runner.temp }}\build" `
+            -DTRIAD_JUCE_PATH="${{ runner.temp }}\JUCE" `
+            -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build VST3 and standalone
+        run: >
+          cmake --build "${{ runner.temp }}\build" --config Release
+          --target Matriarch_VST3 Matriarch_Standalone
+          PolyBrute_VST3 PolyBrute_Standalone
+          MoogOne_VST3 MoogOne_Standalone
+
+      - name: Engine tests
+        run: ctest --test-dir "${{ runner.temp }}\build" -C Release --output-on-failure
+
+      - name: Collect Windows bundles
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          Get-ChildItem -Path "${{ runner.temp }}\build" -Recurse -Directory -Filter "*.vst3" |
+            Where-Object { $_.FullName -like "*Release*" } |
+            ForEach-Object { Copy-Item -Recurse -Force $_.FullName "dist\" }
+          Get-ChildItem -Path "${{ runner.temp }}\build" -Recurse -Directory -Filter "*.exe" |
+            Where-Object { $_.FullName -like "*Standalone*" } |
+            ForEach-Object { Copy-Item -Recurse -Force $_.FullName "dist\" }
+          Get-ChildItem dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AnalogTriad-Windows
+          path: dist/**
+          if-no-files-found: warn

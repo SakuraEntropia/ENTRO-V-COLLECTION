@@ -1,0 +1,29 @@
+# Build output and downloaded dependencies
+build/
+build-*/
+cmake-build-*/
+JUCE/
+JUCE-*/
+.deps/
+dist/
+artifacts/
+
+# IDE and OS noise
+.DS_Store
+.vscode/
+.idea/
+*.xcworkspace/
+xcuserdata/
+*.user
+compile_commands.json
+
+# Generated plugin bundles / installers
+*.vst3
+*.component
+*.app
+*.pkg
+*.dmg
+*.zip
+
+# Presets created during local testing
+*.triadpreset
