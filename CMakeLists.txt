@@ -87,6 +87,12 @@ target_compile_definitions(triad_ui PUBLIC
 # ---------------------------------------------------------------------------
 # Three independent plugin targets built from one host adapter.
 # ---------------------------------------------------------------------------
+if (APPLE)
+    set(TRIAD_PLUGIN_FORMATS AU VST3 Standalone)
+else()
+    set(TRIAD_PLUGIN_FORMATS VST3 Standalone)
+endif()
+
 function(triad_add_instrument target product_name plugin_code instrument_kind)
     juce_add_plugin(${target}
         COMPANY_NAME "SakuraEntropia"
@@ -102,7 +108,7 @@ function(triad_add_instrument target product_name plugin_code instrument_kind)
         PLUGIN_NAME "${product_name}"
         PRODUCT_NAME "${product_name}"
         DESCRIPTION "Independent virtual-analog instrument inspired by ${product_name}"
-        FORMATS AU VST3 Standalone
+        FORMATS ${TRIAD_PLUGIN_FORMATS}
         VST3_CATEGORIES "Instrument Synth"
         AU_MAIN_TYPE "kAudioUnitType_MusicDevice"
         NEEDS_WEB_BROWSER FALSE

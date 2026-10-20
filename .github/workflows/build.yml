@@ -71,9 +71,9 @@ jobs:
           Get-ChildItem -Path "${{ runner.temp }}\build" -Recurse -Directory -Filter "*.vst3" |
             Where-Object { $_.FullName -like "*Release*" } |
             ForEach-Object { Copy-Item -Recurse -Force $_.FullName "dist\" }
-          Get-ChildItem -Path "${{ runner.temp }}\build" -Recurse -Directory -Filter "*.exe" |
+          Get-ChildItem -Path "${{ runner.temp }}\build" -Recurse -File -Filter "*.exe" |
             Where-Object { $_.FullName -like "*Standalone*" } |
-            ForEach-Object { Copy-Item -Recurse -Force $_.FullName "dist\" }
+            ForEach-Object { Copy-Item -Force $_.FullName "dist\" }
           Get-ChildItem dist
 
       - uses: actions/upload-artifact@v4
