@@ -48,11 +48,11 @@ The factory bank is original sound design, grouped by the same kinds of categori
 
 ### CONTINUUM V
 
-19 presets using the Continuum's public two-letter system categories:
+19 presets use names and categories from the supplied Haken Slim Continuum soundlist (firmware 10.09); the parameter designs are original approximations, not the factory data. The public two-letter system categories are:
 Strings `ST`, Winds `WI`, Vocal `VO`, Keyboard `KY`, Classic `CL`, Other `OT`,
 Percussion `PE`, Tuned Percussion `PT`, Processor `PR`, Drone `DO`, Midi `MD`,
 Utility `UT`, plus a small modern Bass group. The matrix cells are part of each
-preset; `PR - Broken Matrix`, `OT - Deep Field` and `MD - MPE Surface` carry
+preset; `PR - Harmonic Resonator`, `OT - Celestial Basin` and `MD - MPE 08 Voice` carry
 custom routing. Names and parameter sets are original; no Haken factory preset
 data is included.
 

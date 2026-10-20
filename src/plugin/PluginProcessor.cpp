@@ -565,11 +565,25 @@ void TriadAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         }
     }
 
-    std::sort (scheduled_.begin(), scheduled_.begin() + scheduledCount_,
-               [] (const ScheduledEvent& a, const ScheduledEvent& b)
-               {
-                   return a.offset < b.offset;
-               });
+    if (isContinuum())
+    {
+        for (int note = 0; note < 128; ++note)
+        {
+            if (! pendingSurfaceOff_[(size_t) note].exchange (false, std::memory_order_relaxed))
+                continue;
+
+            MidiEvent off;
+            off.type = MidiEventType::NoteOff;
+            off.note = note;
+            addScheduledEvent (numSamples, off);
+        }
+    }
+
+    std::stable_sort (scheduled_.begin(), scheduled_.begin() + scheduledCount_,
+                      [] (const ScheduledEvent& a, const ScheduledEvent& b)
+                      {
+                          return a.offset < b.offset;
+                      });
 
     if ((size_t) numSamples > dummyRight_.size())
         dummyRight_.resize ((size_t) numSamples);
@@ -790,6 +804,7 @@ void TriadAudioProcessor::continuumNoteOn (int note, float pitchSemitones,
     if (! isContinuum() || note < 0 || note > 127)
         return;
 
+    pendingSurfaceOff_[(size_t) note].store (false, std::memory_order_relaxed);
     continuumSetExpression (note, pitchSemitones, timbre, pressure);
     keyboardState_.noteOn (1, note, juce::jlimit (0.05f, 1.0f, pressure));
 }
@@ -797,7 +812,10 @@ void TriadAudioProcessor::continuumNoteOn (int note, float pitchSemitones,
 void TriadAudioProcessor::continuumNoteOff (int note)
 {
     if (note >= 0 && note <= 127)
+    {
+        pendingSurfaceOff_[(size_t) note].store (true, std::memory_order_relaxed);
         keyboardState_.noteOff (1, note, 0.0f);
+    }
 }
 
 void TriadAudioProcessor::continuumSetExpression (int note, float pitchSemitones,

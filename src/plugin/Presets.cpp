@@ -927,7 +927,7 @@ std::vector<FactoryPreset> continuumPresets()
               { "con.env2.attack", 0.002f }, { "con.env2.decay", 0.3f },
               { "con.env2.sustain", 0.2f }, { "con.env2.release", 0.2f }
           } },
-        { "CL - Wire Lead", "Classic",
+        { "CL - Clinical Oscillator 1", "Classic",
           Values {
               { "con.master.volume", 0.68f }, { "con.master.glide", 0.09f },
               { "con.master.yDepth", 0.7f }, { "con.master.reverbMix", 0.18f },
@@ -946,7 +946,7 @@ std::vector<FactoryPreset> continuumPresets()
               { "con.sg1.rate", 4.5f }, { "con.sg1.shape", 6.0f },
               { "con.sg1.level", 0.07f }
           } },
-        { "KY - Glass Lead", "Keyboard",
+        { "KY - LegacyDX EP", "Keyboard",
           Values {
               { "con.master.volume", 0.64f }, { "con.master.glide", 0.04f },
               { "con.osc1.wave", 0.0f }, { "con.osc1.level", 0.65f },
@@ -962,7 +962,7 @@ std::vector<FactoryPreset> continuumPresets()
               { "con.env1.sustain", 0.6f }, { "con.env1.release", 0.8f },
               { "con.master.reverbMix", 0.3f }
           } },
-        { "CL - Air Brass", "Classic",
+        { "CL - Analog ADSR", "Classic",
           Values {
               { "con.master.volume", 0.64f }, { "con.master.yDepth", 0.55f },
               { "con.osc1.wave", 2.0f }, { "con.osc1.level", 0.7f },
@@ -980,7 +980,7 @@ std::vector<FactoryPreset> continuumPresets()
               { "con.env2.sustain", 0.4f }, { "con.env2.release", 0.5f },
               { "con.master.reverbMix", 0.2f }
           } },
-        { "DO - Slow Tide", "Drone",
+        { "DO - Feelings Drone", "Drone",
           Values {
               { "con.master.volume", 0.62f }, { "con.master.yDepth", 0.75f },
               { "con.master.reverbMix", 0.42f }, { "con.master.reverbSize", 0.85f },
@@ -1000,7 +1000,7 @@ std::vector<FactoryPreset> continuumPresets()
               { "con.sg1.rate", 0.12f }, { "con.sg1.level", 0.3f },
               { "con.sg2.rate", 0.07f }, { "con.sg2.level", 0.2f }
           } },
-        { "VO - Deep Choir", "Vocal",
+        { "VO - Choir", "Vocal",
           Values {
               { "con.master.volume", 0.6f }, { "con.master.reverbMix", 0.5f },
               { "con.master.reverbSize", 0.9f }, { "con.osc1.wave", 0.0f },
@@ -1018,7 +1018,7 @@ std::vector<FactoryPreset> continuumPresets()
               { "con.env1.release", 4.5f },
               { "con.sg3.rate", 0.09f }, { "con.sg3.level", 0.2f }
           } },
-        { "KY - Glass Surface", "Keyboard",
+        { "KY - Ice Calliope", "Keyboard",
           Values {
               { "con.master.volume", 0.64f }, { "con.master.yDepth", 0.8f },
               { "con.master.reverbMix", 0.3f }, { "con.master.delayMix", 0.18f },
@@ -1034,7 +1034,7 @@ std::vector<FactoryPreset> continuumPresets()
               { "con.env1.attack", 0.01f }, { "con.env1.decay", 1.2f },
               { "con.env1.sustain", 0.7f }, { "con.env1.release", 1.5f }
           } },
-        { "PE - Pressure Field", "Percussion",
+        { "PE - Creaker", "Percussion",
           Values {
               { "con.master.volume", 0.6f }, { "con.master.zDepth", 0.95f },
               { "con.master.yDepth", 0.7f }, { "con.master.reverbMix", 0.38f },
@@ -1050,7 +1050,7 @@ std::vector<FactoryPreset> continuumPresets()
               { "con.env1.sustain", 0.75f }, { "con.env1.release", 1.2f },
               { "con.sg1.rate", 0.4f }, { "con.sg1.level", 0.3f }
           } },
-        { "OT - Metal Cloud", "Other",
+        { "OT - Entanglement", "Other",
           Values {
               { "con.master.volume", 0.58f }, { "con.master.reverbMix", 0.45f },
               { "con.master.reverbSize", 0.92f }, { "con.master.delayMix", 0.25f },
@@ -1070,7 +1070,7 @@ std::vector<FactoryPreset> continuumPresets()
               { "con.sg1.rate", 0.15f }, { "con.sg1.level", 0.35f },
               { "con.sg2.rate", 0.23f }, { "con.sg2.level", 0.25f }
           } },
-        { "ST - Bowed Glass", "Strings",
+        { "ST - Bowed Mood", "Strings",
           Values {
               { "con.master.volume", 0.62f }, { "con.master.yDepth", 0.75f },
               { "con.master.reverbMix", 0.35f }, { "con.osc1.wave", 1.0f },
@@ -1087,7 +1087,7 @@ std::vector<FactoryPreset> continuumPresets()
               { "con.sg1.rate", 5.2f }, { "con.sg1.level", 0.04f },
               { "con.bank1.freq", 440.0f }, { "con.bank1.mix", 0.2f }
           } },
-        { "OT - Deep Field", "Other",
+        { "OT - Celestial Basin", "Other",
           Values {
               { "con.master.volume", 0.56f }, { "con.master.glide", 0.2f },
               { "con.master.reverbMix", 0.58f }, { "con.master.reverbSize", 0.95f },
@@ -1108,7 +1108,7 @@ std::vector<FactoryPreset> continuumPresets()
           { { 0, 0, 1, 1.0f }, { 0, 5, 4, 0.4f }, { 1, 1, 1, 1.0f },
             { 2, 2, 1, 1.0f }, { 6, 15, 4, 0.3f }, { 7, 15, 1, 0.2f },
             { 8, 15, 1, 0.15f }, { 9, 15, 1, 0.12f }, { 10, 15, 1, 0.1f } } },
-        { "PR - Broken Matrix", "Processor",
+        { "PR - Harmonic Resonator", "Processor",
           Values {
               { "con.master.volume", 0.55f }, { "con.master.reverbMix", 0.4f },
               { "con.osc1.wave", 2.0f }, { "con.osc1.level", 0.6f },
@@ -1125,7 +1125,7 @@ std::vector<FactoryPreset> continuumPresets()
           { { 0, 0, 1, 1.0f }, { 1, 1, 1, 0.8f }, { 2, 2, 7, 0.7f },
             { 6, 3, 1, 0.5f }, { 7, 4, 1, 0.4f }, { 8, 15, 4, 0.4f },
             { 9, 15, 2, 0.3f }, { 10, 15, 1, 0.25f }, { 11, 5, 11, 0.6f } } },
-        { "UT - Initial Surface", "Utility",
+        { "UT - Empty", "Utility",
           Values {
               { "con.master.volume", 0.65f }, { "con.master.reverbMix", 0.22f },
               { "con.osc1.wave", 2.0f }, { "con.osc1.level", 0.6f },
@@ -1138,7 +1138,7 @@ std::vector<FactoryPreset> continuumPresets()
               { "con.env1.attack", 0.02f }, { "con.env1.decay", 0.8f },
               { "con.env1.sustain", 0.75f }, { "con.env1.release", 1.0f }
           } },
-        { "WI - Air Column", "Winds",
+        { "WI - Wind", "Winds",
           Values {
               { "con.master.volume", 0.6f }, { "con.master.yDepth", 0.75f },
               { "con.master.reverbMix", 0.32f }, { "con.master.delayMix", 0.12f },
@@ -1155,7 +1155,7 @@ std::vector<FactoryPreset> continuumPresets()
               { "con.env2.attack", 0.2f }, { "con.env2.sustain", 0.4f },
               { "con.sg1.rate", 5.2f }, { "con.sg1.level", 0.05f }
           } },
-        { "WI - Reed Choir", "Winds",
+        { "WI - Double Reed", "Winds",
           Values {
               { "con.master.volume", 0.58f }, { "con.master.reverbMix", 0.38f },
               { "con.osc1.wave", 2.0f }, { "con.osc1.level", 0.5f },
@@ -1173,7 +1173,7 @@ std::vector<FactoryPreset> continuumPresets()
               { "con.env1.sustain", 0.85f }, { "con.env1.release", 2.0f },
               { "con.env2.attack", 0.4f }, { "con.env2.sustain", 0.5f }
           } },
-        { "VO - Vowel Drift", "Vocal",
+        { "VO - Vowel", "Vocal",
           Values {
               { "con.master.volume", 0.58f }, { "con.master.yDepth", 0.8f },
               { "con.master.reverbMix", 0.4f }, { "con.master.delayMix", 0.15f },
@@ -1194,7 +1194,7 @@ std::vector<FactoryPreset> continuumPresets()
           { { 0, 0, 1, 1.0f }, { 1, 1, 1, 0.8f }, { 2, 2, 1, 0.7f },
             { 6, 15, 4, 0.3f }, { 7, 15, 1, 0.22f }, { 8, 15, 1, 0.18f },
             { 9, 15, 1, 0.14f }, { 10, 15, 1, 0.12f } } },
-        { "PT - Glass Bell", "Tuned Percussion",
+        { "PT - Bowed Bells", "Tuned Percussion",
           Values {
               { "con.master.volume", 0.6f }, { "con.master.reverbMix", 0.35f },
               { "con.master.delayMix", 0.25f }, { "con.master.delayTime", 0.21f },
@@ -1212,7 +1212,7 @@ std::vector<FactoryPreset> continuumPresets()
               { "con.env2.attack", 0.002f }, { "con.env2.decay", 0.3f },
               { "con.env2.sustain", 0.0f }, { "con.env2.release", 0.8f }
           } },
-        { "MD - MPE Surface", "Midi",
+        { "MD - MPE 08 Voice", "Midi",
           Values {
               { "con.master.volume", 0.65f }, { "con.master.glide", 0.02f },
               { "con.master.yDepth", 0.9f }, { "con.master.zDepth", 0.95f },

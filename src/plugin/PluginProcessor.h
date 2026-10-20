@@ -125,7 +125,7 @@ private:
     PatternSequencer sequencer_;
     std::vector<FactoryPreset> factoryPresets_;
 
-    std::array<ScheduledEvent, 512> scheduled_ {};
+    std::array<ScheduledEvent, 1024> scheduled_ {};
     int scheduledCount_ = 0;
 
     std::vector<float> dummyRight_;
@@ -146,6 +146,7 @@ private:
     std::vector<PatchCable> patchCables_;
 
     std::array<std::atomic<float>, 128 * 3> expression_ {};
+    std::array<std::atomic<bool>, 128> pendingSurfaceOff_ {};
     std::atomic<int> selectedPart_ { 1 };
     std::atomic<float> uiPitchBend_ { 0.0f };
     std::atomic<float> uiModWheel_ { 0.0f };

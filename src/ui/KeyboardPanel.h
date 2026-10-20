@@ -9,6 +9,19 @@
 namespace triad::ui
 {
 
+/** Keyboard with explicit physical key gaps and bevels. */
+class HardwareKeyboard final : public juce::MidiKeyboardComponent
+{
+public:
+    using juce::MidiKeyboardComponent::MidiKeyboardComponent;
+
+    void drawWhiteNote (int midiNoteNumber, juce::Graphics& g, juce::Rectangle<float> area,
+                        bool isDown, bool isOver, juce::Colour lineColour,
+                        juce::Colour textColour) override;
+    void drawBlackNote (int midiNoteNumber, juce::Graphics& g, juce::Rectangle<float> area,
+                        bool isDown, bool isOver, juce::Colour noteFillColour) override;
+};
+
 /** Keyboard, wheels and part selector shown beneath each instrument panel. */
 class KeyboardPanel final : public juce::Component, private juce::Timer
 {
@@ -25,7 +38,7 @@ private:
     void timerCallback() override;
 
     EditorHost& host_;
-    juce::MidiKeyboardComponent keyboard_;
+    HardwareKeyboard keyboard_;
     juce::Slider pitchWheel_;
     juce::Slider modWheel_;
     juce::Label pitchLabel_, modLabel_;

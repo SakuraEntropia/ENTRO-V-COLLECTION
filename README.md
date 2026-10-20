@@ -127,4 +127,6 @@ docs           覆盖表、验证记录、开发约定
 
 仓库：<https://github.com/SakuraEntropia/ENTRO-V-COLLECTION>
 
+Haken 10.09 soundlist 对照：[docs/Haken-Soundlist-10-09.md](docs/Haken-Soundlist-10-09.md)。
+
 Logo 源文件：`assets/logos/*.svg`；应用图标：`assets/icons/*.icns` / `*.ico`。重新生成使用 `python3 scripts/generate-logo-assets.py`。

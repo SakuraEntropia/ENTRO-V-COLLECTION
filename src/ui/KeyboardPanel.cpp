@@ -3,6 +3,64 @@
 namespace triad::ui
 {
 
+void HardwareKeyboard::drawWhiteNote (int midiNoteNumber, juce::Graphics& g,
+                                      juce::Rectangle<float> area, bool isDown, bool isOver,
+                                      juce::Colour lineColour, juce::Colour textColour)
+{
+    (void) lineColour;
+    auto key = area;
+
+    g.setColour (isDown ? juce::Colour (0xffd8cdb8) : juce::Colour (0xfff0ebdf));
+    g.fillRect (key);
+
+    if (isOver)
+    {
+        g.setColour (juce::Colour (0x22000000));
+        g.fillRect (key);
+    }
+
+    // A real gap between white keys, not just a hairline.
+    g.setColour (juce::Colour (0xff151410));
+    g.fillRect (key.getRight() - 2.0f, key.getY(), 2.0f, key.getHeight());
+
+    g.setColour (juce::Colour (0xff625d53));
+    g.drawRect (key.reduced (0.5f), 1.0f);
+
+    g.setColour (juce::Colour (0xffd6d0c4).withAlpha (0.7f));
+    g.drawHorizontalLine ((int) key.getBottom() - 2, key.getX() + 1.0f, key.getRight() - 3.0f);
+
+    if (midiNoteNumber % 12 == 0)
+    {
+        g.setColour (textColour.withAlpha (0.7f));
+        g.setFont (juce::Font (juce::FontOptions (8.0f)));
+        g.drawText ("C" + juce::String (midiNoteNumber / 12 - 1),
+                    key.removeFromBottom (13.0f).toNearestInt(),
+                    juce::Justification::centred);
+    }
+}
+
+void HardwareKeyboard::drawBlackNote (int midiNoteNumber, juce::Graphics& g,
+                                      juce::Rectangle<float> area, bool isDown, bool isOver,
+                                      juce::Colour noteFillColour)
+{
+    (void) midiNoteNumber;
+    auto key = area;
+
+    g.setColour (noteFillColour);
+    g.fillRect (key);
+
+    if (isOver || isDown)
+    {
+        g.setColour (juce::Colours::white.withAlpha (isDown ? 0.18f : 0.08f));
+        g.fillRect (key);
+    }
+
+    g.setColour (juce::Colour (0xff050505));
+    g.drawRect (key.reduced (0.5f), 1.0f);
+    g.setColour (juce::Colours::white.withAlpha (0.22f));
+    g.drawHorizontalLine ((int) key.getY() + 2, key.getX() + 2.0f, key.getRight() - 2.0f);
+}
+
 KeyboardPanel::KeyboardPanel (EditorHost& host)
     : host_ (host),
       keyboard_ (host.keyboardState(), juce::MidiKeyboardComponent::horizontalKeyboard)

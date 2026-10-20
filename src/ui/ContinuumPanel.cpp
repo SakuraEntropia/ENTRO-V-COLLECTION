@@ -36,56 +36,82 @@ ContinuumSurface::ContinuumSurface (EditorHost& host) : host_ (host)
 {
     setOpaque (true);
     setMouseCursor (juce::MouseCursor::CrosshairCursor);
+    juce::Desktop::getInstance().addGlobalMouseListener (this);
     startTimerHz (24);
+}
+
+ContinuumSurface::~ContinuumSurface()
+{
+    if (active_)
+        endNote();
+
+    juce::Desktop::getInstance().removeGlobalMouseListener (this);
+}
+
+juce::Rectangle<float> ContinuumSurface::playingArea() const
+{
+    return getLocalBounds().toFloat().reduced (6.0f, 0.0f)
+        .withTrimmedTop (24.0f).withTrimmedBottom (24.0f);
 }
 
 float ContinuumSurface::pitchForX (float x) const
 {
-    const auto normalised = juce::jlimit (0.0f, 0.9999f, x / juce::jmax (1.0f, (float) getWidth()));
+    const auto area = playingArea();
+    const auto normalised = juce::jlimit (0.0f, 0.9999f,
+                                          (x - area.getX()) / juce::jmax (1.0f, area.getWidth()));
     return 36.0f + normalised * 48.0f;
 }
 
 juce::Point<float> ContinuumSurface::pointFor (int note, float expr, float timbre) const
 {
+    const auto area = playingArea();
     const auto pitch = (float) note + expr;
-    return { (pitch - 36.0f) / 48.0f * (float) getWidth(),
-             (1.0f - timbre) * (float) getHeight() };
+    return { area.getX() + (pitch - 36.0f) / 48.0f * area.getWidth(),
+             area.getY() + (1.0f - timbre) * area.getHeight() };
 }
 
 void ContinuumSurface::paint (juce::Graphics& g)
 {
     auto bounds = getLocalBounds().toFloat();
+    const auto area = playingArea();
 
-    // The Continuum's most recognisable visual feature: alternating red and
-    // near-black vertical stripes across the playing surface.
     g.fillAll (juce::Colour (0xff0b0b0c));
-    const auto stripeCount = 34;
-    const auto stripeWidth = bounds.getWidth() / (float) stripeCount;
+
+    // The red field is inset between black header/footer rails, matching the
+    // hardware where the pitch labels are not printed on the playing fabric.
+    g.setColour (juce::Colour (0xff11110f));
+    g.fillRect (bounds.withHeight (24.0f));
+    g.fillRect (bounds.withTrimmedTop (bounds.getBottom() - 24.0f));
+
+    const auto stripeCount = 32;
+    const auto stripeWidth = area.getWidth() / (float) stripeCount;
 
     for (int i = 0; i < stripeCount; ++i)
     {
-        const auto x = (float) i * stripeWidth;
+        const auto x = area.getX() + (float) i * stripeWidth;
         g.setColour (juce::Colour (0xffd8232a));
-        g.fillRect (x, 0.0f, stripeWidth * 0.68f, bounds.getHeight());
+        g.fillRect (x, area.getY(), stripeWidth * 0.78f, area.getHeight());
     }
 
-    juce::ColourGradient shade (juce::Colour (0xff050505).withAlpha (0.0f), 0.0f, 0.0f,
-                                juce::Colour (0xff050505).withAlpha (0.55f), 0.0f,
-                                bounds.getBottom(), false);
+    juce::ColourGradient shade (juce::Colour (0xff050505).withAlpha (0.0f), 0.0f, area.getY(),
+                                juce::Colour (0xff050505).withAlpha (0.28f), 0.0f,
+                                area.getBottom(), false);
     g.setGradientFill (shade);
-    g.fillRect (bounds);
+    g.fillRect (area);
 
     g.setColour (juce::Colour (0xff1b1a16));
-    g.drawRect (bounds, 2.0f);
+    g.drawRect (area, 2.0f);
+    g.setColour (juce::Colour (0xfff4e8d2).withAlpha (0.22f));
+    g.drawRect (area, 0.6f);
 
-    // Pitch grid: one vertical line per octave, drawn over the stripes.
+    // Pitch grid: one vertical line per octave.
     for (int note = 36; note <= 84; note += 12)
     {
-        const auto x = (float) (note - 36) / 48.0f * bounds.getWidth();
-        g.setColour (juce::Colour (0xfff4e8d2).withAlpha (note % 12 == 0 ? 0.38f : 0.18f));
-        g.drawVerticalLine ((int) x, 18.0f, bounds.getBottom() - 8.0f);
+        const auto x = area.getX() + (float) (note - 36) / 48.0f * area.getWidth();
+        g.setColour (juce::Colour (0xfff4e8d2).withAlpha (0.34f));
+        g.drawVerticalLine ((int) x, area.getY(), area.getBottom());
 
-        g.setColour (juce::Colour (0xfff4e8d2));
+        g.setColour (juce::Colour (0xfff4e8d2).withAlpha (0.9f));
         g.setFont (juce::Font (juce::FontOptions (8.0f)));
         g.drawText (juce::MidiMessage::getMidiNoteName (note, true, true, 3),
                     (int) x + 4, (int) bounds.getBottom() - 20, 28, 12,
@@ -95,15 +121,15 @@ void ContinuumSurface::paint (juce::Graphics& g)
     // Timbre lines.
     for (int i = 1; i < 4; ++i)
     {
-        const auto y = bounds.getHeight() * (float) i / 4.0f;
-        g.setColour (juce::Colour (0xff111111).withAlpha (0.32f));
-        g.drawHorizontalLine ((int) y, 12.0f, bounds.getRight() - 12.0f);
+        const auto y = area.getY() + area.getHeight() * (float) i / 4.0f;
+        g.setColour (juce::Colour (0xff111111).withAlpha (0.34f));
+        g.drawHorizontalLine ((int) y, area.getX(), area.getRight());
     }
 
     g.setColour (juce::Colour (0xfff4e8d2).withAlpha (0.8f));
     g.setFont (juce::Font (juce::FontOptions (8.0f)).withExtraKerningFactor (0.24f));
     g.drawText ("X  PITCH      Y  TIMBRE      Z  PRESSURE  (WHEEL)",
-                14, 10, 500, 12, juce::Justification::centredLeft);
+                14, 7, 500, 12, juce::Justification::centredLeft);
 
     if (! active_)
     {
@@ -142,6 +168,9 @@ void ContinuumSurface::paint (juce::Graphics& g)
 
 void ContinuumSurface::mouseDown (const juce::MouseEvent& event)
 {
+    if (active_)
+        endNote();
+
     beginNote (event.position);
 }
 
@@ -150,7 +179,7 @@ void ContinuumSurface::beginNote (juce::Point<float> position)
     const auto pitch = pitchForX (position.x);
     note_ = juce::jlimit (0, 127, (int) std::floor (pitch));
     exprPitch_ = pitch - (float) note_;
-    timbre_ = juce::jlimit (0.02f, 0.98f, 1.0f - position.y / juce::jmax (1.0f, (float) getHeight()));
+    timbre_ = juce::jlimit (0.02f, 0.98f, 1.0f - (position.y - playingArea().getY()) / juce::jmax (1.0f, playingArea().getHeight()));
     pressure_ = 0.8f;
     active_ = true;
     lastPoint_ = pointFor (note_, exprPitch_, timbre_);
@@ -172,7 +201,7 @@ void ContinuumSurface::updateFromPosition (juce::Point<float> position, bool all
     }
 
     exprPitch_ = newExpr;
-    timbre_ = juce::jlimit (0.02f, 0.98f, 1.0f - position.y / juce::jmax (1.0f, (float) getHeight()));
+    timbre_ = juce::jlimit (0.02f, 0.98f, 1.0f - (position.y - playingArea().getY()) / juce::jmax (1.0f, playingArea().getHeight()));
     lastPoint_ = pointFor (note_, exprPitch_, timbre_);
     host_.continuumSetExpression (note_, exprPitch_, timbre_, pressure_);
     repaint();
@@ -210,8 +239,26 @@ void ContinuumSurface::mouseWheelMove (const juce::MouseEvent&,
 
 void ContinuumSurface::timerCallback()
 {
+    // Mouse-up can be lost when the window loses focus or the pointer is
+    // released outside the component.  Never leave a note latched.
+    const auto modifiers = juce::ModifierKeys::getCurrentModifiersRealtime();
+    if (active_ && ! modifiers.isAnyMouseButtonDown())
+        endNote();
+
     if (active_)
         repaint();
+}
+
+void ContinuumSurface::visibilityChanged()
+{
+    if (! isVisible() && active_)
+        endNote();
+}
+
+void ContinuumSurface::focusLost (juce::Component::FocusChangeType)
+{
+    if (active_ && ! juce::ModifierKeys::getCurrentModifiersRealtime().isAnyMouseButtonDown())
+        endNote();
 }
 
 // ---------------------------------------------------------------------------

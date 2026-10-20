@@ -11,16 +11,20 @@ namespace triad::ui
 {
 
 /** 3D continuous playing surface: X = pitch, Y = timbre, wheel = pressure. */
-class ContinuumSurface final : public juce::Component, private juce::Timer
+class ContinuumSurface final : public juce::Component,
+                               private juce::Timer
 {
 public:
     explicit ContinuumSurface (EditorHost& host);
+    ~ContinuumSurface() override;
 
     void paint (juce::Graphics&) override;
     void mouseDown (const juce::MouseEvent&) override;
     void mouseDrag (const juce::MouseEvent&) override;
     void mouseUp (const juce::MouseEvent&) override;
     void mouseWheelMove (const juce::MouseEvent&, const juce::MouseWheelDetails&) override;
+    void visibilityChanged() override;
+    void focusLost (juce::Component::FocusChangeType) override;
 
 private:
     void timerCallback() override;
@@ -29,6 +33,7 @@ private:
     void endNote();
     juce::Point<float> pointFor (int note, float expr, float timbre) const;
     float pitchForX (float x) const;
+    juce::Rectangle<float> playingArea() const;
 
     EditorHost& host_;
     bool active_ = false;
