@@ -10,7 +10,7 @@ juce::Colour polyAccent() { return juce::Colour (0xff3f93e8); }
 }
 
 PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
-    : PanelBase (editorHost, "POLYBRUTE V", 1900, 960, polyAccent())
+    : PanelBase (editorHost, "POLYBRUTE V", 1900, 1000, polyAccent())
 {
     setBranding ("POLYBRUTE V", "SIX-VOICE ANALOG SYNTHESIZER");
 
@@ -29,10 +29,9 @@ PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
     const juce::Rectangle<int> lfo1Area { 954, 8, 128, 268 };
 
     const juce::Rectangle<int> vco2Area { 342, 284, 150, 268 };
-    const juce::Rectangle<int> morphArea { 500, 284, 120, 268 };
-    const juce::Rectangle<int> ladderArea { 628, 284, 160, 268 };
-    const juce::Rectangle<int> vcaEnvArea { 796, 284, 150, 268 };
-    const juce::Rectangle<int> lfo2Area { 954, 284, 128, 268 };
+    const juce::Rectangle<int> ladderArea { 500, 284, 160, 268 };
+    const juce::Rectangle<int> vcaEnvArea { 668, 284, 150, 268 };
+    const juce::Rectangle<int> lfo2Area { 826, 284, 128, 268 };
 
     const juce::Rectangle<int> filterFmArea { 342, 560, 270, 268 };
     const juce::Rectangle<int> routingArea { 628, 560, 160, 268 };
@@ -51,7 +50,6 @@ PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
     addModule ("VCF ENV", vcfEnvArea, ModuleTone::Light);
     addModule ("LFO 1", lfo1Area);
     addModule ("VCO 2", vco2Area);
-    addModule ("MORPH", morphArea);
     addModule ("LADDER FILTER", ladderArea);
     addModule ("VCA ENV", vcaEnvArea, ModuleTone::Light);
     addModule ("LFO 2", lfo2Area);
@@ -98,8 +96,7 @@ PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
         addKnob ("poly.voice.glide", "GLIDE", { x, y, width, 56 }); y += 62;
         addChoice ("poly.voice.pitchBendRange", "BEND RANGE", { x, y, width, 42 }); y += 50;
         addKnob ("poly.voice.spread", "SPREAD", { x, y, width, 56 }); y += 62;
-        addKnob ("poly.voice.analog", "ANALOG", { x, y, width, 56 }); y += 62;
-        addKnob ("poly.voice.morph", "MORPH", { x, y, width, 56 });
+        addKnob ("poly.voice.analog", "ANALOG", { x, y, width, 56 });
     }
 
     // -----------------------------------------------------------------------
@@ -253,24 +250,26 @@ PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
     buildLfo (3, lfo3Area, "poly.lfo3.cutoffAmt", "CUTOFF");
 
     // -----------------------------------------------------------------------
-    // Morph
+    // Morph control: a single large knob below the voice panel, as on the
+    // hardware, rather than a module in the middle of the synth block.
     // -----------------------------------------------------------------------
     {
-        const auto x = morphArea.getX() + 6;
-        const auto width = morphArea.getWidth() - 12;
+        const juce::Rectangle<int> morphBar { 342, 836, 740, 108 };
+        addModule ("MORPH", morphBar);
 
         auto& knob = addKnob ("poly.voice.morph", "MORPH A/B",
-                              { x, morphArea.getY() + 34, width, 120 });
+                              { morphBar.getX() + 10, morphBar.getY() + 26, 94, 72 });
         knob.getProperties().set ("silverKnob", true);
 
-        addButton ("CAPTURE B", { x, morphArea.getY() + 166, width, 28 },
+        addButton ("CAPTURE B", { morphBar.getX() + 120, morphBar.getY() + 34, 150, 28 },
                    [this] { host().captureMorphB(); });
-        addButton ("SWAP A/B", { x, morphArea.getY() + 200, width, 28 },
+        addButton ("SWAP A/B", { morphBar.getX() + 282, morphBar.getY() + 34, 150, 28 },
                    [this] { host().swapMorphB(); });
 
         addCaption ("A / B PARAMETER INTERPOLATION",
-                    { x, morphArea.getY() + 238, width, 22 }, juce::Justification::centred, 7.0f,
-                    juce::Colour (0xffe4e0d7));
+                    { morphBar.getX() + 450, morphBar.getY() + 36, 270, 24 },
+                    juce::Justification::centredLeft, 7.0f,
+                    juce::Colour (0xffd0ccc3));
     }
 
     // -----------------------------------------------------------------------

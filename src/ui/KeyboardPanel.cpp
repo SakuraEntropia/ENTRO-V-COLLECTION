@@ -10,7 +10,12 @@ void HardwareKeyboard::drawWhiteNote (int midiNoteNumber, juce::Graphics& g,
     (void) lineColour;
     auto key = area;
 
-    g.setColour (isDown ? juce::Colour (0xffd8cdb8) : juce::Colour (0xfff0ebdf));
+    juce::ColourGradient white (isDown ? juce::Colour (0xffcfc5b1) : juce::Colour (0xfffffdf6),
+                                key.getX(), key.getY(),
+                                isDown ? juce::Colour (0xffb9ae98) : juce::Colour (0xffd8d2c5),
+                                key.getX(), key.getBottom(), false);
+    white.addColour (0.7, isDown ? juce::Colour (0xffc6bba6) : juce::Colour (0xffe8e2d5));
+    g.setGradientFill (white);
     g.fillRect (key);
 
     if (isOver)
@@ -46,7 +51,11 @@ void HardwareKeyboard::drawBlackNote (int midiNoteNumber, juce::Graphics& g,
     (void) midiNoteNumber;
     auto key = area;
 
-    g.setColour (noteFillColour);
+    juce::ColourGradient black (isDown ? juce::Colour (0xff303034) : juce::Colour (0xff26262a),
+                                key.getX(), key.getY(),
+                                juce::Colour (0xff030304), key.getX(), key.getBottom(), false);
+    black.addColour (0.55, juce::Colour (0xff0b0b0d));
+    g.setGradientFill (black);
     g.fillRect (key);
 
     if (isOver || isDown)

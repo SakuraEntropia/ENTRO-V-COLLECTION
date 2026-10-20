@@ -629,24 +629,26 @@ void PanelBase::paint (juce::Graphics& g)
     }
     else if (finish_ == Finish::PolyBrute)
     {
-        juce::ColourGradient background (juce::Colour (0xff2c3236), 0.0f, 0.0f,
-                                         juce::Colour (0xff1c2124), 0.0f, bounds.getBottom(), false);
+        // Arturia-style near-black multi-layer panel.
+        juce::ColourGradient background (juce::Colour (0xff101114), 0.0f, 0.0f,
+                                         juce::Colour (0xff050506), 0.0f, bounds.getBottom(), false);
+        background.addColour (0.48, juce::Colour (0xff0b0c0e));
         g.setGradientFill (background);
         g.fillRect (bounds);
 
         for (float y = 0.0f; y < bounds.getHeight(); y += 2.0f)
         {
-            g.setColour (juce::Colours::white.withAlpha (0.016f));
+            g.setColour (juce::Colours::white.withAlpha (0.012f));
             g.drawHorizontalLine ((int) y, 0.0f, bounds.getWidth());
         }
 
-        drawWood (g, { 0.0f, 0.0f, 8.0f, bounds.getHeight() }, true, 101);
-        drawWood (g, { bounds.getRight() - 8.0f, 0.0f, 8.0f, bounds.getHeight() }, true, 102);
+        drawWood (g, { 0.0f, 0.0f, 14.0f, bounds.getHeight() }, true, 101);
+        drawWood (g, { bounds.getRight() - 14.0f, 0.0f, 14.0f, bounds.getHeight() }, true, 102);
 
-        juce::ColourGradient rail (juce::Colour (0xffc9c7c0), 0.0f, 0.0f,
-                                    juce::Colour (0xff5d5c58), 0.0f, 3.0f, false);
+        juce::ColourGradient rail (juce::Colour (0xffbdb9af), 0.0f, 0.0f,
+                                    juce::Colour (0xff4e4c47), 0.0f, 2.0f, false);
         g.setGradientFill (rail);
-        g.fillRect (0.0f, 0.0f, bounds.getWidth(), 3.0f);
+        g.fillRect (0.0f, 0.0f, bounds.getWidth(), 2.0f);
     }
     else
     {
@@ -689,10 +691,10 @@ void PanelBase::paint (juce::Graphics& g)
 
         if (finish_ == Finish::PolyBrute)
         {
-            fill = juce::Colour (0xff20262a);
-            border = juce::Colour (0xff7a8082);
-            titleColour = juce::Colour (0xffeae7df);
-            subtitleColour = juce::Colour (0xffb5b2aa);
+            fill = juce::Colour (0xff0b0c0e);
+            border = juce::Colour (0xffe2ded5).withAlpha (0.58f);
+            titleColour = juce::Colour (0xfff4f0e7);
+            subtitleColour = juce::Colour (0xffaba79f);
         }
         else if (finish_ == Finish::MoogOne)
         {
@@ -702,7 +704,7 @@ void PanelBase::paint (juce::Graphics& g)
             subtitleColour = juce::Colour (0xffb5b0a6);
         }
 
-        if (module.tone == ModuleTone::Light)
+        if (module.tone == ModuleTone::Light && finish_ != Finish::PolyBrute)
         {
             juce::ColourGradient plate (juce::Colour (0xff414648), area.getX(), area.getY(),
                                          juce::Colour (0xff2a2d2f), area.getX(), area.getBottom(), false);
@@ -713,8 +715,9 @@ void PanelBase::paint (juce::Graphics& g)
             g.setColour (fill);
         }
         g.fillRoundedRectangle (area, 2.0f);
-        g.setColour (border.withAlpha (0.62f));
-        g.drawRoundedRectangle (area.reduced (0.5f), 2.0f, 1.0f);
+        g.setColour (border.withAlpha (finish_ == Finish::PolyBrute ? 0.58f : 0.62f));
+        g.drawRoundedRectangle (area.reduced (0.5f), 2.0f,
+                                finish_ == Finish::PolyBrute ? 1.2f : 1.0f);
 
         // Engraved plate edge.
         g.setColour (juce::Colours::white.withAlpha (0.035f));
@@ -726,6 +729,20 @@ void PanelBase::paint (juce::Graphics& g)
         g.setColour (titleColour);
 
         const auto titleArea = module.bounds.withHeight (16).reduced (5, 0);
+
+        if (finish_ == Finish::PolyBrute && module.title.containsIgnoreCase ("FILTER"))
+        {
+            const auto tab = juce::Rectangle<float> (area.getX() + 3.0f, area.getY() + 2.0f,
+                                                     area.getWidth() - 6.0f, 16.0f);
+            g.setColour (accent_.withAlpha (0.9f));
+            g.fillRoundedRectangle (tab, 2.0f);
+            g.setColour (juce::Colours::white);
+        }
+        else
+        {
+            g.setColour (titleColour);
+        }
+
         g.drawText (module.title.toUpperCase(), titleArea, juce::Justification::centred);
 
         if (finish_ == Finish::MoogOne && module.title.isNotEmpty())
@@ -742,7 +759,9 @@ void PanelBase::paint (juce::Graphics& g)
                         juce::Justification::centred);
         }
 
-        g.setColour (juce::Colours::white.withAlpha (0.09f));
+        g.setColour (finish_ == Finish::PolyBrute
+                         ? juce::Colours::white.withAlpha (0.16f)
+                         : juce::Colours::white.withAlpha (0.09f));
         g.drawHorizontalLine (module.bounds.getY() + 23, area.getX() + 5.0f, area.getRight() - 5.0f);
     }
 

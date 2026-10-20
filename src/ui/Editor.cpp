@@ -314,6 +314,25 @@ TriadEditor::TriadEditor (EditorHost& host)
 
     startTimerHz (8);
 
+    if (auto* snapshotPath = std::getenv ("TRIAD_SNAPSHOT"))
+    {
+        juce::Component::SafePointer<TriadEditor> safe (this);
+        const juce::String path (snapshotPath);
+        juce::Timer::callAfterDelay (900, [safe, path]
+        {
+            if (safe == nullptr)
+                return;
+
+            const auto image = safe->createComponentSnapshot (safe->getLocalBounds());
+            juce::File file (path);
+            if (auto stream = file.createOutputStream())
+            {
+                juce::PNGImageFormat png;
+                png.writeImageToStream (image, *stream);
+            }
+        });
+    }
+
     if (std::getenv ("TRIAD_BROWSER") != nullptr)
     {
         juce::Component::SafePointer<TriadEditor> safe (this);

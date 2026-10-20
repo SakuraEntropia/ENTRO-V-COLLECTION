@@ -64,7 +64,8 @@ void TriadLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, int wi
                                          : juce::Colour (0xffcf3f23));
 
     // Engraved tick ring.
-    g.setColour (juce::Colour (0xffbfbbb0).withAlpha (style == HardwareStyle::Matriarch ? 0.55f : 0.32f));
+    g.setColour (juce::Colour (0xffd9d5cb).withAlpha (style == HardwareStyle::PolyBrute ? 0.68f
+                                                                              : (style == HardwareStyle::Matriarch ? 0.55f : 0.32f)));
     for (int i = 0; i <= 10; ++i)
     {
         const auto tickAngle = startAngle + (endAngle - startAngle) * (float) i / 10.0f;
@@ -90,8 +91,8 @@ void TriadLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, int wi
         juce::Path valueArc;
         valueArc.addCentredArc (centre.x, centre.y, arcRadius, arcRadius, 0.0f,
                                 juce::jmin (arcStart, angle), juce::jmax (arcStart, angle), true);
-        g.setColour (accentColour.withAlpha (0.9f));
-        g.strokePath (valueArc, juce::PathStrokeType (2.6f, juce::PathStrokeType::curved,
+        g.setColour (accentColour.withAlpha (style == HardwareStyle::PolyBrute ? 0.52f : 0.9f));
+        g.strokePath (valueArc, juce::PathStrokeType (2.1f, juce::PathStrokeType::curved,
                                                       juce::PathStrokeType::rounded));
     }
 
@@ -119,10 +120,10 @@ void TriadLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, int wi
     }
     else if (style == HardwareStyle::PolyBrute)
     {
-        top = juce::Colour (0xff3a3a41);
-        bottom = juce::Colour (0xff0b0b0e);
-        rim = juce::Colour (0xffa9adb4);
-        pointer = juce::Colour (0xffeff2f5);
+        top = juce::Colour (0xff33343a);
+        bottom = juce::Colour (0xff050506);
+        rim = juce::Colour (0xffe2ded4);
+        pointer = juce::Colour (0xfff7f3ea);
     }
     else
     {
@@ -136,7 +137,9 @@ void TriadLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, int wi
     juce::ColourGradient bodyGradient (top, centre.x, body.getY(), bottom, centre.x, body.getBottom(), false);
     bodyGradient.addColour (0.5, style == HardwareStyle::MoogOne
                                      ? juce::Colour (0xffa49e90)
-                                     : juce::Colour (0xff2b2b2f));
+                                     : (style == HardwareStyle::PolyBrute
+                                            ? juce::Colour (0xff18191c)
+                                            : juce::Colour (0xff2b2b2f)));
     g.setGradientFill (bodyGradient);
     g.fillEllipse (body);
 
@@ -203,19 +206,52 @@ void TriadLookAndFeel::drawLinearSlider (juce::Graphics& g, int x, int y, int wi
 
     if (style == juce::Slider::LinearVertical)
     {
-        const auto track = juce::Rectangle<float> (bounds.getCentreX() - 2.0f, bounds.getY() + 4.0f,
-                                                   4.0f, bounds.getHeight() - 8.0f);
-        g.setColour (juce::Colour (0xff2b2b30));
-        g.fillRoundedRectangle (track, 2.0f);
-        g.setColour (accent.withAlpha (0.8f));
-        g.fillRoundedRectangle (track.withTop (sliderPos), 2.0f);
+        const auto track = juce::Rectangle<float> (bounds.getCentreX() - 2.5f, bounds.getY() + 4.0f,
+                                                   5.0f, bounds.getHeight() - 8.0f);
 
-        const auto grip = juce::Rectangle<float> (bounds.getWidth() - 8.0f, 18.0f)
-                              .withCentre ({ bounds.getCentreX(), sliderPos });
-        g.setColour (juce::Colour (0xffd9d5cc));
-        g.fillRoundedRectangle (grip, 3.0f);
-        g.setColour (juce::Colours::black.withAlpha (0.6f));
-        g.drawRoundedRectangle (grip, 3.0f, 1.0f);
+        if (style_ == HardwareStyle::PolyBrute)
+        {
+            g.setColour (juce::Colour (0xff050506));
+            g.fillRoundedRectangle (track, 2.0f);
+            g.setColour (juce::Colour (0xff55565b));
+            g.drawRoundedRectangle (track.reduced (0.5f), 2.0f, 1.0f);
+
+            for (int i = 0; i <= 8; ++i)
+            {
+                const auto yPos = track.getY() + track.getHeight() * (float) i / 8.0f;
+                g.setColour (juce::Colour (0xffd8d4ca).withAlpha (i % 2 == 0 ? 0.55f : 0.28f));
+                g.drawHorizontalLine ((int) yPos,
+                                      track.getX() - 5.0f, track.getX() - 1.0f);
+                g.drawHorizontalLine ((int) yPos,
+                                      track.getRight() + 1.0f, track.getRight() + 5.0f);
+            }
+
+            const auto grip = juce::Rectangle<float> (bounds.getWidth() - 10.0f, 20.0f)
+                                  .withCentre ({ bounds.getCentreX(), sliderPos });
+            g.setColour (juce::Colours::black.withAlpha (0.55f));
+            g.fillRoundedRectangle (grip.translated (0.0f, 2.0f), 2.5f);
+            g.setColour (juce::Colour (0xffe9e5dc));
+            g.fillRoundedRectangle (grip, 2.5f);
+            g.setColour (juce::Colour (0xffd2cec4));
+            g.fillRect (grip.getX() + 2.0f, grip.getCentreY() - 1.0f,
+                        grip.getWidth() - 4.0f, 2.0f);
+            g.setColour (juce::Colour (0xff8e8a81));
+            g.drawRoundedRectangle (grip, 2.5f, 1.0f);
+        }
+        else
+        {
+            g.setColour (juce::Colour (0xff2b2b30));
+            g.fillRoundedRectangle (track, 2.0f);
+            g.setColour (accent.withAlpha (0.8f));
+            g.fillRoundedRectangle (track.withTop (sliderPos), 2.0f);
+
+            const auto grip = juce::Rectangle<float> (bounds.getWidth() - 8.0f, 18.0f)
+                                  .withCentre ({ bounds.getCentreX(), sliderPos });
+            g.setColour (juce::Colour (0xffd9d5cc));
+            g.fillRoundedRectangle (grip, 3.0f);
+            g.setColour (juce::Colours::black.withAlpha (0.6f));
+            g.drawRoundedRectangle (grip, 3.0f, 1.0f);
+        }
     }
     else
     {
@@ -228,12 +264,22 @@ void TriadLookAndFeel::drawComboBox (juce::Graphics& g, int width, int height, b
                                      int, int, int, int, juce::ComboBox& box)
 {
     const auto bounds = juce::Rectangle<int> (0, 0, width, height).toFloat();
-    juce::ColourGradient background (juce::Colour (0xff2a2a2e), 0.0f, 0.0f,
-                                     juce::Colour (0xff141417), 0.0f, bounds.getBottom(), false);
-    g.setGradientFill (background);
-    g.fillRoundedRectangle (bounds, 2.5f);
-    g.setColour (juce::Colour (0xff6d6a63).withAlpha (0.8f));
-    g.drawRoundedRectangle (bounds.reduced (0.5f), 2.5f, 1.0f);
+    if (style_ == HardwareStyle::PolyBrute)
+    {
+        g.setColour (juce::Colour (0xff08090b));
+        g.fillRoundedRectangle (bounds, 2.0f);
+        g.setColour (juce::Colour (0xffd9d5cb).withAlpha (0.55f));
+        g.drawRoundedRectangle (bounds.reduced (0.5f), 2.0f, 1.0f);
+    }
+    else
+    {
+        juce::ColourGradient background (juce::Colour (0xff2a2a2e), 0.0f, 0.0f,
+                                         juce::Colour (0xff141417), 0.0f, bounds.getBottom(), false);
+        g.setGradientFill (background);
+        g.fillRoundedRectangle (bounds, 2.5f);
+        g.setColour (juce::Colour (0xff6d6a63).withAlpha (0.8f));
+        g.drawRoundedRectangle (bounds.reduced (0.5f), 2.5f, 1.0f);
+    }
 
     juce::Path arrow;
     const auto centreX = (float) width - 12.0f;
@@ -255,10 +301,20 @@ void TriadLookAndFeel::drawButtonBackground (juce::Graphics& g, juce::Button& bu
     else if (highlighted)
         base = base.brighter (0.08f);
 
-    g.setColour (base);
-    g.fillRoundedRectangle (bounds, 3.0f);
-    g.setColour ((button.getToggleState() ? accent : juce::Colour (0xff505057)).withAlpha (0.9f));
-    g.drawRoundedRectangle (bounds.reduced (0.5f), 3.0f, 1.0f);
+    if (style_ == HardwareStyle::PolyBrute)
+    {
+        g.setColour (base.withAlpha (0.96f));
+        g.fillRoundedRectangle (bounds, 2.5f);
+        g.setColour ((button.getToggleState() ? accent : juce::Colour (0xffe4e0d7)).withAlpha (0.65f));
+        g.drawRoundedRectangle (bounds.reduced (0.5f), 2.5f, 1.0f);
+    }
+    else
+    {
+        g.setColour (base);
+        g.fillRoundedRectangle (bounds, 3.0f);
+        g.setColour ((button.getToggleState() ? accent : juce::Colour (0xff505057)).withAlpha (0.9f));
+        g.drawRoundedRectangle (bounds.reduced (0.5f), 3.0f, 1.0f);
+    }
 }
 
 juce::Font TriadLookAndFeel::getComboBoxFont (juce::ComboBox&)

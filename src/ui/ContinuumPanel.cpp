@@ -83,14 +83,35 @@ void ContinuumSurface::paint (juce::Graphics& g)
     g.fillRect (bounds.withHeight (24.0f));
     g.fillRect (bounds.withTrimmedTop (bounds.getBottom() - 24.0f));
 
-    const auto stripeCount = 32;
-    const auto stripeWidth = area.getWidth() / (float) stripeCount;
+    // Four octaves of a piano layout: seven equal white keys and five
+    // narrower black keys per octave.  Red = white key, black = black key.
+    const auto octaveWidth = area.getWidth() / 4.0f;
+    const auto whiteWidth = octaveWidth / 7.0f;
+    const auto blackWidth = whiteWidth * 0.58f;
+    static const int blackOffsets[] = { 1, 2, 4, 5, 6 };
 
-    for (int i = 0; i < stripeCount; ++i)
+    for (int octave = 0; octave < 4; ++octave)
     {
-        const auto x = area.getX() + (float) i * stripeWidth;
+        const auto octaveX = area.getX() + (float) octave * octaveWidth;
+
         g.setColour (juce::Colour (0xffd8232a));
-        g.fillRect (x, area.getY(), stripeWidth * 0.78f, area.getHeight());
+        g.fillRect (octaveX, area.getY(), octaveWidth, area.getHeight());
+
+        for (int white = 1; white < 7; ++white)
+        {
+            const auto x = octaveX + (float) white * whiteWidth;
+            g.setColour (juce::Colour (0xff6f1013));
+            g.fillRect (x - 0.7f, area.getY(), 1.4f, area.getHeight());
+        }
+
+        for (const auto offset : blackOffsets)
+        {
+            const auto x = octaveX + (float) offset * whiteWidth - blackWidth * 0.5f;
+            g.setColour (juce::Colour (0xff0a0a0b));
+            g.fillRect (x, area.getY(), blackWidth, area.getHeight());
+            g.setColour (juce::Colour (0xff3a3a3c).withAlpha (0.7f));
+            g.drawVerticalLine ((int) (x + blackWidth - 1.0f), area.getY(), area.getBottom());
+        }
     }
 
     juce::ColourGradient shade (juce::Colour (0xff050505).withAlpha (0.0f), 0.0f, area.getY(),

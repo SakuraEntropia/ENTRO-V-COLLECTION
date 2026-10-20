@@ -147,9 +147,19 @@ def icon_svg(kind: str) -> str:
 
     if kind == "continuum":
         stripes = '<g clip-path="url(#clip)">'
-        for i in range(26):
-            stripes += (f'<rect x="{i * 42}" y="0" width="28" height="1024" '
-                        f'fill="#c51f27"/>')
+        stripes += '<rect x="0" y="0" width="1024" height="1024" fill="#c51f27"/>'
+        octave_width = 1024.0 / 4.0
+        white_width = octave_width / 7.0
+        black_width = white_width * 0.58
+        for octave in range(4):
+            octave_x = octave * octave_width
+            for white in range(1, 7):
+                stripes += (f'<rect x="{octave_x + white * white_width - 0.8:.2f}" '
+                            f'y="0" width="1.6" height="1024" fill="#6f1013"/>')
+            for offset in (1, 2, 4, 5, 6):
+                x = octave_x + offset * white_width - black_width / 2.0
+                stripes += (f'<rect x="{x:.2f}" y="0" width="{black_width:.2f}" '
+                            f'height="1024" fill="#0a0a0b"/>')
         stripes += "</g>"
 
     return f"""<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
