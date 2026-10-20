@@ -74,6 +74,7 @@ public:
 
     int factoryPresetCount() const override;
     juce::String factoryPresetName (int index) const override;
+    juce::String factoryPresetCategory (int index) const override;
     void loadFactoryPreset (int index) override;
     void initPatch() override;
     void savePreset() override;

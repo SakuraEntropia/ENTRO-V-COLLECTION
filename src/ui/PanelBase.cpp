@@ -2,6 +2,9 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <typeinfo>
 
 namespace triad::ui
 {
@@ -154,7 +157,7 @@ juce::Slider& PanelBase::addFader (const juce::String& paramId, const juce::Stri
     sliders_.push_back (std::move (slider));
 
     addLabel (labelText, { area.getX(), area.getBottom() - labelHeight, area.getWidth(), labelHeight },
-              9.6f, juce::Colour (0xffe4e0d7), false);
+              10.2f, juce::Colour (0xffe9e5dc), false);
 
     return ref;
 }
@@ -193,7 +196,7 @@ juce::ComboBox& PanelBase::addChoice (const juce::String& paramId, const juce::S
 
     if (labelText.isNotEmpty())
         addLabel (labelText, { area.getX(), area.getBottom() - labelHeight, area.getWidth(), labelHeight },
-                  9.6f, juce::Colour (0xffe4e0d7), false);
+                  10.2f, juce::Colour (0xffe9e5dc), false);
 
     return ref;
 }
@@ -224,7 +227,7 @@ HardwareSwitch& PanelBase::addSwitch (const juce::String& paramId, const juce::S
 
     if (labelText.isNotEmpty())
         addLabel (labelText, { area.getX(), area.getBottom() - labelHeight, area.getWidth(), labelHeight },
-                  9.6f, juce::Colour (0xffe4e0d7), false);
+                  10.2f, juce::Colour (0xffe9e5dc), false);
 
     return ref;
 }
@@ -280,7 +283,7 @@ Jack& PanelBase::addJack (const juce::String& patchId, juce::Rectangle<int> area
         const auto labelHeight = 8;
         addLabel (juce::String (spec->name),
                   { area.getX() - 22, area.getBottom(), area.getWidth() + 44, labelHeight },
-                  8.0f, juce::Colour (0xffdedad1), false);
+                  8.4f, juce::Colour (0xffe6e2d9), false);
     }
 
     return ref;
@@ -348,6 +351,52 @@ void PanelBase::clearControls()
     jacks_.clear();
     modules_.clear();
     selectedJack_ = -1;
+}
+
+void PanelBase::dumpLayout() const
+{
+    if (std::getenv ("TRIAD_LAYOUT") == nullptr)
+        return;
+
+    std::fprintf (stderr, "=== %s: %d children, design %dx%d\n",
+                  title_.toRawUTF8(), getNumChildComponents(), designWidth_, designHeight_);
+
+    std::vector<juce::Rectangle<int>> bounds;
+
+    for (int i = 0; i < getNumChildComponents(); ++i)
+    {
+        auto* child = getChildComponent (i);
+        if (child == nullptr || ! child->isVisible())
+            continue;
+
+        juce::String label = child->getName();
+        if (label.isEmpty())
+            if (auto* tip = dynamic_cast<juce::SettableTooltipClient*> (child))
+                label = tip->getTooltip();
+        if (label.isEmpty())
+            label = typeid (*child).name();
+
+        std::fprintf (stderr, "  [%3d] %4d,%4d %4dx%4d  %s\n", i,
+                      child->getX(), child->getY(), child->getWidth(), child->getHeight(),
+                      label.substring (0, 48).toRawUTF8());
+        bounds.push_back (child->getBounds());
+    }
+
+    int collisions = 0;
+    for (size_t a = 0; a < bounds.size(); ++a)
+        for (size_t b = a + 1; b < bounds.size(); ++b)
+        {
+            const auto overlap = bounds[a].getIntersection (bounds[b]);
+            if (overlap.getWidth() > 3 && overlap.getHeight() > 3)
+            {
+                std::fprintf (stderr, "  COLLISION %zu/%zu overlap %dx%d at %d,%d\n",
+                              a, b, overlap.getWidth(), overlap.getHeight(),
+                              overlap.getX(), overlap.getY());
+                ++collisions;
+            }
+        }
+
+    std::fprintf (stderr, "=== collisions: %d\n", collisions);
 }
 
 void PanelBase::pollPatchCables()
@@ -654,8 +703,8 @@ void PanelBase::paint (juce::Graphics& g)
 
         if (module.tone == ModuleTone::Light)
         {
-            juce::ColourGradient plate (juce::Colour (0xff727678), area.getX(), area.getY(),
-                                         juce::Colour (0xff4c5052), area.getX(), area.getBottom(), false);
+            juce::ColourGradient plate (juce::Colour (0xff414648), area.getX(), area.getY(),
+                                         juce::Colour (0xff2a2d2f), area.getX(), area.getBottom(), false);
             g.setGradientFill (plate);
         }
         else
@@ -670,7 +719,7 @@ void PanelBase::paint (juce::Graphics& g)
         g.setColour (juce::Colours::white.withAlpha (0.035f));
         g.drawHorizontalLine ((int) area.getY() + 1, area.getX() + 3.0f, area.getRight() - 3.0f);
 
-        auto titleFont = juce::Font (juce::FontOptions (12.0f, juce::Font::bold))
+        auto titleFont = juce::Font (juce::FontOptions (13.0f, juce::Font::bold))
                              .withExtraKerningFactor (0.12f);
         g.setFont (titleFont);
         g.setColour (titleColour);

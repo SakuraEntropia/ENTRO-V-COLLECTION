@@ -25,12 +25,12 @@ Artifacts inspected:
 
 | Bundle | Architecture | Signature |
 |---|---|---|
-| `Matriarch.vst3` | arm64 | ad-hoc / linker-signed |
-| `Matriarch.component` | arm64 | ad-hoc |
-| `PolyBrute.vst3` | arm64 | ad-hoc |
-| `PolyBrute.component` | arm64 | ad-hoc |
-| `Moog One.vst3` | arm64 | ad-hoc |
-| `Moog One.component` | arm64 | ad-hoc |
+| `MATRIARCH V.vst3` | arm64 | ad-hoc / linker-signed |
+| `MATRIARCH V.component` | arm64 | ad-hoc |
+| `POLYBRUTE V.vst3` | arm64 | ad-hoc |
+| `POLYBRUTE V.component` | arm64 | ad-hoc |
+| `ONE V.vst3` | arm64 | ad-hoc |
+| `ONE V.component` | arm64 | ad-hoc |
 
 No Developer ID identity is configured; hardened runtime and notarisation were not attempted.
 
@@ -55,7 +55,7 @@ Start 2: triad_factory_presets ... Passed
 - Matriarch patch-cable creation and clearing;
 - tuning: note 69 = 440 Hz, note 57 = 220 Hz, note 81 = 880 Hz within ±60 cents using autocorrelation (Matriarch, PolyBrute and Moog One).
 
-`triad_factory_presets` checks that every preset parameter ID exists, values are finite and in range, choice indices are valid, and preset names are unique (4 presets per instrument).
+`triad_factory_presets` checks that every preset parameter ID exists, values are finite and in range, choice indices are valid, preset names are unique, categories are known and grouped, and each instrument has at least 12 presets including a Reese bass (15 / 17 / 15 presets for MATRIARCH V / POLYBRUTE V / ONE V).
 
 ### Pitch fix recorded during validation
 

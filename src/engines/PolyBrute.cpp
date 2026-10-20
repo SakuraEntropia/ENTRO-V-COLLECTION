@@ -68,7 +68,7 @@ PolyBruteEngine::PolyBruteEngine()
 void PolyBruteEngine::buildDefinition()
 {
     definition_.id = "polybrute";
-    definition_.displayName = "PolyBrute";
+    definition_.displayName = "POLYBRUTE V";
     definition_.manufacturer = "SakuraEntropia";
 
     auto add = [this] (ParamId id, const char* paramId, const char* name,

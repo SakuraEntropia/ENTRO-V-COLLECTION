@@ -12,6 +12,7 @@ namespace triad
 struct FactoryPreset
 {
     juce::String name;
+    juce::String category;
     std::vector<std::pair<juce::String, float>> values;
 };
 

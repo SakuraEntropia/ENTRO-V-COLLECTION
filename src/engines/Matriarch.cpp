@@ -44,7 +44,7 @@ MatriarchEngine::MatriarchEngine()
 void MatriarchEngine::buildDefinition()
 {
     definition_.id = "matriarch";
-    definition_.displayName = "Matriarch";
+    definition_.displayName = "MATRIARCH V";
     definition_.manufacturer = "SakuraEntropia";
 
     auto addParam = [this] (const char* id, const char* name, const char* group,
@@ -173,53 +173,53 @@ void MatriarchEngine::buildDefinition()
     {
         const auto prefix = "mat.patch.vco" + std::to_string (i);
         const auto group = "VCO " + std::to_string (i);
-        addJack ((prefix + ".pitch").c_str(), "PITCH IN", group.c_str(), false);
-        addJack ((prefix + ".fm").c_str(), "LIN FM IN", group.c_str(), false, true);
-        addJack ((prefix + ".pwm").c_str(), "PWM IN", group.c_str(), false);
-        addJack ((prefix + ".out").c_str(), "WAVE OUT", group.c_str(), true, true);
+        addJack ((prefix + ".pitch").c_str(), "PITCH", group.c_str(), false);
+        addJack ((prefix + ".fm").c_str(), "LIN FM", group.c_str(), false, true);
+        addJack ((prefix + ".pwm").c_str(), "PWM", group.c_str(), false);
+        addJack ((prefix + ".out").c_str(), "OUT", group.c_str(), true, true);
     }
 
-    addJack ("mat.patch.mix.noiseIn", "NOISE IN", "Mixer", false, true);
-    addJack ("mat.patch.mix.osc1In", "OSC 1 IN", "Mixer", false, true);
-    addJack ("mat.patch.mix.osc2In", "OSC 2 IN", "Mixer", false, true);
-    addJack ("mat.patch.mix.osc3In", "OSC 3 IN", "Mixer", false, true);
-    addJack ("mat.patch.mix.osc4In", "OSC 4 IN", "Mixer", false, true);
-    addJack ("mat.patch.mix.out", "MIXER OUT", "Mixer", true, true);
+    addJack ("mat.patch.mix.noiseIn", "NOISE", "Mixer", false, true);
+    addJack ("mat.patch.mix.osc1In", "OSC1", "Mixer", false, true);
+    addJack ("mat.patch.mix.osc2In", "OSC2", "Mixer", false, true);
+    addJack ("mat.patch.mix.osc3In", "OSC3", "Mixer", false, true);
+    addJack ("mat.patch.mix.osc4In", "OSC4", "Mixer", false, true);
+    addJack ("mat.patch.mix.out", "MIX OUT", "Mixer", true, true);
 
-    addJack ("mat.patch.flt1.in", "VCF 1 IN", "Filters", false, true);
-    addJack ("mat.patch.flt2.in", "VCF 2 IN", "Filters", false, true);
-    addJack ("mat.patch.flt1.cutoff", "CUTOFF 1 IN", "Filters", false);
-    addJack ("mat.patch.flt2.cutoff", "CUTOFF 2 IN", "Filters", false);
-    addJack ("mat.patch.flt.envAmt", "ENV AMT IN", "Filters", false);
-    addJack ("mat.patch.flt1.out", "VCF 1 OUT", "Filters", true, true);
-    addJack ("mat.patch.flt2.out", "VCF 2 OUT", "Filters", true, true);
+    addJack ("mat.patch.flt1.in", "VCF1 IN", "Filters", false, true);
+    addJack ("mat.patch.flt2.in", "VCF2 IN", "Filters", false, true);
+    addJack ("mat.patch.flt1.cutoff", "CUT1 IN", "Filters", false);
+    addJack ("mat.patch.flt2.cutoff", "CUT2 IN", "Filters", false);
+    addJack ("mat.patch.flt.envAmt", "ENV AMT", "Filters", false);
+    addJack ("mat.patch.flt1.out", "VCF1 OUT", "Filters", true, true);
+    addJack ("mat.patch.flt2.out", "VCF2 OUT", "Filters", true, true);
 
-    addJack ("mat.patch.amp.trig", "TRIGGER IN", "Amplitude EG", false);
-    addJack ("mat.patch.amp.out", "ENV OUT", "Amplitude EG", true);
-    addJack ("mat.patch.amp.end", "ENV END OUT", "Amplitude EG", true);
-    addJack ("mat.patch.fltEnv.trig", "TRIGGER IN", "Filter EG", false);
-    addJack ("mat.patch.fltEnv.out", "ENV OUT", "Filter EG", true);
-    addJack ("mat.patch.fltEnv.end", "ENV END OUT", "Filter EG", true);
+    addJack ("mat.patch.amp.trig", "TRIG", "Amplitude EG", false);
+    addJack ("mat.patch.amp.out", "ENV", "Amplitude EG", true);
+    addJack ("mat.patch.amp.end", "END", "Amplitude EG", true);
+    addJack ("mat.patch.fltEnv.trig", "TRIG", "Filter EG", false);
+    addJack ("mat.patch.fltEnv.out", "ENV", "Filter EG", true);
+    addJack ("mat.patch.fltEnv.end", "END", "Filter EG", true);
 
-    addJack ("mat.patch.vca1.in", "VCA 1 IN", "Output", false, true);
-    addJack ("mat.patch.vca2.in", "VCA 2 IN", "Output", false, true);
-    addJack ("mat.patch.vca1.cv", "VCA 1 CV IN", "Output", false);
-    addJack ("mat.patch.vca2.cv", "VCA 2 CV IN", "Output", false);
+    addJack ("mat.patch.vca1.in", "VCA1 IN", "Output", false, true);
+    addJack ("mat.patch.vca2.in", "VCA2 IN", "Output", false, true);
+    addJack ("mat.patch.vca1.cv", "CV1 IN", "Output", false);
+    addJack ("mat.patch.vca2.cv", "CV2 IN", "Output", false);
 
-    addJack ("mat.patch.delay.in1", "INPUT 1", "Stereo Delay", false, true);
-    addJack ("mat.patch.delay.in2", "INPUT 2", "Stereo Delay", false, true);
-    addJack ("mat.patch.delay.fbCv", "FB CV IN", "Stereo Delay", false);
+    addJack ("mat.patch.delay.in1", "IN 1", "Stereo Delay", false, true);
+    addJack ("mat.patch.delay.in2", "IN 2", "Stereo Delay", false, true);
+    addJack ("mat.patch.delay.fbCv", "FB CV", "Stereo Delay", false);
     addJack ("mat.patch.delay.mixCv", "MIX IN", "Stereo Delay", false);
-    addJack ("mat.patch.delay.time1Cv", "TIME 1 IN", "Stereo Delay", false);
-    addJack ("mat.patch.delay.time2Cv", "TIME 2 IN", "Stereo Delay", false);
-    addJack ("mat.patch.delay.out1", "DELAY 1 OUT", "Stereo Delay", true, true);
-    addJack ("mat.patch.delay.out2", "DELAY 2 OUT", "Stereo Delay", true, true);
+    addJack ("mat.patch.delay.time1Cv", "TIME1", "Stereo Delay", false);
+    addJack ("mat.patch.delay.time2Cv", "TIME2", "Stereo Delay", false);
+    addJack ("mat.patch.delay.out1", "OUT1", "Stereo Delay", true, true);
+    addJack ("mat.patch.delay.out2", "OUT2", "Stereo Delay", true, true);
 
     addJack ("mat.patch.lfo.rateIn", "RATE IN", "Modulation", false);
     addJack ("mat.patch.lfo.syncIn", "SYNC IN", "Modulation", false);
-    addJack ("mat.patch.lfo.out", "SIGNAL OUT", "Modulation", true);
-    addJack ("mat.patch.noise.out", "NOISE OUT", "Modulation", true, true);
-    addJack ("mat.patch.sh.out", "S/H OUT", "Modulation", true);
+    addJack ("mat.patch.lfo.out", "LFO OUT", "Modulation", true);
+    addJack ("mat.patch.noise.out", "NOISE", "Modulation", true, true);
+    addJack ("mat.patch.sh.out", "S/H", "Modulation", true);
 
     addJack ("mat.patch.mult1.a", "MULT 1", "Utilities", true);
     addJack ("mat.patch.mult1.b", "MULT 1", "Utilities", true);
@@ -230,12 +230,12 @@ void MatriarchEngine::buildDefinition()
     addJack ("mat.patch.mult2.c", "MULT 2", "Utilities", true);
     addJack ("mat.patch.mult2.d", "MULT 2", "Utilities", true);
 
-    addJack ("mat.patch.att1.in", "ATTENUATOR 1 IN", "Utilities", false);
-    addJack ("mat.patch.att1.out", "ATTENUATOR 1 OUT", "Utilities", true);
-    addJack ("mat.patch.att2.in", "ATTENUATOR 2 IN", "Utilities", false);
-    addJack ("mat.patch.att2.out", "ATTENUATOR 2 OUT", "Utilities", true);
-    addJack ("mat.patch.att3.in", "ATTENUATOR 3 IN", "Utilities", false);
-    addJack ("mat.patch.att3.out", "ATTENUATOR 3 OUT", "Utilities", true);
+    addJack ("mat.patch.att1.in", "ATT1 IN", "Utilities", false);
+    addJack ("mat.patch.att1.out", "ATT1 OUT", "Utilities", true);
+    addJack ("mat.patch.att2.in", "ATT2 IN", "Utilities", false);
+    addJack ("mat.patch.att2.out", "ATT2 OUT", "Utilities", true);
+    addJack ("mat.patch.att3.in", "ATT3 IN", "Utilities", false);
+    addJack ("mat.patch.att3.out", "ATT3 OUT", "Utilities", true);
 
     addJack ("mat.patch.lfo2.rateIn", "LFO RATE IN", "Utilities", false);
     addJack ("mat.patch.lfo2.out", "LFO OUT", "Utilities", true);
@@ -247,11 +247,11 @@ void MatriarchEngine::buildDefinition()
     addJack ("mat.patch.clock.resetIn", "RESET IN", "Arp / Seq", false);
     addJack ("mat.patch.clock.resetOut", "RESET OUT", "Arp / Seq", true);
 
-    addJack ("mat.patch.kb.pitch", "PITCH OUT", "Keyboard", true);
-    addJack ("mat.patch.kb.gate", "GATE OUT", "Keyboard", true);
-    addJack ("mat.patch.kb.velocity", "VELOCITY OUT", "Keyboard", true);
-    addJack ("mat.patch.kb.aftertouch", "AFTERTOUCH OUT", "Keyboard", true);
-    addJack ("mat.patch.kb.mod", "MOD WHEEL OUT", "Keyboard", true);
+    addJack ("mat.patch.kb.pitch", "PITCH", "Keyboard", true);
+    addJack ("mat.patch.kb.gate", "GATE", "Keyboard", true);
+    addJack ("mat.patch.kb.velocity", "VEL", "Keyboard", true);
+    addJack ("mat.patch.kb.aftertouch", "AFTERTOUCH", "Keyboard", true);
+    addJack ("mat.patch.kb.mod", "MOD", "Keyboard", true);
 }
 
 void MatriarchEngine::cacheIndices()

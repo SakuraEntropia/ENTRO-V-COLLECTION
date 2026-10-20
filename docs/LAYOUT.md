@@ -1,4 +1,4 @@
-# Panel layout references
+# Panel layout references (MATRIARCH V / POLYBRUTE V / ONE V)
 
 The editor panels are redrawn in code; no photograph or manufacturer artwork is embedded. The module order and the relative positions below come from the official manuals and product photographs.
 

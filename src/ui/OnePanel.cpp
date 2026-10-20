@@ -10,9 +10,9 @@ juce::Colour oneAccent() { return juce::Colour (0xffd9a441); }
 }
 
 OnePanel::OnePanel (EditorHost& host)
-    : PanelBase (host, "Moog One", 2240, 760, oneAccent())
+    : PanelBase (host, "ONE V", 2240, 760, oneAccent())
 {
-    setBranding ("MOOG ONE", "POLYPHONIC ANALOG SYNTHESIZER");
+    setBranding ("ONE V", "POLYPHONIC ANALOG SYNTHESIZER");
     rebuildForPart();
 }
 
@@ -54,9 +54,9 @@ void OnePanel::rebuildForPart()
     addModule ("ARP", arpArea);
     addModule ("CENTER CONSOLE", centerArea);
     addModule ("MIXER", mixerArea);
-    addModule ("STATE VARIABLE FILTER", svfArea);
+    addModule ("SVF", svfArea);
     addModule ("LADDER FILTER", ladderArea);
-    addModule ("ENVELOPE GENERATORS", envArea);
+    addModule ("ENVELOPES", envArea);
     addModule ("MOD MATRIX", modArea);
     addModule ("EFFECTS", fxArea);
 
@@ -69,7 +69,7 @@ void OnePanel::rebuildForPart()
         const auto width = area.getWidth() - 12;
         const auto cellWidth = width / 2;
         const auto stem = prefix + "vco" + juce::String (osc) + ".";
-        auto y = 30;
+        auto y = area.getY() + 30;
 
         if (osc == 1)
         {
@@ -81,9 +81,9 @@ void OnePanel::rebuildForPart()
         addSwitch (stem + "octave", "OCTAVE", { x, y, width, 32 }); y += 36;
 
         addKnob (stem + "tune", "TUNE", { x, y, cellWidth, 46 });
-        addKnob (stem + "waveAngle", "WAVE ANGLE", { x + cellWidth, y, cellWidth, 46 }); y += 48;
+        addKnob (stem + "waveAngle", "ANGLE", { x + cellWidth, y, cellWidth, 46 }); y += 48;
         addKnob (stem + "shape", "SHAPE", { x, y, cellWidth, 46 });
-        addKnob (stem + "pw", "PULSE WIDTH", { x + cellWidth, y, cellWidth, 46 }); y += 48;
+        addKnob (stem + "pw", "PULSE W", { x + cellWidth, y, cellWidth, 46 }); y += 48;
         addKnob (stem + "level", "LEVEL", { x, y, cellWidth, 46 });
 
         if (osc > 1)
@@ -111,7 +111,7 @@ void OnePanel::rebuildForPart()
         const auto x = area.getX() + 6;
         const auto width = area.getWidth() - 12;
         const auto stem = prefix + "lfo" + juce::String (lfo) + ".";
-        auto y = 28;
+        auto y = area.getY() + 28;
 
         addKnob (stem + "rate", "RATE", { x, y, width, 50 }); y += 54;
         addChoice (stem + "wave", "WAVE", { x, y, width, 32 }); y += 36;
@@ -138,7 +138,7 @@ void OnePanel::rebuildForPart()
     {
         const auto x = arpArea.getX() + 6;
         const auto width = arpArea.getWidth() - 12;
-        auto y = 30;
+        auto y = arpArea.getY() + 30;
 
         auto& enabled = addLed (prefix + "arp.enabled", "ARP", { x, y, width, 22 });
         enabled.setAccent (accent);
@@ -239,14 +239,14 @@ void OnePanel::rebuildForPart()
         auto y = 34;
 
         addKnob (prefix + "svf.cutoff", "CUTOFF", { x, y, width, 54 }); y += 58;
-        addKnob (prefix + "svf.resonance", "RESONANCE", { x, y, width, 54 }); y += 58;
+        addKnob (prefix + "svf.resonance", "RESO", { x, y, width, 54 }); y += 58;
         addChoice (prefix + "svf.mode", "MODE", { x, y, width, 36 }); y += 42;
         addChoice (prefix + "svf.slope", "SLOPE", { x, y, width, 36 }); y += 42;
-        addKnob (prefix + "svf.envAmt", "ENV AMOUNT", { x, y, width, 54 }); y += 58;
-        addKnob (prefix + "svf.keyTrack", "KEY TRACK", { x, y, width, 54 }); y += 58;
+        addKnob (prefix + "svf.envAmt", "ENV AMT", { x, y, width, 54 }); y += 58;
+        addKnob (prefix + "svf.keyTrack", "KEY TRK", { x, y, width, 54 }); y += 58;
         addKnob (prefix + "svf.level", "LEVEL", { x, y, width, 54 }); y += 58;
         addChoice (prefix + "filters.routing", "ROUTING", { x, y, width, 36 }); y += 42;
-        addKnob (prefix + "filters.mix", "FILTER MIX", { x, y, width, 54 });
+        addKnob (prefix + "filters.mix", "FILTER", { x, y, width, 54 });
     }
 
     {
@@ -255,11 +255,11 @@ void OnePanel::rebuildForPart()
         auto y = 34;
 
         addKnob (prefix + "ladder.cutoff", "CUTOFF", { x, y, width, 54 }); y += 58;
-        addKnob (prefix + "ladder.resonance", "RESONANCE", { x, y, width, 54 }); y += 58;
+        addKnob (prefix + "ladder.resonance", "RESO", { x, y, width, 54 }); y += 58;
         addKnob (prefix + "ladder.drive", "DRIVE", { x, y, width, 54 }); y += 58;
         addChoice (prefix + "ladder.slope", "SLOPE", { x, y, width, 36 }); y += 42;
-        addKnob (prefix + "ladder.envAmt", "ENV AMOUNT", { x, y, width, 54 }); y += 58;
-        addKnob (prefix + "ladder.keyTrack", "KEY TRACK", { x, y, width, 54 });
+        addKnob (prefix + "ladder.envAmt", "ENV AMT", { x, y, width, 54 }); y += 58;
+        addKnob (prefix + "ladder.keyTrack", "KEY TRK", { x, y, width, 54 });
     }
 
     // -----------------------------------------------------------------------
@@ -276,7 +276,7 @@ void OnePanel::rebuildForPart()
             addCaption ("ENV " + juce::String (env), { x, 30, columnWidth, 10 },
                         juce::Justification::centred, 7.5f, juce::Colour (0xffe4e0d7), true);
 
-            auto y = 44;
+            auto y = envArea.getY() + 44;
             addKnob (stem + "delay", "DELAY", { x, y, columnWidth, 48 }); y += 52;
             addKnob (stem + "attack", "ATTACK", { x, y, columnWidth, 48 }); y += 52;
             addKnob (stem + "hold", "HOLD", { x, y, columnWidth, 48 }); y += 52;
@@ -287,7 +287,8 @@ void OnePanel::rebuildForPart()
 
             if (env < 3)
             {
-                auto& loop = addLed (stem + "loop", "LOOP", { x, 438, columnWidth, 20 });
+                auto& loop = addLed (stem + "loop", "LOOP",
+                                     { x, envArea.getY() + 438, columnWidth, 20 });
                 loop.setAccent (accent);
             }
         }
@@ -321,7 +322,7 @@ void OnePanel::rebuildForPart()
         const auto x1 = fxArea.getX() + 6;
         const auto x2 = x1 + columnWidth + 4;
 
-        addCaption ("DISTORTION", { x1, 30, columnWidth, 10 }, juce::Justification::centred,
+        addCaption ("DIST", { x1, 30, columnWidth, 10 }, juce::Justification::centred,
                     7.0f, juce::Colour (0xffe4e0d7), true);
         addChoice (prefix + "fx.dist.type", "", { x1, 42, columnWidth - 2, 30 });
         addKnob (prefix + "fx.dist.drive", "DRIVE", { x1, 76, columnWidth, 50 });
@@ -341,7 +342,7 @@ void OnePanel::rebuildForPart()
 
         addCaption ("MASTER SEND", { x2, 196, columnWidth, 10 }, juce::Justification::centred,
                     7.0f, juce::Colour (0xffe4e0d7), true);
-        addKnob (prefix + "fx.reverb.send", "REVERB SEND", { x2, 208, columnWidth, 50 });
+        addKnob (prefix + "fx.reverb.send", "REV SEND", { x2, 208, columnWidth, 50 });
     }
 }
 

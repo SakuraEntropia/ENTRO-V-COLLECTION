@@ -152,9 +152,9 @@ function(triad_add_instrument target product_name plugin_code instrument_kind)
     endif()
 endfunction()
 
-triad_add_instrument(Matriarch "Matriarch" Ma01 0)
-triad_add_instrument(PolyBrute "PolyBrute" Pb02 1)
-triad_add_instrument(MoogOne "Moog One" Mo03 2)
+triad_add_instrument(Matriarch "MATRIARCH V" Ma01 0)
+triad_add_instrument(PolyBrute "POLYBRUTE V" Pb02 1)
+triad_add_instrument(MoogOne "ONE V" Mo03 2)
 
 # ---------------------------------------------------------------------------
 # Deterministic, framework-independent tests.

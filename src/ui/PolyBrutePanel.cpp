@@ -10,9 +10,9 @@ juce::Colour polyAccent() { return juce::Colour (0xff3f93e8); }
 }
 
 PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
-    : PanelBase (editorHost, "PolyBrute", 1900, 960, polyAccent())
+    : PanelBase (editorHost, "POLYBRUTE V", 1900, 960, polyAccent())
 {
-    setBranding ("POLYBRUTE", "SIX-VOICE ANALOG SYNTHESIZER");
+    setBranding ("POLYBRUTE V", "SIX-VOICE ANALOG SYNTHESIZER");
 
     const auto accent = polyAccent();
 
@@ -108,12 +108,12 @@ PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
     {
         const auto x = vco1Area.getX() + 6;
         const auto cellWidth = (vco1Area.getWidth() - 12) / 2;
-        auto y = 28;
+        auto y = vco1Area.getY() + 28;
 
         addSwitch ("poly.vcoA.octave", "OCTAVE", { x, y, vco1Area.getWidth() - 12, 34 }); y += 38;
         addKnob ("poly.vcoA.tune", "TUNE", { x, y, cellWidth, 48 });
-        addKnob ("poly.vcoA.wave", "SAW / TRI", { x + cellWidth, y, cellWidth, 48 }); y += 48;
-        addKnob ("poly.vcoA.pw", "PULSE WIDTH", { x, y, cellWidth, 48 });
+        addKnob ("poly.vcoA.wave", "SAW/TRI", { x + cellWidth, y, cellWidth, 48 }); y += 48;
+        addKnob ("poly.vcoA.pw", "PULSE W", { x, y, cellWidth, 48 });
         addKnob ("poly.vcoA.pulse", "PULSE", { x + cellWidth, y, cellWidth, 48 }); y += 48;
         addKnob ("poly.vcoA.level", "LEVEL", { x, y, cellWidth, 48 });
         addKnob ("poly.vcoA.metalizer", "METALIZER", { x + cellWidth, y, cellWidth, 48 });
@@ -122,12 +122,12 @@ PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
     {
         const auto x = vco2Area.getX() + 6;
         const auto cellWidth = (vco2Area.getWidth() - 12) / 2;
-        auto y = 28;
+        auto y = vco2Area.getY() + 28;
 
         addSwitch ("poly.vcoB.octave", "OCTAVE", { x, y, vco2Area.getWidth() - 12, 34 }); y += 38;
         addKnob ("poly.vcoB.tune", "TUNE", { x, y, cellWidth, 46 });
-        addKnob ("poly.vcoB.wave", "SAW / TRI", { x + cellWidth, y, cellWidth, 46 }); y += 46;
-        addKnob ("poly.vcoB.pw", "PULSE WIDTH", { x, y, cellWidth, 46 });
+        addKnob ("poly.vcoB.wave", "SAW/TRI", { x + cellWidth, y, cellWidth, 46 }); y += 46;
+        addKnob ("poly.vcoB.pw", "PULSE W", { x, y, cellWidth, 46 });
         addKnob ("poly.vcoB.pulse", "PULSE", { x + cellWidth, y, cellWidth, 46 }); y += 46;
         addKnob ("poly.vcoB.level", "LEVEL", { x, y, cellWidth, 46 });
         addKnob ("poly.vcoB.sub", "SUB OSC", { x + cellWidth, y, cellWidth, 46 }); y += 50;
@@ -166,7 +166,7 @@ PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
     {
         const auto x = ladderArea.getX() + 6;
         const auto cellWidth = (ladderArea.getWidth() - 12) / 2;
-        auto y = 30;
+        auto y = ladderArea.getY() + 30;
 
         addKnob ("poly.ladder.cutoff", "CUTOFF", { x, y, cellWidth, 48 });
         addKnob ("poly.ladder.resonance", "RESO", { x + cellWidth, y, cellWidth, 48 }); y += 52;
@@ -179,10 +179,10 @@ PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
     {
         const auto x = filterFmArea.getX() + 6;
         const auto cellWidth = (filterFmArea.getWidth() - 12) / 3;
-        auto y = 30;
+        auto y = filterFmArea.getY() + 30;
 
-        addKnob ("poly.steiner.fm", "VCO 2 > VCF", { x, y, cellWidth, 50 });
-        addKnob ("poly.mixer.noise", "NOISE LEVEL", { x + cellWidth, y, cellWidth, 50 });
+        addKnob ("poly.steiner.fm", "VCO2>VCF", { x, y, cellWidth, 50 });
+        addKnob ("poly.mixer.noise", "NOISE", { x + cellWidth, y, cellWidth, 50 });
         addSwitch ("poly.mixer.noiseColor", "NOISE COLOR",
                    { x + cellWidth * 2, y, cellWidth, 34 });
         y += 62;
@@ -195,9 +195,11 @@ PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
         const auto x = routingArea.getX() + 6;
         const auto width = routingArea.getWidth() - 12;
 
-        addChoice ("poly.filters.routing", "FILTER ROUTING", { x, 34, width, 40 });
-        addKnob ("poly.filters.balance", "FILTER BALANCE", { x, 88, width, 54 });
-        addCaption ("SERIAL / PARALLEL / SPLIT", { x, 152, width, 24 },
+        addChoice ("poly.filters.routing", "FILTER ROUTING",
+                   { x, routingArea.getY() + 34, width, 40 });
+        addKnob ("poly.filters.balance", "BALANCE",
+                 { x, routingArea.getY() + 88, width, 54 });
+        addCaption ("SERIAL / PARALLEL / SPLIT", { x, routingArea.getY() + 152, width, 24 },
                     juce::Justification::centred, 7.0f, juce::Colour (0xffd0ccc3));
     }
 
@@ -214,7 +216,8 @@ PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
         const char* suffixes[5] = { "velocity", "attack", "decay", "sustain", "release" };
 
         for (int i = 0; i < 5; ++i)
-            addFader (stem + suffixes[i], names[i], { x + i * cellWidth, 30, cellWidth, 220 });
+            addFader (stem + suffixes[i], names[i],
+                      { x + i * cellWidth, area.getY() + 30, cellWidth, 220 });
     };
 
     buildEnvelope ("poly.env1.", vcfEnvArea);
@@ -230,7 +233,7 @@ PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
         const auto stem = "poly.lfo" + juce::String (index) + ".";
         const auto x = area.getX() + 5;
         const auto width = area.getWidth() - 10;
-        auto y = 28;
+        auto y = area.getY() + 28;
 
         addKnob (stem + "rate", "RATE", { x, y, width, 46 }); y += 50;
         addChoice (stem + "wave", "WAVE", { x, y, width, 30 }); y += 34;
@@ -256,14 +259,17 @@ PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
         const auto x = morphArea.getX() + 6;
         const auto width = morphArea.getWidth() - 12;
 
-        auto& knob = addKnob ("poly.voice.morph", "MORPH A/B", { x, 34, width, 120 });
+        auto& knob = addKnob ("poly.voice.morph", "MORPH A/B",
+                              { x, morphArea.getY() + 34, width, 120 });
         knob.getProperties().set ("silverKnob", true);
 
-        addButton ("CAPTURE B", { x, 166, width, 28 }, [this] { host().captureMorphB(); });
-        addButton ("SWAP A/B", { x, 200, width, 28 }, [this] { host().swapMorphB(); });
+        addButton ("CAPTURE B", { x, morphArea.getY() + 166, width, 28 },
+                   [this] { host().captureMorphB(); });
+        addButton ("SWAP A/B", { x, morphArea.getY() + 200, width, 28 },
+                   [this] { host().swapMorphB(); });
 
         addCaption ("A / B PARAMETER INTERPOLATION",
-                    { x, 238, width, 22 }, juce::Justification::centred, 7.0f,
+                    { x, morphArea.getY() + 238, width, 22 }, juce::Justification::centred, 7.0f,
                     juce::Colour (0xffe4e0d7));
     }
 
@@ -282,9 +288,6 @@ PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
             sources.push_back ("poly.mod.slot" + juce::String (slot) + ".source");
 
         addSourceMatrix (sources, 12, { x, 86, 190, 300 });
-
-        addCaption ("SLOT  DESTINATION", { x + 16, 88, 170, 10 },
-                    juce::Justification::centredLeft, 7.0f, juce::Colour (0xff20262a));
 
         for (int slot = 1; slot <= 8; ++slot)
         {

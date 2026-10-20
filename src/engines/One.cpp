@@ -88,7 +88,7 @@ OneEngine::OneEngine()
 void OneEngine::buildDefinition()
 {
     definition_.id = "moogone";
-    definition_.displayName = "Moog One";
+    definition_.displayName = "ONE V";
     definition_.manufacturer = "SakuraEntropia";
     definition_.version = "0.1.0";
 

@@ -710,6 +710,14 @@ juce::String TriadAudioProcessor::factoryPresetName (int index) const
     return {};
 }
 
+juce::String TriadAudioProcessor::factoryPresetCategory (int index) const
+{
+    if (index >= 0 && index < (int) factoryPresets_.size())
+        return factoryPresets_[(size_t) index].category;
+
+    return {};
+}
+
 void TriadAudioProcessor::initPatch()
 {
     for (const auto& spec : engine_->definition().params)

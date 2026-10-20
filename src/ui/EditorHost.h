@@ -52,6 +52,7 @@ public:
 
     virtual int factoryPresetCount() const { return 0; }
     virtual juce::String factoryPresetName (int) const { return {}; }
+    virtual juce::String factoryPresetCategory (int) const { return {}; }
     virtual void loadFactoryPreset (int) {}
     virtual void initPatch() {}
     virtual void savePreset() {}

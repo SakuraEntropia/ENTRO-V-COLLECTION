@@ -4,9 +4,9 @@
 
 | 插件 | 对应实体合成器的功能组织 | 格式 |
 |---|---|---|
-| **Matriarch** | 四振荡器准复音、立体声梯形滤波、双包络、双 LFO、90 类插接点、BBD 立体声延迟 | VST3 / AU / Standalone |
-| **PolyBrute** | 六声部、双 VCO + Sub、Metalizer、Steiner + Ladder 双滤波、三包络、三 LFO、调制矩阵、效果链 | VST3 / AU / Standalone |
-| **Moog One** | 三个 Synth 部分共享声部池、每声部三 VCO、SVF + Ladder、三个 DAHDSR 包络、四个 LFO、效果 | VST3 / AU / Standalone |
+| **MATRIARCH V** | 四振荡器准复音、立体声梯形滤波、双包络、双 LFO、90 类插接点、BBD 立体声延迟 | VST3 / AU / Standalone |
+| **POLYBRUTE V** | 六声部、双 VCO + Sub、Metalizer、Steiner + Ladder 双滤波、三包络、三 LFO、调制矩阵、效果链 | VST3 / AU / Standalone |
+| **ONE V** | 三个 Synth 部分共享声部池、每声部三 VCO、SVF + Ladder、三个 DAHDSR 包络、四个 LFO、效果 | VST3 / AU / Standalone |
 
 本项目是**独立实现的软件乐器**，不是 Arturia 或 Moog 的官方产品，也不包含原厂固件、预设或界面素材。面板按公开手册与产品照片重绘，音频引擎全部自行实现。手册只描述操作与信号路径，不提供电路容差、非线性元件或专有数字效果的算法；因此本项目不声称“逐电路”或“与实机完全相同”。详见 [COVERAGE.md](docs/COVERAGE.md)。
 
@@ -50,12 +50,12 @@ ctest --test-dir ../work/build-triad --output-on-failure
 产物位置：
 
 ```
-../work/build-triad/Matriarch_artefacts/Release/VST3/Matriarch.vst3
-../work/build-triad/Matriarch_artefacts/Release/AU/Matriarch.component
-../work/build-triad/Matriarch_artefacts/Release/Standalone/Matriarch.app
+../work/build-triad/Matriarch_artefacts/Release/VST3/MATRIARCH V.vst3
+../work/build-triad/Matriarch_artefacts/Release/AU/MATRIARCH V.component
+../work/build-triad/Matriarch_artefacts/Release/Standalone/MATRIARCH V.app
 ```
 
-PolyBrute 的产物名是 `PolyBrute.vst3` / `PolyBrute.component`；Moog One 的产物名带空格：`Moog One.vst3`、`Moog One.component`。构建目标名是 `Matriarch_VST3`、`MoogOne_AU` 等。
+POLYBRUTE V 的产物名是 `POLYBRUTE V.vst3` / `POLYBRUTE V.component`；ONE V 的产物名带空格：`ONE V.vst3`、`ONE V.component`。构建目标名是 `Matriarch_VST3`、`MoogOne_AU` 等。
 
 Universal 构建：
 
@@ -74,10 +74,12 @@ cmake -S . -B ../work/build-triad-universal -G Ninja \
 脚本只复制已经编译成功的产物，不会伪造未生成的格式。卸载时删除：
 
 ```
-~/Library/Audio/Plug-Ins/VST3/{Matriarch,PolyBrute}.vst3
-~/Library/Audio/Plug-Ins/VST3/Moog One.vst3
-~/Library/Audio/Plug-Ins/Components/{Matriarch,PolyBrute}.component
-~/Library/Audio/Plug-Ins/Components/Moog One.component
+~/Library/Audio/Plug-Ins/VST3/MATRIARCH V.vst3
+~/Library/Audio/Plug-Ins/VST3/POLYBRUTE V.vst3
+~/Library/Audio/Plug-Ins/VST3/ONE V.vst3
+~/Library/Audio/Plug-Ins/Components/MATRIARCH V.component
+~/Library/Audio/Plug-Ins/Components/POLYBRUTE V.component
+~/Library/Audio/Plug-Ins/Components/ONE V.component
 ```
 
 首次加载未签名插件时，macOS 可能要求在“系统设置 → 隐私与安全性”中允许。正式分发需要 Developer ID 签名与公证，本项目当前没有该身份。
@@ -86,7 +88,7 @@ Windows 使用 GitHub Actions 的 Windows runner 构建，产物为 `.vst3` 与 
 
 ## 使用
 
-- 顶部栏选择预设、INIT、保存/载入 `.triadpreset` 文件。
+- 顶部栏选择预设、INIT、保存/载入 `.triadpreset` 文件；预设按 Bass / Lead / Brass / Pad / Keys / Sequence / Split / FX 分类。每台琴内置 15、17、15 个预设（含 Reese Bass、Acid Bass、Supersaw、Warm Pad、Organ、Pluck 等）。
 - 面板按官方手册与产品照片重排：Matriarch 单行模块顺序、PolyBrute 三段式合成区（VCO/滤波/包络/LFO 三行）、Moog One 左/中/右三块面板。资料页码与模块位置见 [docs/LAYOUT.md](docs/LAYOUT.md)。旋转拖动旋钮，双击回到默认值；硬件开关按档位点击。
 - 底部键盘可点击演奏；滚轮为 Pitch/Mod（Pitch 松手回中）。Matriarch 显示 49 键 F1–F5，PolyBrute 与 Moog One 显示 61 键 C2–C7。Moog One 的 `MIDI PART` 选择屏幕键盘发送到哪一部分。
 - Matriarch 插线：先点一个输出插孔，再点一个输入插孔建立连线；右键点击插孔清除与它相连的线缆。线缆随工程状态保存。

@@ -2,6 +2,9 @@
 
 #include <juce_gui_extra/juce_gui_extra.h>
 
+#include <cstdio>
+#include <cstdlib>
+
 namespace triad::ui
 {
 
@@ -11,13 +14,33 @@ public:
     explicit HeaderBar (EditorHost& host)
         : host_ (host)
     {
-        presetBox_.setTooltip ("Factory presets");
+        presetBox_.setTooltip ("Factory presets by category");
         presetBox_.addItem ("INIT", 1);
 
+        juce::String lastCategory;
+
         for (int i = 0; i < host_.factoryPresetCount(); ++i)
+        {
+            const auto category = host_.factoryPresetCategory (i);
+
+            if (category.isNotEmpty() && category != lastCategory)
+            {
+                presetBox_.addSectionHeading (category);
+                lastCategory = category;
+            }
+
             presetBox_.addItem (host_.factoryPresetName (i), i + 2);
+        }
 
         presetBox_.setSelectedId (1, juce::dontSendNotification);
+
+        if (std::getenv ("TRIAD_LAYOUT") != nullptr)
+        {
+            std::fprintf (stderr, "PRESET ITEMS for %s:\n", host_.instrumentName().toRawUTF8());
+            for (int i = 0; i < presetBox_.getNumItems(); ++i)
+                std::fprintf (stderr, "  id=%d  %s\n", presetBox_.getItemId (i),
+                              presetBox_.getItemText (i).toRawUTF8());
+        }
         presetBox_.onChange = [this]
         {
             const auto id = presetBox_.getSelectedId();
@@ -35,6 +58,14 @@ public:
         {
             host_.initPatch();
             presetBox_.setSelectedId (1, juce::dontSendNotification);
+
+        if (std::getenv ("TRIAD_LAYOUT") != nullptr)
+        {
+            std::fprintf (stderr, "PRESET ITEMS for %s:\n", host_.instrumentName().toRawUTF8());
+            for (int i = 0; i < presetBox_.getNumItems(); ++i)
+                std::fprintf (stderr, "  id=%d  %s\n", presetBox_.getItemId (i),
+                              presetBox_.getItemText (i).toRawUTF8());
+        }
         };
 
         saveButton_.setButtonText ("SAVE");
@@ -48,6 +79,24 @@ public:
         addAndMakeVisible (initButton_);
         addAndMakeVisible (saveButton_);
         addAndMakeVisible (loadButton_);
+
+        zoomOutButton_.setButtonText ("-");
+        zoomOutButton_.setTooltip ("Zoom out");
+        zoomOutButton_.onClick = [this] { if (onZoomStep != nullptr) onZoomStep (-1); };
+        fitButton_.setButtonText ("FIT");
+        fitButton_.setTooltip ("Fit the whole panel");
+        fitButton_.onClick = [this] { if (onFit != nullptr) onFit(); };
+        zoomInButton_.setButtonText ("+");
+        zoomInButton_.setTooltip ("Zoom in");
+        zoomInButton_.onClick = [this] { if (onZoomStep != nullptr) onZoomStep (1); };
+        zoomLabel_.setJustificationType (juce::Justification::centred);
+        zoomLabel_.setColour (juce::Label::textColourId, juce::Colour (0xff9a968d));
+        zoomLabel_.setFont (juce::Font (juce::FontOptions (9.0f)));
+
+        addAndMakeVisible (zoomOutButton_);
+        addAndMakeVisible (fitButton_);
+        addAndMakeVisible (zoomInButton_);
+        addAndMakeVisible (zoomLabel_);
 
         startTimerHz (6);
     }
@@ -97,10 +146,7 @@ public:
         g.setColour (accent_);
         g.fillRect (29.0f, bounds.getBottom() - 3.0f, bounds.getWidth() - 58.0f, 1.5f);
 
-        g.setColour (juce::Colour (0xff8f8c85));
-        g.setFont (juce::Font (juce::FontOptions (8.0f)));
-        g.drawText ("PRESET", (int) presetBox_.getX() - 44, presetBox_.getY() + 3, 42, 12,
-                    juce::Justification::centredRight);
+        juce::ignoreUnused (presetBox_);
     }
 
     void resized() override
@@ -110,7 +156,13 @@ public:
         loadButton_.setBounds (area.removeFromRight (54).reduced (2, 0));
         saveButton_.setBounds (area.removeFromRight (58).reduced (2, 0));
         initButton_.setBounds (area.removeFromRight (50).reduced (2, 0));
-        presetBox_.setBounds (area.removeFromRight (220).reduced (4, 0));
+        presetBox_.setBounds (area.removeFromRight (190).reduced (4, 0));
+
+        auto zoomArea = area.removeFromRight (154).reduced (4, 0);
+        zoomOutButton_.setBounds (zoomArea.removeFromLeft (30));
+        fitButton_.setBounds (zoomArea.removeFromLeft (42).reduced (2, 0));
+        zoomInButton_.setBounds (zoomArea.removeFromLeft (30));
+        zoomLabel_.setBounds (zoomArea.reduced (2, 0));
     }
 
     void refresh()
@@ -119,10 +171,11 @@ public:
 
         for (int i = 0; i < presetBox_.getNumItems(); ++i)
         {
-            if (presetBox_.getItemText (i) == name)
+            if (presetBox_.getItemText (i) == name && presetBox_.getItemId (i) != 0)
             {
-                if (presetBox_.getSelectedItemIndex() != i)
-                    presetBox_.setSelectedItemIndex (i, juce::dontSendNotification);
+                if (presetBox_.getSelectedId() != presetBox_.getItemId (i))
+                    presetBox_.setSelectedId (presetBox_.getItemId (i),
+                                              juce::dontSendNotification);
                 return;
             }
         }
@@ -134,6 +187,15 @@ public:
         repaint();
     }
 
+    void setZoomText (float zoom)
+    {
+        zoomLabel_.setText (juce::String (juce::roundToInt (zoom * 100.0f)) + "%",
+                            juce::dontSendNotification);
+    }
+
+    std::function<void (int)> onZoomStep;
+    std::function<void()> onFit;
+
 private:
     void timerCallback() override
     {
@@ -143,6 +205,8 @@ private:
     EditorHost& host_;
     juce::ComboBox presetBox_;
     juce::TextButton initButton_, saveButton_, loadButton_;
+    juce::TextButton zoomOutButton_, fitButton_, zoomInButton_;
+    juce::Label zoomLabel_;
     juce::Colour accent_ { 0xffcf4b2e };
 };
 
@@ -185,7 +249,19 @@ TriadEditor::TriadEditor (EditorHost& host)
     addAndMakeVisible (*header_);
 
     panel_ = createInstrumentPanel (host);
-    addAndMakeVisible (*panel_);
+    canvas_.addAndMakeVisible (*panel_);
+    viewport_.setViewedComponent (&canvas_, false);
+    viewport_.setScrollBarsShown (true, true);
+    viewport_.setColour (juce::ScrollBar::thumbColourId, juce::Colour (0xff5a5a5f));
+    viewport_.setColour (juce::ScrollBar::trackColourId, juce::Colour (0xff151517));
+    addAndMakeVisible (viewport_);
+
+    header_->onZoomStep = [this] (int direction)
+    {
+        const auto base = zoom_ > 0.0f ? zoom_ : currentFitScale_;
+        setZoom (base + 0.1f * (float) direction);
+    };
+    header_->onFit = [this] { setZoom (0.0f); };
 
     addAndMakeVisible (keyboard_);
 
@@ -241,23 +317,57 @@ void TriadEditor::resized()
     header_->setBounds (area.removeFromTop (52));
     keyboard_.setBounds (area.removeFromBottom (132));
 
-    auto panelArea = area.reduced (10, 6);
+    auto panelArea = area.reduced (0, 4);
+    viewport_.setBounds (panelArea);
 
     if (panel_ == nullptr || panel_->designWidth() <= 0 || panel_->designHeight() <= 0)
         return;
 
     const auto designW = (float) panel_->designWidth();
     const auto designH = (float) panel_->designHeight();
-    const auto scale = juce::jmin ((float) panelArea.getWidth() / designW,
-                                   (float) panelArea.getHeight() / designH);
+    const auto fitScale = juce::jmin ((float) panelArea.getWidth() / designW,
+                                      (float) panelArea.getHeight() / designH);
+    currentFitScale_ = fitScale;
 
+    const auto scale = zoom_ > 0.0f ? zoom_ : fitScale;
     const auto scaledW = designW * scale;
     const auto scaledH = designH * scale;
-    const auto offsetX = (float) panelArea.getX() + ((float) panelArea.getWidth() - scaledW) * 0.5f;
-    const auto offsetY = (float) panelArea.getY() + ((float) panelArea.getHeight() - scaledH) * 0.5f;
 
-    panel_->setBounds (0, 0, panel_->designWidth(), panel_->designHeight());
-    panel_->setTransform (juce::AffineTransform::scale (scale).translated (offsetX, offsetY));
+    if (zoom_ > 0.0f)
+    {
+        canvas_.setSize (juce::jmax (1, juce::roundToInt (scaledW)),
+                         juce::jmax (1, juce::roundToInt (scaledH)));
+        panel_->setBounds (0, 0, panel_->designWidth(), panel_->designHeight());
+        panel_->setTransform (juce::AffineTransform::scale (scale));
+    }
+    else
+    {
+        canvas_.setSize (panelArea.getWidth(), panelArea.getHeight());
+        const auto offsetX = ((float) panelArea.getWidth() - scaledW) * 0.5f;
+        const auto offsetY = ((float) panelArea.getHeight() - scaledH) * 0.5f;
+        panel_->setBounds (0, 0, panel_->designWidth(), panel_->designHeight());
+        panel_->setTransform (juce::AffineTransform::scale (scale).translated (offsetX, offsetY));
+    }
+
+    viewport_.setViewPosition (0, 0);
+
+    if (header_ != nullptr)
+        header_->setZoomText (scale);
+
+    if (std::getenv ("TRIAD_LAYOUT") != nullptr)
+        std::fprintf (stderr, "EDITOR %dx%d viewport %dx%d design %dx%d scale %.4f\n",
+                      getWidth(), getHeight(), panelArea.getWidth(), panelArea.getHeight(),
+                      panel_->designWidth(), panel_->designHeight(), scale);
+}
+
+void TriadEditor::setZoom (float zoom)
+{
+    if (zoom <= 0.0f)
+        zoom_ = 0.0f;
+    else
+        zoom_ = juce::jlimit (0.35f, 2.0f, zoom);
+
+    resized();
 }
 
 void TriadEditor::timerCallback()
@@ -268,7 +378,15 @@ void TriadEditor::timerCallback()
     keyboard_.refresh();
 
     if (panel_ != nullptr)
+    {
         panel_->pollPatchCables();
+
+        if (! layoutDumped_)
+        {
+            layoutDumped_ = true;
+            panel_->dumpLayout();
+        }
+    }
 
     if (auto* onePanel = dynamic_cast<OnePanel*> (panel_.get()))
     {

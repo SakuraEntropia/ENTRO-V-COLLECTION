@@ -31,8 +31,10 @@ fi
 INSTRUMENTS=("Matriarch" "PolyBrute" "MoogOne")
 product_name() {
     case "$1" in
-        MoogOne) echo "Moog One" ;;
-        *)       echo "$1" ;;
+        Matriarch) echo "MATRIARCH V" ;;
+        PolyBrute) echo "POLYBRUTE V" ;;
+        MoogOne)   echo "ONE V" ;;
+        *)         echo "$1" ;;
     esac
 }
 STAGE="${ROOT}/dist"

@@ -17,9 +17,9 @@ int rowsFor (int count, int columns)
 } // namespace
 
 MatriarchPanel::MatriarchPanel (EditorHost& host)
-    : PanelBase (host, "Matriarch", 1800, 500, matriarchAccent())
+    : PanelBase (host, "MATRIARCH V", 1800, 500, matriarchAccent())
 {
-    setBranding ("MATRIARCH", "SEMI-MODULAR ANALOG SYNTHESIZER");
+    setBranding ("MATRIARCH V", "SEMI-MODULAR ANALOG SYNTHESIZER");
 
     const auto accent = matriarchAccent();
 
@@ -115,7 +115,7 @@ MatriarchPanel::MatriarchPanel (EditorHost& host)
                    { modArea.getX() + 6, y + 158, modArea.getWidth() - 12, 36 });
         addKnob ("mat.lfo.cutoffAmt", "CUTOFF AMT",
                  { modArea.getX() + 6, y + 198, modArea.getWidth() - 12, 56 });
-        addKnob ("mat.lfo.pwAmt", "PULSE WIDTH AMT",
+        addKnob ("mat.lfo.pwAmt", "PULSE W AMT",
                  { modArea.getX() + 6, y + 256, modArea.getWidth() - 12, 56 });
 
 
@@ -131,9 +131,9 @@ MatriarchPanel::MatriarchPanel (EditorHost& host)
                                    "mat.patch.att2.in", "mat.patch.att2.out" },
                                  utilArea, 2, 32);
 
-        addKnob ("mat.att1", "ATTENUATOR 1",
+        addKnob ("mat.att1", "ATTEN 1",
                  { utilArea.getX() + 4, y + 4, utilArea.getWidth() - 8, 58 });
-        addKnob ("mat.att2", "ATTENUATOR 2",
+        addKnob ("mat.att2", "ATTEN 2",
                  { utilArea.getX() + 4, y + 66, utilArea.getWidth() - 8, 58 });
     }
 
@@ -222,8 +222,8 @@ MatriarchPanel::MatriarchPanel (EditorHost& host)
         addKnob ("mat.flt.res1", "RESONANCE 1", { x1, rowY, cellWidth, 58 });
         addKnob ("mat.flt.res2", "RESONANCE 2", { x2, rowY, cellWidth, 58 });
         rowY += 62;
-        addKnob ("mat.flt.envAmt", "ENVELOPE AMT", { x1, rowY, cellWidth, 58 });
-        addKnob ("mat.flt.kbTrack", "KB TRACKING", { x2, rowY, cellWidth, 58 });
+        addKnob ("mat.flt.envAmt", "ENV AMOUNT", { x1, rowY, cellWidth, 58 });
+        addKnob ("mat.flt.kbTrack", "KB TRACK", { x2, rowY, cellWidth, 58 });
     }
 
     // -----------------------------------------------------------------------
@@ -238,7 +238,7 @@ MatriarchPanel::MatriarchPanel (EditorHost& host)
 
         addKnob ("mat.lfo2.rate", "LFO RATE",
                  { util2Area.getX() + 4, y + 4, util2Area.getWidth() - 8, 58 });
-        addKnob ("mat.att3", "ATTENUATOR 3",
+        addKnob ("mat.att3", "ATTEN 3",
                  { util2Area.getX() + 4, y + 68, util2Area.getWidth() - 8, 58 });
         addSwitch ("mat.lfo2.bipolar", "BIPOLAR",
                    { util2Area.getX() + 4, y + 132, util2Area.getWidth() - 8, 40 });
@@ -313,7 +313,7 @@ MatriarchPanel::MatriarchPanel (EditorHost& host)
         const auto x = outArea.getX() + 6;
         const auto width = outArea.getWidth() - 12;
 
-        addKnob ("mat.master.volume", "MAIN VOLUME", { x, y + 4, width, 54 });
+        addKnob ("mat.master.volume", "MAIN VOL", { x, y + 4, width, 54 });
         addKnob ("mat.output.velocity", "VELOCITY", { x, y + 62, width, 54 });
         addKnob ("mat.output.aftertouch", "AFTERTOUCH", { x, y + 120, width, 54 });
         addKnob ("mat.global.fine", "FINE TUNE", { x, y + 180, width, 54 });

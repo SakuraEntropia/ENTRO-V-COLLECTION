@@ -66,6 +66,7 @@ public:
     void clearControls();
     void refreshPatchCables();
     void pollPatchCables();
+    void dumpLayout() const;
 
     juce::Slider& knobFor (const juce::String& paramId);
 

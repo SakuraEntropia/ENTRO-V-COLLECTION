@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstdio>
 #include <set>
+#include <vector>
 
 namespace
 {
@@ -32,11 +33,29 @@ int main()
         check (! presets.empty(), "no factory presets", definition.id);
 
         std::set<juce::String> names;
+        int lastCategoryIndex = -1;
+        int bassCount = 0;
+        bool hasReese = false;
+
+        const juce::StringArray categoryOrder { "Bass", "Lead", "Brass", "Pad", "Keys",
+                                                "Sequence", "Split", "FX" };
 
         for (const auto& preset : presets)
         {
             check (names.insert (preset.name).second, "duplicate preset name", preset.name);
             check (! preset.values.empty(), "empty preset", preset.name);
+            check (preset.category.isNotEmpty(), "empty preset category", preset.name);
+
+            const auto categoryIndex = categoryOrder.indexOf (preset.category);
+            check (categoryIndex >= 0, "unknown preset category", preset.category);
+            check (categoryIndex >= lastCategoryIndex, "preset categories not grouped", preset.name);
+            lastCategoryIndex = juce::jmax (lastCategoryIndex, categoryIndex);
+
+            if (preset.category == "Bass")
+                ++bassCount;
+
+            if (preset.name.containsIgnoreCase ("Reese"))
+                hasReese = true;
 
             for (const auto& entry : preset.values)
             {
@@ -69,6 +88,60 @@ int main()
                                preset.name + " / " + entry.first);
                 }
             }
+        }
+
+        check (presets.size() >= 12, "too few factory presets", definition.id);
+        check (bassCount >= 2, "bass category too small", definition.id);
+        check (hasReese, "missing Reese bass preset", definition.id);
+
+        // Render each preset to make sure it is audible, finite and bounded.
+        auto renderEngine = triad::makeEngine (kind);
+        renderEngine->prepare (48000.0, 256);
+
+        for (const auto& preset : presets)
+        {
+            std::vector<float> values (definition.params.size());
+
+            for (size_t i = 0; i < values.size(); ++i)
+                values[i] = definition.params[i].def;
+
+            for (const auto& entry : preset.values)
+            {
+                const auto index = definition.indexOf (entry.first.toStdString());
+                if (index >= 0)
+                    values[(size_t) index] = entry.second;
+            }
+
+            renderEngine->reset();
+            renderEngine->setParameters (values.data(), (int) values.size());
+
+            triad::MidiEvent note;
+            note.type = triad::MidiEventType::NoteOn;
+            note.note = 60;
+            note.value = 0.8f;
+            renderEngine->processMidi (note);
+
+            float left[256];
+            float right[256];
+            double energy = 0.0;
+            float peak = 0.0f;
+            bool finite = true;
+
+            for (int block = 0; block < (int) (0.75 * 48000.0 / 256.0); ++block)
+            {
+                renderEngine->render (left, right, 256);
+
+                for (int i = 0; i < 256; ++i)
+                {
+                    finite = finite && std::isfinite (left[i]) && std::isfinite (right[i]);
+                    energy += (double) left[i] * left[i] + (double) right[i] * right[i];
+                    peak = std::max (peak, std::max (std::abs (left[i]), std::abs (right[i])));
+                }
+            }
+
+            check (finite, "preset produced non-finite audio", preset.name);
+            check (energy > 1.0e-5, "preset is silent", preset.name);
+            check (peak < 1.05f, "preset clips", preset.name);
         }
 
         std::printf ("%s: %d presets, %zu parameters\n", definition.id.c_str(),

@@ -24,11 +24,20 @@ private:
 
     void timerCallback() override;
 
+public:
+    void setZoom (float zoom);
+
+private:
     EditorHost& host_;
     TriadLookAndFeel lookAndFeel_;
     std::unique_ptr<HeaderBar> header_;
     std::unique_ptr<PanelBase> panel_;
+    juce::Viewport viewport_;
+    juce::Component canvas_;
     KeyboardPanel keyboard_;
+    bool layoutDumped_ = false;
+    float zoom_ = 0.0f;           // 0 = fit
+    float currentFitScale_ = 1.0f;
     juce::TooltipWindow tooltip_ { this, 700 };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TriadEditor)
