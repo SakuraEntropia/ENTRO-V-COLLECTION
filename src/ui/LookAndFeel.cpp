@@ -50,75 +50,154 @@ void TriadLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, int wi
     const auto radius = juce::jmin (bounds.getWidth(), bounds.getHeight()) * 0.5f;
     const auto centre = bounds.getCentre();
     const auto angle = startAngle + sliderPos * (endAngle - startAngle);
-
-    const auto knobRadius = radius * 0.78f;
-    const auto arcRadius = radius * 0.92f;
-
-    // Arc track.
-    juce::Path track;
-    track.addCentredArc (centre.x, centre.y, arcRadius, arcRadius, 0.0f,
-                         startAngle, endAngle, true);
-    g.setColour (juce::Colour (0xff3a3a3f));
-    g.strokePath (track, juce::PathStrokeType (2.2f, juce::PathStrokeType::curved,
-                                               juce::PathStrokeType::rounded));
-
-    // Value arc (from the centre for bipolar parameters).
     const auto isBipolar = slider.getMinimum() < 0.0 && slider.getMaximum() > 0.0;
-    const auto centreAngle = (startAngle + endAngle) * 0.5f;
-    const auto arcStart = isBipolar ? centreAngle : startAngle;
-    if (std::abs (angle - arcStart) > 0.01f)
+
+    const auto style = style_;
+    const auto knobRadius = radius * 0.74f;
+    const auto arcRadius = radius * 0.9f;
+    const auto accentColour = style == HardwareStyle::PolyBrute
+                                  ? juce::Colour (0xff3f93e8)
+                                  : (style == HardwareStyle::MoogOne
+                                         ? juce::Colour (0xffd9a441)
+                                         : juce::Colour (0xffcf3f23));
+
+    // Engraved tick ring.
+    g.setColour (juce::Colour (0xffbfbbb0).withAlpha (style == HardwareStyle::Matriarch ? 0.55f : 0.32f));
+    for (int i = 0; i <= 10; ++i)
     {
+        const auto tickAngle = startAngle + (endAngle - startAngle) * (float) i / 10.0f;
+        const auto inner = juce::Point<float> (centre.x + std::sin (tickAngle) * radius * 0.86f,
+                                               centre.y - std::cos (tickAngle) * radius * 0.86f);
+        const auto outer = juce::Point<float> (centre.x + std::sin (tickAngle) * radius * 0.95f,
+                                               centre.y - std::cos (tickAngle) * radius * 0.95f);
+        g.drawLine ({ inner, outer }, i % 5 == 0 ? 1.5f : 0.9f);
+    }
+
+    // Illuminated value ring (PolyBrute / One). Matriarch knobs are unlit.
+    if (style != HardwareStyle::Matriarch)
+    {
+        juce::Path track;
+        track.addCentredArc (centre.x, centre.y, arcRadius, arcRadius, 0.0f,
+                             startAngle, endAngle, true);
+        g.setColour (juce::Colour (0xff2c2d31));
+        g.strokePath (track, juce::PathStrokeType (2.0f, juce::PathStrokeType::curved,
+                                                   juce::PathStrokeType::rounded));
+
+        const auto centreAngle = (startAngle + endAngle) * 0.5f;
+        const auto arcStart = isBipolar ? centreAngle : startAngle;
         juce::Path valueArc;
         valueArc.addCentredArc (centre.x, centre.y, arcRadius, arcRadius, 0.0f,
                                 juce::jmin (arcStart, angle), juce::jmax (arcStart, angle), true);
-        g.setColour (accent.withAlpha (0.95f));
-        g.strokePath (valueArc, juce::PathStrokeType (2.4f, juce::PathStrokeType::curved,
+        g.setColour (accentColour.withAlpha (0.9f));
+        g.strokePath (valueArc, juce::PathStrokeType (2.6f, juce::PathStrokeType::curved,
                                                       juce::PathStrokeType::rounded));
     }
 
-    // Knob body.
-    const auto body = juce::Rectangle<float> (knobRadius * 2.0f, knobRadius * 2.0f)
-                          .withCentre (centre);
-    g.setColour (juce::Colours::black.withAlpha (0.55f));
-    g.fillEllipse (body.translated (0.0f, 1.6f));
+    // Drop shadow and metal skirt.
+    g.setColour (juce::Colours::black.withAlpha (0.6f));
+    g.fillEllipse (juce::Rectangle<float> (knobRadius * 2.0f + 4.0f, knobRadius * 2.0f + 4.0f)
+                       .withCentre (centre).translated (0.0f, 2.0f));
 
-    juce::ColourGradient bodyGradient (juce::Colour (0xff4a4a4f), centre.x, body.getY(),
-                                       juce::Colour (0xff18181b), centre.x, body.getBottom(), false);
-    bodyGradient.addColour (0.45, juce::Colour (0xff303035));
+    const auto silverKnob = (bool) slider.getProperties()["silverKnob"];
+
+    juce::Colour top, bottom, rim, pointer;
+    if (silverKnob)
+    {
+        top = juce::Colour (0xffe6e2d8);
+        bottom = juce::Colour (0xff7d786e);
+        rim = juce::Colour (0xff35332f);
+        pointer = juce::Colour (0xff17161a);
+    }
+    else if (style == HardwareStyle::Matriarch)
+    {
+        top = juce::Colour (0xff4a4a4d);
+        bottom = juce::Colour (0xff080809);
+        rim = juce::Colour (0xff9b9ba1);
+        pointer = juce::Colour (0xfff4f1e8);
+    }
+    else if (style == HardwareStyle::PolyBrute)
+    {
+        top = juce::Colour (0xff3a3a41);
+        bottom = juce::Colour (0xff0b0b0e);
+        rim = juce::Colour (0xffa9adb4);
+        pointer = juce::Colour (0xffeff2f5);
+    }
+    else
+    {
+        top = juce::Colour (0xffd6d0c2);
+        bottom = juce::Colour (0xff5a564d);
+        rim = juce::Colour (0xff28282a);
+        pointer = juce::Colour (0xff17161a);
+    }
+
+    const auto body = juce::Rectangle<float> (knobRadius * 2.0f, knobRadius * 2.0f).withCentre (centre);
+    juce::ColourGradient bodyGradient (top, centre.x, body.getY(), bottom, centre.x, body.getBottom(), false);
+    bodyGradient.addColour (0.5, style == HardwareStyle::MoogOne
+                                     ? juce::Colour (0xffa49e90)
+                                     : juce::Colour (0xff2b2b2f));
     g.setGradientFill (bodyGradient);
     g.fillEllipse (body);
 
-    g.setColour (juce::Colour (0xff77777e).withAlpha (0.75f));
-    g.drawEllipse (body.reduced (0.6f), 1.0f);
+    // Knurled rim.
+    g.setColour (rim.withAlpha (0.9f));
+    g.drawEllipse (body.reduced (0.7f), 1.2f);
+    g.setColour (juce::Colours::black.withAlpha (0.35f));
+    for (int i = 0; i < 40; ++i)
+    {
+        const auto a = juce::MathConstants<float>::twoPi * (float) i / 40.0f;
+        const auto p1 = juce::Point<float> (centre.x + std::sin (a) * knobRadius * 0.94f,
+                                            centre.y - std::cos (a) * knobRadius * 0.94f);
+        const auto p2 = juce::Point<float> (centre.x + std::sin (a) * knobRadius * 1.0f,
+                                            centre.y - std::cos (a) * knobRadius * 1.0f);
+        g.drawLine ({ p1, p2 }, 0.7f);
+    }
 
     // Pointer.
-    const auto pointerLength = knobRadius * 0.78f;
-    const auto pointerStart = knobRadius * 0.24f;
+    const auto pointerLength = knobRadius * 0.82f;
+    const auto pointerStart = knobRadius * 0.18f;
     const auto pointerEnd = juce::Point<float> (centre.x + std::sin (angle) * pointerLength,
                                                 centre.y - std::cos (angle) * pointerLength);
     const auto pointerBegin = juce::Point<float> (centre.x + std::sin (angle) * pointerStart,
                                                   centre.y - std::cos (angle) * pointerStart);
-    g.setColour (juce::Colour (0xfff3efe6));
-    g.drawLine ({ pointerBegin, pointerEnd }, juce::jmax (1.4f, radius * 0.055f));
+    g.setColour (pointer);
+    g.drawLine ({ pointerBegin, pointerEnd }, juce::jmax (1.6f, radius * 0.06f));
 
-    // Tick marks.
-    g.setColour (juce::Colour (0xff8f8c86).withAlpha (0.55f));
-    for (int i = 0; i <= 10; ++i)
+    if (style == HardwareStyle::Matriarch)
     {
-        const auto tickAngle = startAngle + (endAngle - startAngle) * (float) i / 10.0f;
-        const auto inner = juce::Point<float> (centre.x + std::sin (tickAngle) * radius * 0.72f,
-                                               centre.y - std::cos (tickAngle) * radius * 0.72f);
-        const auto outer = juce::Point<float> (centre.x + std::sin (tickAngle) * radius * 0.79f,
-                                               centre.y - std::cos (tickAngle) * radius * 0.79f);
-        g.drawLine ({ inner, outer }, 1.0f);
+        g.setColour (juce::Colours::white.withAlpha (0.15f));
+        g.drawEllipse (body.reduced (2.0f), 0.8f);
     }
 }
 
 void TriadLookAndFeel::drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height,
                                          float sliderPos, float, float,
-                                         juce::Slider::SliderStyle style, juce::Slider&)
+                                         juce::Slider::SliderStyle style, juce::Slider& slider)
 {
     const auto bounds = juce::Rectangle<int> (x, y, width, height).toFloat();
+
+    if ((bool) slider.getProperties()["wheel"])
+    {
+        const auto wheel = bounds.reduced (2.0f, 2.0f);
+        const auto wheelBody = juce::Rectangle<float> (wheel.getWidth(), wheel.getHeight())
+                                   .withCentre (wheel.getCentre());
+
+        juce::ColourGradient rubber (juce::Colour (0xff4a4a4e), wheelBody.getX(), wheelBody.getY(),
+                                      juce::Colour (0xff0d0d0f), wheelBody.getRight(), wheelBody.getBottom(), false);
+        g.setGradientFill (rubber);
+        g.fillRoundedRectangle (wheelBody, 5.0f);
+
+        g.setColour (juce::Colours::black.withAlpha (0.65f));
+        for (float yLine = wheelBody.getY() + 6.0f; yLine < wheelBody.getBottom() - 4.0f; yLine += 5.0f)
+            g.drawHorizontalLine ((int) yLine, wheelBody.getX() + 3.0f, wheelBody.getRight() - 3.0f);
+
+        g.setColour (juce::Colour (0xffc9c6be));
+        g.fillRoundedRectangle (juce::Rectangle<float> (wheelBody.getWidth() - 4.0f, 2.0f)
+                                    .withCentre ({ wheelBody.getCentreX(), sliderPos }), 1.0f);
+
+        g.setColour (juce::Colour (0xff8f8b84).withAlpha (0.7f));
+        g.drawRoundedRectangle (wheelBody.reduced (0.5f), 5.0f, 1.0f);
+        return;
+    }
 
     if (style == juce::Slider::LinearVertical)
     {
@@ -147,10 +226,12 @@ void TriadLookAndFeel::drawComboBox (juce::Graphics& g, int width, int height, b
                                      int, int, int, int, juce::ComboBox& box)
 {
     const auto bounds = juce::Rectangle<int> (0, 0, width, height).toFloat();
-    g.setColour (juce::Colour (0xff1d1d21));
-    g.fillRoundedRectangle (bounds, 3.0f);
-    g.setColour (juce::Colour (0xff4b4b52));
-    g.drawRoundedRectangle (bounds.reduced (0.5f), 3.0f, 1.0f);
+    juce::ColourGradient background (juce::Colour (0xff2a2a2e), 0.0f, 0.0f,
+                                     juce::Colour (0xff141417), 0.0f, bounds.getBottom(), false);
+    g.setGradientFill (background);
+    g.fillRoundedRectangle (bounds, 2.5f);
+    g.setColour (juce::Colour (0xff6d6a63).withAlpha (0.8f));
+    g.drawRoundedRectangle (bounds.reduced (0.5f), 2.5f, 1.0f);
 
     juce::Path arrow;
     const auto centreX = (float) width - 12.0f;

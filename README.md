@@ -87,7 +87,7 @@ Windows 使用 GitHub Actions 的 Windows runner 构建，产物为 `.vst3` 与 
 ## 使用
 
 - 顶部栏选择预设、INIT、保存/载入 `.triadpreset` 文件。
-- 面板控件按实体位置排列：旋转拖动旋钮，双击回到默认值；硬件开关按档位点击。
+- 面板按官方手册与产品照片重排：Matriarch 单行模块顺序、PolyBrute 三段式合成区（VCO/滤波/包络/LFO 三行）、Moog One 左/中/右三块面板。资料页码与模块位置见 [docs/LAYOUT.md](docs/LAYOUT.md)。旋转拖动旋钮，双击回到默认值；硬件开关按档位点击。
 - 底部键盘可点击演奏；滚轮为 Pitch/Mod（Pitch 松手回中）。Matriarch 显示 49 键 F1–F5，PolyBrute 与 Moog One 显示 61 键 C2–C7。Moog One 的 `MIDI PART` 选择屏幕键盘发送到哪一部分。
 - Matriarch 插线：先点一个输出插孔，再点一个输入插孔建立连线；右键点击插孔清除与它相连的线缆。线缆随工程状态保存。
 - PolyBrute：`CAPTURE B` 把当前面板存入 B，`MORPH` 在 A/B 之间插值；`SWAP A/B` 交换两侧。
@@ -99,7 +99,7 @@ Windows 使用 GitHub Actions 的 Windows runner 构建，产物为 `.vst3` 与 
 src/core       与框架无关的参数、引擎契约、DSP 基元、琶音/音序器
 src/engines    Matriarch / PolyBrute / One 的独立实现（无 JUCE 类型）
 src/plugin     JUCE 处理器、参数树、状态、预设、宿主总线
-src/ui         矢量绘制的实体面板、控件、键盘、虚拟插线
+src/ui         矢量绘制的实体面板、控件、键盘、虚拟插线（不嵌入厂商图片）
 tests          确定性的离线音频与引擎契约测试
 scripts        打包与安装
 docs           覆盖表、验证记录、开发约定

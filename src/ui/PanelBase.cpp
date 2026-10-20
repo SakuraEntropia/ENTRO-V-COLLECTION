@@ -11,6 +11,10 @@ PanelBase::PanelBase (EditorHost& host, juce::String title, int designWidth, int
     : host_ (host), title_ (std::move (title)), designWidth_ (designWidth),
       designHeight_ (designHeight), accent_ (accent)
 {
+    const auto id = juce::String (host_.definition().id);
+    finish_ = id == "polybrute" ? Finish::PolyBrute
+              : (id == "moogone" || id == "one" ? Finish::MoogOne : Finish::Matriarch);
+
     setSize (designWidth_, designHeight_);
     setOpaque (true);
     fallbackParameter_ = std::make_unique<juce::AudioParameterFloat> (
@@ -32,15 +36,16 @@ juce::RangedAudioParameter* PanelBase::parameterFor (const juce::String& paramId
     return host_.apvts().getParameter (paramId);
 }
 
-void PanelBase::addModule (const juce::String& moduleTitle, juce::Rectangle<int> area)
+void PanelBase::addModule (const juce::String& moduleTitle, juce::Rectangle<int> area,
+                           ModuleTone tone)
 {
-    addModule (moduleTitle, {}, area);
+    addModule (moduleTitle, {}, area, tone);
 }
 
 void PanelBase::addModule (const juce::String& moduleTitle, const juce::String& subtitle,
-                           juce::Rectangle<int> area)
+                           juce::Rectangle<int> area, ModuleTone tone)
 {
-    modules_.push_back ({ moduleTitle, subtitle, area });
+    modules_.push_back ({ moduleTitle, subtitle, area, tone });
 }
 
 void PanelBase::addLabel (const juce::String& text, juce::Rectangle<int> area, float fontSize,
@@ -149,7 +154,7 @@ juce::Slider& PanelBase::addFader (const juce::String& paramId, const juce::Stri
     sliders_.push_back (std::move (slider));
 
     addLabel (labelText, { area.getX(), area.getBottom() - labelHeight, area.getWidth(), labelHeight },
-              9.6f, juce::Colour (0xffc9c5bb), false);
+              9.6f, juce::Colour (0xffe4e0d7), false);
 
     return ref;
 }
@@ -188,7 +193,7 @@ juce::ComboBox& PanelBase::addChoice (const juce::String& paramId, const juce::S
 
     if (labelText.isNotEmpty())
         addLabel (labelText, { area.getX(), area.getBottom() - labelHeight, area.getWidth(), labelHeight },
-                  9.6f, juce::Colour (0xffc9c5bb), false);
+                  9.6f, juce::Colour (0xffe4e0d7), false);
 
     return ref;
 }
@@ -219,7 +224,7 @@ HardwareSwitch& PanelBase::addSwitch (const juce::String& paramId, const juce::S
 
     if (labelText.isNotEmpty())
         addLabel (labelText, { area.getX(), area.getBottom() - labelHeight, area.getWidth(), labelHeight },
-                  9.6f, juce::Colour (0xffc9c5bb), false);
+                  9.6f, juce::Colour (0xffe4e0d7), false);
 
     return ref;
 }
@@ -237,6 +242,7 @@ LedButton& PanelBase::addLed (const juce::String& paramId, const juce::String& l
     }
 
     auto component = std::make_unique<LedButton> (*parameter, labelText);
+    component->setAccent (accent_);
     component->setTooltip (spec != nullptr ? juce::String (spec->name) + "  [" + paramId + "]" : paramId);
     component->setBounds (area);
     addAndMakeVisible (*component);
@@ -274,7 +280,7 @@ Jack& PanelBase::addJack (const juce::String& patchId, juce::Rectangle<int> area
         const auto labelHeight = 8;
         addLabel (juce::String (spec->name),
                   { area.getX() - 22, area.getBottom(), area.getWidth() + 44, labelHeight },
-                  7.6f, juce::Colour (0xffb6b2a9), false);
+                  8.0f, juce::Colour (0xffdedad1), false);
     }
 
     return ref;
@@ -342,6 +348,29 @@ void PanelBase::clearControls()
     jacks_.clear();
     modules_.clear();
     selectedJack_ = -1;
+}
+
+void PanelBase::pollPatchCables()
+{
+    const auto current = host_.patchCables();
+
+    if (current.size() == cables_.size())
+    {
+        bool equal = true;
+        for (size_t i = 0; i < current.size(); ++i)
+        {
+            if (current[i].from != cables_[i].from || current[i].to != cables_[i].to)
+            {
+                equal = false;
+                break;
+            }
+        }
+
+        if (equal)
+            return;
+    }
+
+    refreshPatchCables();
 }
 
 void PanelBase::refreshPatchCables()
@@ -453,77 +482,311 @@ void PanelBase::handleJackRightClicked (Jack& jack)
         onPatchChanged();
 }
 
+namespace
+{
+void drawWood (juce::Graphics& g, juce::Rectangle<float> area, bool vertical, int seed)
+{
+    juce::ColourGradient wood (juce::Colour (0xff7a4d2c), area.getX(), area.getY(),
+                               juce::Colour (0xff3b2415), area.getRight(), area.getBottom(), false);
+    wood.addColour (0.35, juce::Colour (0xff5f3a21));
+    wood.addColour (0.7, juce::Colour (0xff6d4529));
+    g.setGradientFill (wood);
+    g.fillRect (area);
+
+    juce::Random random (seed);
+    for (int i = 0; i < 18; ++i)
+    {
+        const auto offset = random.nextFloat();
+        const auto thickness = 0.5f + random.nextFloat() * 1.2f;
+        g.setColour (juce::Colours::black.withAlpha (0.06f + random.nextFloat() * 0.1f));
+
+        if (vertical)
+        {
+            const auto x = area.getX() + offset * area.getWidth();
+            g.drawVerticalLine ((int) x, area.getY(), area.getBottom());
+        }
+        else
+        {
+            const auto y = area.getY() + offset * area.getHeight();
+            g.drawHorizontalLine ((int) y, area.getX(), area.getRight());
+        }
+
+        juce::ignoreUnused (thickness);
+    }
+
+    g.setColour (juce::Colours::black.withAlpha (0.55f));
+    g.drawRect (area, 1.0f);
+}
+
+void drawScrew (juce::Graphics& g, juce::Point<float> centre, bool dark)
+{
+    const auto radius = 3.4f;
+    const auto body = juce::Rectangle<float> (radius * 2.0f, radius * 2.0f).withCentre (centre);
+
+    if (dark)
+    {
+        juce::ColourGradient metal (juce::Colour (0xff5a5a60), body.getX(), body.getY(),
+                                     juce::Colour (0xff111113), body.getRight(), body.getBottom(), false);
+        g.setGradientFill (metal);
+        g.fillEllipse (body);
+        g.setColour (juce::Colours::black.withAlpha (0.7f));
+        g.drawLine (centre.x - 2.2f, centre.y - 2.2f, centre.x + 2.2f, centre.y + 2.2f, 1.0f);
+    }
+    else
+    {
+        juce::ColourGradient metal (juce::Colour (0xffd8d5cd), body.getX(), body.getY(),
+                                     juce::Colour (0xff55524c), body.getRight(), body.getBottom(), false);
+        g.setGradientFill (metal);
+        g.fillEllipse (body);
+        g.setColour (juce::Colour (0xff2a2a2a).withAlpha (0.8f));
+        g.drawLine (centre.x - 2.2f, centre.y, centre.x + 2.2f, centre.y, 1.0f);
+        g.drawLine (centre.x, centre.y - 2.2f, centre.x, centre.y + 2.2f, 1.0f);
+    }
+
+    g.setColour (juce::Colours::white.withAlpha (0.14f));
+    g.drawEllipse (body.reduced (2.2f), 0.6f);
+}
+} // namespace
+
 void PanelBase::paint (juce::Graphics& g)
 {
     const auto bounds = getLocalBounds().toFloat();
 
-    juce::ColourGradient background (juce::Colour (0xff232327), 0.0f, 0.0f,
-                                     juce::Colour (0xff0f0f11), 0.0f, bounds.getBottom(), false);
-    background.addColour (0.45, juce::Colour (0xff1a1a1d));
-    g.setGradientFill (background);
-    g.fillRect (bounds);
+    // ---- Panel base -------------------------------------------------------
+    if (finish_ == Finish::Matriarch)
+    {
+        g.setColour (juce::Colour (0xff0a0a0b));
+        g.fillRect (bounds);
 
-    // Brushed-metal texture.
-    g.setColour (juce::Colours::white.withAlpha (0.018f));
-    for (float y = 0.0f; y < bounds.getHeight(); y += 3.0f)
-        g.drawHorizontalLine ((int) y, 0.0f, bounds.getWidth());
+        for (float y = 0.0f; y < bounds.getHeight(); y += 2.0f)
+        {
+            const auto alpha = 0.012f + 0.012f * std::sin (y * 0.13f);
+            g.setColour (juce::Colours::white.withAlpha (alpha));
+            g.drawHorizontalLine ((int) y, 0.0f, bounds.getWidth());
+        }
 
-    // Panel border.
-    g.setColour (juce::Colour (0xff000000).withAlpha (0.7f));
-    g.drawRect (getLocalBounds(), 2);
+        // Black wooden end cheeks.
+        for (const auto& side : { juce::Rectangle<float> (0.0f, 0.0f, 6.0f, bounds.getHeight()),
+                                  juce::Rectangle<float> (bounds.getRight() - 6.0f, 0.0f, 6.0f,
+                                                          bounds.getHeight()) })
+        {
+            g.setColour (juce::Colour (0xff040405));
+            g.fillRect (side);
+            g.setColour (juce::Colour (0xff1b1b1d).withAlpha (0.5f));
+            for (float x = side.getX() + 1.0f; x < side.getRight(); x += 2.0f)
+                g.drawVerticalLine ((int) x, 0.0f, bounds.getHeight());
+        }
+    }
+    else if (finish_ == Finish::PolyBrute)
+    {
+        juce::ColourGradient background (juce::Colour (0xff2c3236), 0.0f, 0.0f,
+                                         juce::Colour (0xff1c2124), 0.0f, bounds.getBottom(), false);
+        g.setGradientFill (background);
+        g.fillRect (bounds);
 
+        for (float y = 0.0f; y < bounds.getHeight(); y += 2.0f)
+        {
+            g.setColour (juce::Colours::white.withAlpha (0.016f));
+            g.drawHorizontalLine ((int) y, 0.0f, bounds.getWidth());
+        }
+
+        drawWood (g, { 0.0f, 0.0f, 8.0f, bounds.getHeight() }, true, 101);
+        drawWood (g, { bounds.getRight() - 8.0f, 0.0f, 8.0f, bounds.getHeight() }, true, 102);
+
+        juce::ColourGradient rail (juce::Colour (0xffc9c7c0), 0.0f, 0.0f,
+                                    juce::Colour (0xff5d5c58), 0.0f, 3.0f, false);
+        g.setGradientFill (rail);
+        g.fillRect (0.0f, 0.0f, bounds.getWidth(), 3.0f);
+    }
+    else
+    {
+        g.setColour (juce::Colour (0xff0d0d0e));
+        g.fillRect (bounds);
+
+        // Moog One sits in a wooden cabinet.
+        const auto frame = 8.0f;
+        drawWood (g, { 0.0f, 0.0f, bounds.getWidth(), frame }, false, 201);
+        drawWood (g, { 0.0f, bounds.getBottom() - frame, bounds.getWidth(), frame }, false, 202);
+        drawWood (g, { 0.0f, 0.0f, frame, bounds.getHeight() }, true, 203);
+        drawWood (g, { bounds.getRight() - frame, 0.0f, frame, bounds.getHeight() }, true, 204);
+
+        g.setColour (juce::Colour (0xffc4bfb2).withAlpha (0.35f));
+        g.drawRect (bounds.reduced (frame + 1.0f, frame + 1.0f), 1.0f);
+
+        // Left / console / right panel separators.
+        juce::ColourGradient trim (juce::Colour (0xffb9b6ad), 0.0f, 0.0f,
+                                    juce::Colour (0xff3c3b38), 0.0f, bounds.getBottom(), false);
+        g.setGradientFill (trim);
+        g.fillRect (772.0f, 8.0f, 2.0f, bounds.getHeight() - 16.0f);
+        g.fillRect (1082.0f, 8.0f, 2.0f, bounds.getHeight() - 16.0f);
+    }
+
+    // Top bevel highlight and bottom shadow.
+    g.setColour (juce::Colours::white.withAlpha (0.08f));
+    g.drawHorizontalLine (0, 0.0f, bounds.getWidth());
+    g.setColour (juce::Colours::black.withAlpha (0.65f));
+    g.drawHorizontalLine (getHeight() - 1, 0.0f, bounds.getWidth());
+
+    // ---- Modules ----------------------------------------------------------
     for (const auto& module : modules_)
     {
         const auto area = module.bounds.toFloat();
-        g.setColour (juce::Colour (0xff151517));
-        g.fillRoundedRectangle (area, 3.0f);
 
-        g.setColour (accent_.withAlpha (0.22f));
-        g.drawRoundedRectangle (area.reduced (0.5f), 3.0f, 1.0f);
+        juce::Colour fill = juce::Colour (0xff0e0e0f);
+        juce::Colour border = juce::Colour (0xff8a8a84);
+        juce::Colour titleColour = juce::Colour (0xfff2efe5);
+        juce::Colour subtitleColour = juce::Colour (0xffb8b4aa);
 
-        g.setColour (accent_.withAlpha (0.9f));
-        g.setFont (juce::Font (juce::FontOptions (12.5f, juce::Font::bold)));
-        g.drawText (module.title.toUpperCase(),
-                    module.bounds.withHeight (15).reduced (7, 0),
-                    juce::Justification::centredLeft);
+        if (finish_ == Finish::PolyBrute)
+        {
+            fill = juce::Colour (0xff20262a);
+            border = juce::Colour (0xff7a8082);
+            titleColour = juce::Colour (0xffeae7df);
+            subtitleColour = juce::Colour (0xffb5b2aa);
+        }
+        else if (finish_ == Finish::MoogOne)
+        {
+            fill = juce::Colour (0xff101012);
+            border = juce::Colour (0xff7c7c82);
+            titleColour = juce::Colour (0xffeae5da);
+            subtitleColour = juce::Colour (0xffb5b0a6);
+        }
+
+        if (module.tone == ModuleTone::Light)
+        {
+            juce::ColourGradient plate (juce::Colour (0xff727678), area.getX(), area.getY(),
+                                         juce::Colour (0xff4c5052), area.getX(), area.getBottom(), false);
+            g.setGradientFill (plate);
+        }
+        else
+        {
+            g.setColour (fill);
+        }
+        g.fillRoundedRectangle (area, 2.0f);
+        g.setColour (border.withAlpha (0.62f));
+        g.drawRoundedRectangle (area.reduced (0.5f), 2.0f, 1.0f);
+
+        // Engraved plate edge.
+        g.setColour (juce::Colours::white.withAlpha (0.035f));
+        g.drawHorizontalLine ((int) area.getY() + 1, area.getX() + 3.0f, area.getRight() - 3.0f);
+
+        auto titleFont = juce::Font (juce::FontOptions (12.0f, juce::Font::bold))
+                             .withExtraKerningFactor (0.12f);
+        g.setFont (titleFont);
+        g.setColour (titleColour);
+
+        const auto titleArea = module.bounds.withHeight (16).reduced (5, 0);
+        g.drawText (module.title.toUpperCase(), titleArea, juce::Justification::centred);
+
+        if (finish_ == Finish::MoogOne && module.title.isNotEmpty())
+        {
+            g.setColour (accent_.withAlpha (0.9f));
+            g.fillRect (juce::Rectangle<float> (area.getX() + 2.0f, area.getY() + 2.0f, 2.0f, 11.0f));
+        }
 
         if (module.subtitle.isNotEmpty())
         {
-            g.setColour (juce::Colour (0xff8f8c85));
-            g.setFont (juce::Font (juce::FontOptions (8.0f)));
-            g.drawText (module.subtitle,
-                        module.bounds.withTrimmedTop (12).withHeight (11).reduced (7, 0),
-                        juce::Justification::centredLeft);
+            g.setColour (subtitleColour);
+            g.setFont (juce::Font (juce::FontOptions (7.5f)));
+            g.drawText (module.subtitle, module.bounds.withTrimmedTop (13).withHeight (9).reduced (5, 0),
+                        juce::Justification::centred);
         }
 
-        g.setColour (juce::Colour (0xffffffff).withAlpha (0.07f));
-        g.drawHorizontalLine (module.bounds.getY() + 24, area.getX() + 6.0f, area.getRight() - 6.0f);
+        g.setColour (juce::Colours::white.withAlpha (0.09f));
+        g.drawHorizontalLine (module.bounds.getY() + 23, area.getX() + 5.0f, area.getRight() - 5.0f);
     }
 
+    // ---- Branding ---------------------------------------------------------
     if (brandMain_.isNotEmpty())
     {
-        g.setColour (juce::Colour (0xffd9d5cc));
-        g.setFont (juce::Font (juce::FontOptions (26.0f)));
-        g.drawText (brandMain_, getLocalBounds().removeFromBottom (44).withTrimmedLeft (18),
-                    juce::Justification::centredLeft);
+        const auto brandArea = getLocalBounds().removeFromBottom (48).withTrimmedLeft (16);
 
-        g.setColour (juce::Colour (0xff8f8c85));
-        g.setFont (juce::Font (juce::FontOptions (9.0f)));
-        g.drawText (brandSub_.toUpperCase(), getLocalBounds().removeFromBottom (44).withTrimmedLeft (220),
-                    juce::Justification::centredLeft);
+        if (finish_ == Finish::Matriarch)
+        {
+            auto font = juce::Font (juce::FontOptions (29.0f, juce::Font::bold))
+                            .withExtraKerningFactor (0.05f);
+            g.setFont (font);
+            g.setColour (juce::Colour (0xfff0ece2));
+
+            juce::Rectangle<int> textArea (brandArea.getX(), brandArea.getY() + 2, 250, 34);
+            g.drawText (brandMain_, textArea, juce::Justification::centredLeft);
+
+            g.setColour (juce::Colour (0xffd9d5cb).withAlpha (0.55f));
+            g.setFont (juce::Font (juce::FontOptions (7.5f)).withExtraKerningFactor (0.28f));
+            g.drawText (brandSub_.toUpperCase(),
+                        brandArea.withTrimmedLeft (222).withHeight (48),
+                        juce::Justification::centredLeft);
+
+            // Moog script mark at the right.
+            const auto logoArea = getLocalBounds().removeFromBottom (44).removeFromRight (110);
+            g.setColour (juce::Colour (0xfff0ece2).withAlpha (0.9f));
+            g.setFont (juce::Font (juce::FontOptions ("Helvetica Neue", 24.0f, juce::Font::bold | juce::Font::italic)));
+            g.drawText ("moog", logoArea, juce::Justification::centred);
+        }
+        else if (finish_ == Finish::PolyBrute)
+        {
+            auto font = juce::Font (juce::FontOptions (27.0f, juce::Font::bold))
+                            .withExtraKerningFactor (0.18f);
+            g.setFont (font);
+            g.setColour (juce::Colour (0xffe8e5de));
+            g.drawText (brandMain_, brandArea, juce::Justification::centredLeft);
+
+            g.setColour (juce::Colour (0xff8f8c85));
+            g.setFont (juce::Font (juce::FontOptions (8.0f)).withExtraKerningFactor (0.4f));
+            g.drawText ("ARTURIA  /  " + brandSub_.toUpperCase(),
+                        brandArea.withTrimmedTop (26), juce::Justification::centredLeft);
+
+            g.setColour (juce::Colour (0xff3f93e8));
+            g.fillRect (juce::Rectangle<float> ((float) brandArea.getX(), (float) brandArea.getY() + 2.0f,
+                                                3.0f, 30.0f));
+        }
+        else
+        {
+            auto font = juce::Font (juce::FontOptions (26.0f, juce::Font::bold))
+                            .withExtraKerningFactor (0.08f);
+            g.setFont (font);
+            g.setColour (juce::Colour (0xffe9e4d8));
+            g.drawText (brandMain_, brandArea, juce::Justification::centredLeft);
+
+            g.setColour (juce::Colour (0xff9a958a));
+            g.setFont (juce::Font (juce::FontOptions (7.5f)).withExtraKerningFactor (0.35f));
+            g.drawText (brandSub_.toUpperCase(), brandArea.withTrimmedTop (26),
+                        juce::Justification::centredLeft);
+
+            g.setColour (juce::Colour (0xffd9a441).withAlpha (0.85f));
+            g.fillRect (juce::Rectangle<float> ((float) brandArea.getX(), (float) brandArea.getY() + 2.0f,
+                                                3.0f, 30.0f));
+        }
     }
 
-    // Screws.
-    g.setColour (juce::Colour (0xff4a4a50));
-    for (const auto& point : { juce::Point<int> (8, 8), juce::Point<int> (getWidth() - 8, 8),
-                               juce::Point<int> (8, getHeight() - 8),
-                               juce::Point<int> (getWidth() - 8, getHeight() - 8) })
+    // ---- Screws and panel edge -------------------------------------------
+    const auto darkScrews = finish_ == Finish::Matriarch;
+    drawScrew (g, { 11.0f, 11.0f }, darkScrews);
+    drawScrew (g, { (float) getWidth() - 11.0f, 11.0f }, darkScrews);
+    drawScrew (g, { 11.0f, (float) getHeight() - 11.0f }, darkScrews);
+    drawScrew (g, { (float) getWidth() - 11.0f, (float) getHeight() - 11.0f }, darkScrews);
+
+    // Wooden cheeks are the outermost layer on the hardware.
+    if (finish_ == Finish::PolyBrute)
     {
-        g.fillEllipse (juce::Rectangle<float> (5.0f, 5.0f).withCentre (point.toFloat()));
-        g.setColour (juce::Colour (0xff0a0a0c));
-        g.drawLine ((float) point.x - 1.5f, (float) point.y, (float) point.x + 1.5f, (float) point.y, 1.0f);
-        g.setColour (juce::Colour (0xff4a4a50));
+        drawWood (g, { 0.0f, 0.0f, 12.0f, bounds.getHeight() }, true, 301);
+        drawWood (g, { bounds.getRight() - 12.0f, 0.0f, 12.0f, bounds.getHeight() }, true, 302);
     }
+    else if (finish_ == Finish::Matriarch)
+    {
+        for (const auto& side : { juce::Rectangle<float> (0.0f, 0.0f, 7.0f, bounds.getHeight()),
+                                  juce::Rectangle<float> (bounds.getRight() - 7.0f, 0.0f, 7.0f,
+                                                          bounds.getHeight()) })
+        {
+            g.setColour (juce::Colour (0xff050506));
+            g.fillRect (side);
+            g.setColour (juce::Colour (0xff202022));
+            g.drawVerticalLine ((int) side.getX(), 0.0f, bounds.getHeight());
+        }
+    }
+
+    g.setColour (juce::Colours::black.withAlpha (0.85f));
+    g.drawRect (getLocalBounds(), 2);
 }
 
 void PanelBase::paintOverChildren (juce::Graphics& g)

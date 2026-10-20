@@ -19,17 +19,19 @@ KeyboardPanel::KeyboardPanel (EditorHost& host)
     keyboard_.setScrollButtonsVisible (false);
     keyboard_.setMidiChannel (1);
 
-    keyboard_.setColour (juce::MidiKeyboardComponent::whiteNoteColourId, juce::Colour (0xffe7e2d8));
-    keyboard_.setColour (juce::MidiKeyboardComponent::blackNoteColourId, juce::Colour (0xff141416));
-    keyboard_.setColour (juce::MidiKeyboardComponent::keySeparatorLineColourId, juce::Colour (0xff55524c));
-    keyboard_.setColour (juce::MidiKeyboardComponent::mouseOverKeyOverlayColourId, juce::Colour (0x33cf4b2e));
-    keyboard_.setColour (juce::MidiKeyboardComponent::keyDownOverlayColourId, juce::Colour (0x66cf4b2e));
-    keyboard_.setColour (juce::MidiKeyboardComponent::shadowColourId, juce::Colour (0x44000000));
+    const auto accent = TriadLookAndFeel::accentFor (host_.instrumentName());
+    keyboard_.setColour (juce::MidiKeyboardComponent::whiteNoteColourId, juce::Colour (0xfff0ebdf));
+    keyboard_.setColour (juce::MidiKeyboardComponent::blackNoteColourId, juce::Colour (0xff0f0f11));
+    keyboard_.setColour (juce::MidiKeyboardComponent::keySeparatorLineColourId, juce::Colour (0xff8d887d));
+    keyboard_.setColour (juce::MidiKeyboardComponent::mouseOverKeyOverlayColourId, accent.withAlpha (0.18f));
+    keyboard_.setColour (juce::MidiKeyboardComponent::keyDownOverlayColourId, accent.withAlpha (0.42f));
+    keyboard_.setColour (juce::MidiKeyboardComponent::shadowColourId, juce::Colour (0x66000000));
 
     pitchWheel_.setSliderStyle (juce::Slider::LinearVertical);
     pitchWheel_.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
     pitchWheel_.setRange (-1.0, 1.0, 0.0);
     pitchWheel_.setValue (0.0, juce::dontSendNotification);
+    pitchWheel_.getProperties().set ("wheel", true);
     pitchWheel_.onValueChange = [this]
     {
         host_.setUiPitchBend ((float) pitchWheel_.getValue());
@@ -39,6 +41,7 @@ KeyboardPanel::KeyboardPanel (EditorHost& host)
     modWheel_.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
     modWheel_.setRange (0.0, 1.0, 0.0);
     modWheel_.setValue (0.0, juce::dontSendNotification);
+    modWheel_.getProperties().set ("wheel", true);
     modWheel_.onValueChange = [this]
     {
         host_.setUiModWheel ((float) modWheel_.getValue());
@@ -109,18 +112,52 @@ KeyboardPanel::~KeyboardPanel()
 void KeyboardPanel::paint (juce::Graphics& g)
 {
     auto bounds = getLocalBounds().toFloat();
-    juce::ColourGradient background (juce::Colour (0xff1a1a1d), 0.0f, 0.0f,
-                                     juce::Colour (0xff0b0b0c), 0.0f, bounds.getBottom(), false);
+    const auto instrument = juce::String (host_.definition().id);
+    const auto wood = instrument != "matriarch";
+
+    juce::ColourGradient background (juce::Colour (0xff1e1e21), 0.0f, 0.0f,
+                                     juce::Colour (0xff08080a), 0.0f, bounds.getBottom(), false);
     g.setGradientFill (background);
     g.fillRect (bounds);
+
+    // Wooden end cheeks and front rail.
+    if (wood)
+    {
+        for (const auto& side : { juce::Rectangle<float> (0.0f, 0.0f, 13.0f, bounds.getHeight()),
+                                  juce::Rectangle<float> (bounds.getRight() - 13.0f, 0.0f, 13.0f,
+                                                          bounds.getHeight()) })
+        {
+            juce::ColourGradient grain (juce::Colour (0xff6f4224), side.getX(), 0.0f,
+                                         juce::Colour (0xff2f1b0f), side.getRight(), 0.0f, false);
+            grain.addColour (0.45, juce::Colour (0xff5a331b));
+            g.setGradientFill (grain);
+            g.fillRect (side);
+
+            g.setColour (juce::Colours::black.withAlpha (0.25f));
+            for (float x = side.getX() + 2.0f; x < side.getRight(); x += 3.0f)
+                g.drawVerticalLine ((int) x, 0.0f, bounds.getHeight());
+        }
+    }
+    else
+    {
+        g.setColour (juce::Colour (0xff050506));
+        g.fillRect (0.0f, 0.0f, 10.0f, bounds.getHeight());
+        g.fillRect (bounds.getRight() - 10.0f, 0.0f, 10.0f, bounds.getHeight());
+    }
+
+    // Felt strip above the keybed.
+    g.setColour (juce::Colour (0xff3a0d0c));
+    g.fillRect (bounds.getX() + 14.0f, 6.0f, bounds.getWidth() - 28.0f, 4.0f);
+    g.setColour (juce::Colour (0xff6b1a17).withAlpha (0.7f));
+    g.fillRect (bounds.getX() + 14.0f, 6.0f, bounds.getWidth() - 28.0f, 1.2f);
 
     g.setColour (juce::Colour (0xffffffff).withAlpha (0.06f));
     g.drawLine (0.0f, 0.0f, bounds.getWidth(), 0.0f, 1.0f);
 
-    g.setColour (juce::Colour (0xff9c9992).withAlpha (0.7f));
-    g.setFont (juce::Font (juce::FontOptions (8.0f)));
-    g.drawText ("ANALOG TRIAD  /  " + host_.instrumentName().toUpperCase(),
-                getLocalBounds().removeFromBottom (14).reduced (18, 0),
+    g.setColour (juce::Colour (0xffb9b5ab).withAlpha (0.8f));
+    g.setFont (juce::Font (juce::FontOptions (8.0f)).withExtraKerningFactor (0.22f));
+    g.drawText (host_.instrumentName().toUpperCase() + "   /   SAKURAENTROPIA",
+                getLocalBounds().removeFromBottom (14).reduced (22, 0),
                 juce::Justification::centredLeft);
 }
 

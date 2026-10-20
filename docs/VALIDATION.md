@@ -61,6 +61,18 @@ Start 2: triad_factory_presets ... Passed
 
 The first Matriarch build computed frequency from semitone offsets as if they were MIDI note numbers (`noteToHz(note - 60)`), producing a pitch roughly five octaves too low and a keyboard that did not match the played note. It now uses `noteToHz(60 + semitones)`, and the on-screen range matches the hardware F1–F5 49-key layout. The regression is covered by the tuning test.
 
+## CPU measurement (offline benchmark)
+
+Rendered 10 seconds of audio per instrument at 256-sample blocks on the Apple Silicon host (single process, default patches, notes held across the case):
+
+| Instrument | Voices | 48 kHz | 96 kHz |
+|---|---:|---:|---:|
+| Matriarch | 4 (paraphonic) | 0.041 s → 242× realtime | 0.080 s → 125× realtime |
+| PolyBrute | 6 | 0.289 s → 35× realtime | 0.600 s → 17× realtime |
+| Moog One | 8 | 0.355 s → 28× realtime | 0.730 s → 14× realtime |
+
+This is a synthetic offline benchmark, not a DAW CPU-meter reading. Host buffer size, effects, automation and multiple instances will change the result.
+
 ## AU validation
 
 Installed to `~/Library/Audio/Plug-Ins/Components`, then:
@@ -100,6 +112,7 @@ Result: `SUCCESS` for all three at strictness level 5. Matriarch was additionall
   - Moog One window shows the three-part console, per-part VCOs/filters/envelopes/LFOs/matrix/effects and the 61-key keyboard.
 - Parameter changes update audio and survive project-style state calls (pluginval state tests).
 - The `INIT` button resets all parameters.
+- The PolyBrute and Moog One panels were re-laid out from the manual diagrams after the last screenshot pass; the rebuilt binaries compile and pass the engine tests, but the final visual pass on those two panels was interrupted by the machine locking. This is recorded as pending visual review.
 
 Screenshots were captured locally for layout review. They are not committed because they contain unrelated desktop content.
 

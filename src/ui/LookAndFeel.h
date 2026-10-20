@@ -5,6 +5,13 @@
 namespace triad::ui
 {
 
+enum class HardwareStyle
+{
+    Matriarch,
+    PolyBrute,
+    MoogOne
+};
+
 class TriadLookAndFeel final : public juce::LookAndFeel_V4
 {
 public:
@@ -40,7 +47,12 @@ public:
 
     juce::Colour accent { 0xffcf4b2e };
 
+    void setHardwareStyle (HardwareStyle style) { style_ = style; }
+    HardwareStyle hardwareStyle() const { return style_; }
+
 private:
+    HardwareStyle style_ = HardwareStyle::Matriarch;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TriadLookAndFeel)
 };
 

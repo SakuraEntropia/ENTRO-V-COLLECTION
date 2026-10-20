@@ -53,36 +53,48 @@ void HardwareSwitch::paint (juce::Graphics& g)
 {
     auto bounds = getLocalBounds().toFloat().reduced (1.0f);
 
-    g.setColour (juce::Colour (0xff1d1d22));
+    juce::ColourGradient plate (juce::Colour (0xff3a3a3f), bounds.getX(), bounds.getY(),
+                                 juce::Colour (0xff121214), bounds.getX(), bounds.getBottom(), false);
+    g.setGradientFill (plate);
     g.fillRoundedRectangle (bounds, 3.0f);
-    g.setColour (juce::Colour (0xff55555d));
+    g.setColour (juce::Colour (0xff6f6f76).withAlpha (0.85f));
     g.drawRoundedRectangle (bounds.reduced (0.5f), 3.0f, 1.0f);
+    g.setColour (juce::Colours::white.withAlpha (0.08f));
+    g.drawHorizontalLine ((int) bounds.getY() + 1, bounds.getX() + 5.0f, bounds.getRight() - 5.0f);
 
-    const auto dotArea = bounds.removeFromRight (16.0f).reduced (4.0f, 5.0f);
+    const auto dotArea = bounds.removeFromRight (15.0f).reduced (3.0f, 4.0f);
     const auto count = positions_;
     const auto step = count > 1 ? dotArea.getHeight() / (float) (count - 1) : 0.0f;
+    const auto pivot = juce::Point<float> (dotArea.getCentreX(), bounds.getCentreY());
 
     for (int i = 0; i < count; ++i)
     {
         const auto point = juce::Point<float> (dotArea.getCentreX(), dotArea.getY() + step * (float) i + 1.0f);
         const auto active = i == current_;
 
-        if (active)
-        {
-            g.setColour (accent_.withAlpha (0.28f));
-            g.fillEllipse (juce::Rectangle<float> (13.0f, 13.0f).withCentre (point));
-        }
-
-        g.setColour (active ? accent_ : juce::Colour (0xff8d8a93));
-        g.fillEllipse (juce::Rectangle<float> (active ? 6.0f : 4.0f, active ? 6.0f : 4.0f)
+        g.setColour (active ? accent_.withAlpha (0.28f) : juce::Colours::white.withAlpha (0.04f));
+        g.fillEllipse (juce::Rectangle<float> (11.0f, 11.0f).withCentre (point));
+        g.setColour (active ? accent_ : juce::Colour (0xff8a8790));
+        g.fillEllipse (juce::Rectangle<float> (active ? 5.5f : 3.6f, active ? 5.5f : 3.6f)
                            .withCentre (point));
     }
 
-    const auto textArea = bounds.reduced (6.0f, 0.0f).withTrimmedRight (4.0f);
-    g.setColour (accent_.brighter (0.25f));
-    g.setFont (juce::Font (juce::FontOptions (9.5f, juce::Font::bold)));
+    // Chrome toggle lever.
+    const auto activePoint = juce::Point<float> (dotArea.getCentreX(),
+                                                 dotArea.getY() + step * (float) current_ + 1.0f);
+    g.setColour (juce::Colours::black.withAlpha (0.55f));
+    g.drawLine ({ pivot, activePoint }, 3.6f);
+    g.setColour (juce::Colour (0xffd8d5cd));
+    g.drawLine ({ pivot, activePoint }, 2.0f);
+    g.setColour (juce::Colour (0xfff4f1e8));
+    g.fillEllipse (juce::Rectangle<float> (6.0f, 6.0f)
+                       .withCentre (pivot.translated (0.0f, 0.0f)));
+
+    const auto textArea = bounds.reduced (6.0f, 0.0f).withTrimmedRight (3.0f);
+    g.setColour (accent_.brighter (0.35f));
+    g.setFont (juce::Font (juce::FontOptions (9.0f, juce::Font::bold)));
     g.drawFittedText (labels_[juce::jlimit (0, labels_.size() - 1, current_)], textArea.toNearestInt(),
-                      juce::Justification::centredLeft, 1, 0.65f);
+                      juce::Justification::centredLeft, 1, 0.62f);
 }
 
 void HardwareSwitch::mouseDown (const juce::MouseEvent& event)
@@ -145,30 +157,45 @@ void LedButton::setOn (float value)
 void LedButton::paint (juce::Graphics& g)
 {
     auto bounds = getLocalBounds().toFloat().reduced (1.0f);
-    g.setColour (juce::Colour (0xff17171a));
-    g.fillRoundedRectangle (bounds, 4.0f);
-    g.setColour (juce::Colour (0xff43434a));
-    g.drawRoundedRectangle (bounds.reduced (0.5f), 4.0f, 1.0f);
 
-    const auto ledRect = juce::Rectangle<float> (10.0f, 10.0f)
-                             .withCentre ({ bounds.getRight() - 12.0f, bounds.getCentreY() });
+    // Metal bezel.
+    juce::ColourGradient plate (juce::Colour (0xff44444a), bounds.getX(), bounds.getY(),
+                                 juce::Colour (0xff151518), bounds.getX(), bounds.getBottom(), false);
+    g.setGradientFill (plate);
+    g.fillRoundedRectangle (bounds, 3.5f);
 
+    auto inner = bounds.reduced (2.5f);
     if (on_)
     {
-        g.setColour (accent_.withAlpha (0.35f));
-        g.fillEllipse (ledRect.expanded (4.5f));
-        g.setColour (accent_.brighter (0.4f));
+        juce::ColourGradient lit (accent_.brighter (0.35f), inner.getCentreX(), inner.getY(),
+                                   accent_.darker (0.45f), inner.getCentreX(), inner.getBottom(), false);
+        g.setGradientFill (lit);
+        g.fillRoundedRectangle (inner, 2.5f);
+
+        g.setColour (accent_.brighter (0.6f).withAlpha (0.35f));
+        g.drawRoundedRectangle (inner.expanded (1.0f), 3.0f, 1.2f);
     }
     else
     {
-        g.setColour (juce::Colour (0xff2b2b30));
+        g.setColour (juce::Colour (0xff1a1a1d));
+        g.fillRoundedRectangle (inner, 2.5f);
+        g.setColour (juce::Colour (0xff3a3a40));
+        g.drawRoundedRectangle (inner, 2.5f, 0.8f);
     }
-    g.fillEllipse (ledRect);
 
-    g.setColour (on_ ? juce::Colour (0xfff2ede2) : juce::Colour (0xff9c9992));
-    g.setFont (juce::Font (juce::FontOptions (10.5f, juce::Font::bold)));
-    g.drawFittedText (label_, getLocalBounds().reduced (6, 0).withTrimmedRight (18),
-                      juce::Justification::centredLeft, 1);
+    g.setColour (juce::Colours::white.withAlpha (0.09f));
+    g.drawHorizontalLine ((int) bounds.getY() + 1, bounds.getX() + 4.0f, bounds.getRight() - 4.0f);
+
+    g.setColour (on_ ? juce::Colour (0xfff6f1e6) : juce::Colour (0xffbdb9b0));
+    g.setFont (juce::Font (juce::FontOptions (9.5f, juce::Font::bold)));
+    g.drawFittedText (label_, inner.toNearestInt().reduced (7, 0),
+                      juce::Justification::centredLeft, 1, 0.72f);
+
+    // Small status jewel.
+    const auto jewel = juce::Rectangle<float> (5.0f, 5.0f)
+                           .withCentre ({ bounds.getRight() - 8.0f, bounds.getCentreY() });
+    g.setColour (on_ ? juce::Colours::white.withAlpha (0.9f) : juce::Colour (0xff3a3a3e));
+    g.fillEllipse (jewel);
 }
 
 void LedButton::mouseDown (const juce::MouseEvent&)
@@ -190,41 +217,42 @@ Jack::Jack (int patchIndex, bool isOutput, juce::String name, juce::Colour accen
 
 void Jack::paint (juce::Graphics& g)
 {
-    const auto bounds = getLocalBounds().toFloat().reduced (1.0f);
+    const auto bounds = getLocalBounds().toFloat().reduced (0.5f);
     const auto radius = juce::jmin (bounds.getWidth(), bounds.getHeight()) * 0.5f;
     const auto centre = bounds.getCentre();
 
     if (selected_ || hover_)
     {
-        g.setColour (accent_.withAlpha (selected_ ? 0.45f : 0.25f));
-        g.fillEllipse (juce::Rectangle<float> (radius * 2.0f + 6.0f, radius * 2.0f + 6.0f).withCentre (centre));
+        g.setColour (accent_.withAlpha (selected_ ? 0.5f : 0.25f));
+        g.fillEllipse (juce::Rectangle<float> (radius * 2.0f + 7.0f, radius * 2.0f + 7.0f)
+                           .withCentre (centre));
     }
 
-    // Cable count badge.
     if (cableCount_ > 0)
     {
-        g.setColour (accent_.withAlpha (0.85f));
+        g.setColour (accent_);
         g.fillEllipse (juce::Rectangle<float> (5.0f, 5.0f)
-                           .withCentre ({ bounds.getRight() - 1.5f, bounds.getY() + 1.5f }));
+                           .withCentre ({ bounds.getRight() - 1.0f, bounds.getY() + 1.0f }));
     }
 
     const auto outer = juce::Rectangle<float> (radius * 2.0f, radius * 2.0f).withCentre (centre);
-    juce::ColourGradient ring (juce::Colour (0xff8a8a90), outer.getX(), outer.getY(),
-                               juce::Colour (0xff303035), outer.getRight(), outer.getBottom(), false);
+
+    juce::ColourGradient ring (juce::Colour (0xffd8d4ca), outer.getX(), outer.getY(),
+                                juce::Colour (0xff3b3a38), outer.getRight(), outer.getBottom(), false);
+    ring.addColour (0.45, juce::Colour (0xff8b877f));
     g.setGradientFill (ring);
     g.fillEllipse (outer);
 
-    g.setColour (juce::Colours::black);
-    g.fillEllipse (outer.reduced (radius * 0.38f));
+    g.setColour (juce::Colours::black.withAlpha (0.95f));
+    g.fillEllipse (outer.reduced (radius * 0.3f));
 
-    g.setColour (juce::Colour (0xff0a0a0c));
-    g.fillEllipse (outer.reduced (radius * 0.62f));
+    juce::ColourGradient hole (juce::Colour (0xff161618), centre.x, centre.y,
+                                juce::Colour (0xff000000), centre.x, bounds.getBottom(), false);
+    g.setGradientFill (hole);
+    g.fillEllipse (outer.reduced (radius * 0.58f));
 
-    if (hover_)
-    {
-        g.setColour (juce::Colours::white.withAlpha (0.25f));
-        g.drawEllipse (outer.reduced (0.5f), 1.0f);
-    }
+    g.setColour (juce::Colours::white.withAlpha (0.18f));
+    g.drawEllipse (outer.reduced (radius * 0.42f), 0.7f);
 }
 
 void Jack::mouseDown (const juce::MouseEvent& event)

@@ -86,10 +86,13 @@ public:
         g.drawText (host_.instrumentName().toUpperCase(), 62, 8, 320, 22,
                     juce::Justification::centredLeft);
 
-        g.setColour (juce::Colour (0xff8f8c85));
-        g.setFont (juce::Font (juce::FontOptions (8.5f)));
-        g.drawText ("VIRTUAL ANALOG INSTRUMENT  /  SAKURAENTROPIA",
-                    62, 27, 380, 12, juce::Justification::centredLeft);
+        const auto id = juce::String (host_.definition().id);
+        const auto subtitle = id == "matriarch" ? "SEMI-MODULAR ANALOG SYNTHESIZER"
+                              : (id == "polybrute" ? "SIX-VOICE ANALOG SYNTHESIZER"
+                                                   : "POLYPHONIC ANALOG SYNTHESIZER");
+        g.setColour (juce::Colour (0xff9a968d));
+        g.setFont (juce::Font (juce::FontOptions (8.5f)).withExtraKerningFactor (0.16f));
+        g.drawText (subtitle, 62, 27, 420, 12, juce::Justification::centredLeft);
 
         g.setColour (accent_);
         g.fillRect (29.0f, bounds.getBottom() - 3.0f, bounds.getWidth() - 58.0f, 1.5f);
@@ -169,7 +172,12 @@ TriadEditor::TriadEditor (EditorHost& host)
       host_ (host),
       keyboard_ (host)
 {
+    const auto instrumentId = juce::String (host.definition().id);
     lookAndFeel_.accent = TriadLookAndFeel::accentFor (host.definition().displayName);
+    lookAndFeel_.setHardwareStyle (instrumentId == "polybrute"
+                                       ? HardwareStyle::PolyBrute
+                                       : (instrumentId == "moogone" ? HardwareStyle::MoogOne
+                                                                     : HardwareStyle::Matriarch));
     setLookAndFeel (&lookAndFeel_);
 
     header_ = std::make_unique<HeaderBar> (host);
@@ -189,12 +197,12 @@ TriadEditor::TriadEditor (EditorHost& host)
     if (id == "polybrute")
     {
         defaultWidth = 1680;
-        defaultHeight = 720;
+        defaultHeight = 1000;
     }
     else if (id == "moogone" || id == "one")
     {
         defaultWidth = 1680;
-        defaultHeight = 760;
+        defaultHeight = 800;
     }
 
     auto maxWidth = 3000;
@@ -258,6 +266,9 @@ void TriadEditor::timerCallback()
         header_->refresh();
 
     keyboard_.refresh();
+
+    if (panel_ != nullptr)
+        panel_->pollPatchCables();
 
     if (auto* onePanel = dynamic_cast<OnePanel*> (panel_.get()))
     {

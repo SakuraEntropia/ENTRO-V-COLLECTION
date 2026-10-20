@@ -34,6 +34,7 @@ All parameters have stable string IDs, natural-unit ranges and group metadata. A
 | Host automation | Implemented, partial | block-rate snapshot; sample-accurate automation is not claimed |
 | MIDI event offsets | Implemented | render is split at event sample offsets |
 | Keyboard UI | Implemented | Matriarch F1–F5; PolyBrute/One 61 keys C2–C7; wheels send bend/CC1 |
+| Panel layout | Implemented, documented | Matriarch single-row manual order; PolyBrute three-row synth block; One left/centre/right sections (see `docs/LAYOUT.md`) |
 | Presets | Implemented, tested | 4 per instrument; all IDs/ranges validated by `triad_preset_tests` |
 | Patch cables | Implemented (Matriarch) | click output → input, right-click clears; saved in state |
 | Sequencer/arpeggiator | Partial | one shared 16-step arp/step engine per instance, driven by the host wrapper |

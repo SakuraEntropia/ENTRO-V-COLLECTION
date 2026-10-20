@@ -31,8 +31,12 @@ public:
 
     void setBranding (juce::String mainText, juce::String subText);
 
-    void addModule (const juce::String& title, juce::Rectangle<int> area);
-    void addModule (const juce::String& title, const juce::String& subtitle, juce::Rectangle<int> area);
+    enum class ModuleTone { Dark, Light };
+
+    void addModule (const juce::String& title, juce::Rectangle<int> area,
+                    ModuleTone tone = ModuleTone::Dark);
+    void addModule (const juce::String& title, const juce::String& subtitle,
+                    juce::Rectangle<int> area, ModuleTone tone = ModuleTone::Dark);
 
     juce::Slider& addKnob (const juce::String& paramId, const juce::String& label,
                            juce::Rectangle<int> area);
@@ -61,6 +65,7 @@ public:
 
     void clearControls();
     void refreshPatchCables();
+    void pollPatchCables();
 
     juce::Slider& knobFor (const juce::String& paramId);
 
@@ -80,9 +85,13 @@ protected:
         juce::String title;
         juce::String subtitle;
         juce::Rectangle<int> bounds;
+        ModuleTone tone = ModuleTone::Dark;
     };
 
     std::vector<ModuleFrame> modules_;
+
+    enum class Finish { Matriarch, PolyBrute, MoogOne };
+    Finish finish_ = Finish::Matriarch;
 
 private:
     juce::RangedAudioParameter* parameterFor (const juce::String& paramId) const;

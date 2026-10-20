@@ -118,9 +118,7 @@ MatriarchPanel::MatriarchPanel (EditorHost& host)
         addKnob ("mat.lfo.pwAmt", "PULSE WIDTH AMT",
                  { modArea.getX() + 6, y + 256, modArea.getWidth() - 12, 56 });
 
-        auto& sync = addLed ("mat.vco.syncEnable", "SYNC ENABLE",
-                             { modArea.getX() + 6, y + 318, modArea.getWidth() - 12, 24 });
-        sync.setAccent (accent);
+
     }
 
     // -----------------------------------------------------------------------
@@ -170,6 +168,12 @@ MatriarchPanel::MatriarchPanel (EditorHost& host)
                                  { area.getX() + 10, y + 164, area.getWidth() - 20, 24 });
             sync.setAccent (accent);
         }
+        else
+        {
+            auto& sync = addLed ("mat.vco.syncEnable", "SYNC ENABLE",
+                                 { area.getX() + 8, y + 164, area.getWidth() - 16, 24 });
+            sync.setAccent (accent);
+        }
     };
 
     buildOscillator (1, vco1Area);
@@ -186,12 +190,12 @@ MatriarchPanel::MatriarchPanel (EditorHost& host)
                                    "mat.patch.mix.osc4In", "mat.patch.mix.out" },
                                  mixArea, 3, 32);
 
-        const auto width = mixArea.getWidth() - 12;
-        addKnob ("mat.mix.osc1", "OSC 1", { mixArea.getX() + 6, y + 6, width, 58 });
-        addKnob ("mat.mix.osc2", "OSC 2", { mixArea.getX() + 6, y + 68, width, 58 });
-        addKnob ("mat.mix.osc3", "OSC 3", { mixArea.getX() + 6, y + 130, width, 58 });
-        addKnob ("mat.mix.osc4", "OSC 4", { mixArea.getX() + 6, y + 192, width, 58 });
-        addKnob ("mat.mix.noise", "NOISE", { mixArea.getX() + 6, y + 254, width, 58 });
+        const auto cellWidth = (mixArea.getWidth() - 16) / 2;
+        addKnob ("mat.mix.osc1", "OSC 1", { mixArea.getX() + 6, y + 6, cellWidth, 58 });
+        addKnob ("mat.mix.osc2", "OSC 2", { mixArea.getX() + 10 + cellWidth, y + 6, cellWidth, 58 });
+        addKnob ("mat.mix.osc3", "OSC 3", { mixArea.getX() + 6, y + 68, cellWidth, 58 });
+        addKnob ("mat.mix.osc4", "OSC 4", { mixArea.getX() + 10 + cellWidth, y + 68, cellWidth, 58 });
+        addKnob ("mat.mix.noise", "NOISE", { mixArea.getX() + 6, y + 130, mixArea.getWidth() - 12, 58 });
     }
 
     // -----------------------------------------------------------------------
