@@ -37,6 +37,7 @@ int main()
         int lastCategoryIndex = -1;
         int bassCount = 0;
         bool hasReese = false;
+        bool hasKevinEharp = false;
 
         const juce::StringArray categoryOrder { "Bass", "Lead", "Brass", "Pad", "Strings",
                                                 "Winds", "Vocal", "Keyboard", "Classic", "Other",
@@ -61,6 +62,9 @@ int main()
 
             if (preset.name.containsIgnoreCase ("Reese"))
                 hasReese = true;
+
+            if (preset.name == "Kevin Penkin Style Eharp")
+                hasKevinEharp = true;
 
             for (const auto& cell : preset.matrix)
             {
@@ -110,6 +114,9 @@ int main()
         check (presets.size() >= 12, "too few factory presets", definition.id);
         check (bassCount >= 2, "bass category too small", definition.id);
         check (hasReese, "missing Reese bass preset", definition.id);
+
+        if (kind == triad::InstrumentKind::Continuum)
+            check (hasKevinEharp, "missing Kevin Penkin Style Eharp preset", definition.id);
 
         // Render each preset to make sure it is audible, finite and bounded.
         auto renderEngine = triad::makeEngine (kind);
