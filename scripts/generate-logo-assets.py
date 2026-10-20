@@ -153,9 +153,6 @@ def icon_svg(kind: str) -> str:
         black_width = white_width * 0.58
         for octave in range(4):
             octave_x = octave * octave_width
-            for white in range(1, 7):
-                stripes += (f'<rect x="{octave_x + white * white_width - 0.8:.2f}" '
-                            f'y="0" width="1.6" height="1024" fill="#6f1013"/>')
             for offset in (1, 2, 4, 5, 6):
                 x = octave_x + offset * white_width - black_width / 2.0
                 stripes += (f'<rect x="{x:.2f}" y="0" width="{black_width:.2f}" '

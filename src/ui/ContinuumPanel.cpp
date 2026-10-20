@@ -97,13 +97,6 @@ void ContinuumSurface::paint (juce::Graphics& g)
         g.setColour (juce::Colour (0xffd8232a));
         g.fillRect (octaveX, area.getY(), octaveWidth, area.getHeight());
 
-        for (int white = 1; white < 7; ++white)
-        {
-            const auto x = octaveX + (float) white * whiteWidth;
-            g.setColour (juce::Colour (0xff6f1013));
-            g.fillRect (x - 0.7f, area.getY(), 1.4f, area.getHeight());
-        }
-
         for (const auto offset : blackOffsets)
         {
             const auto x = octaveX + (float) offset * whiteWidth - blackWidth * 0.5f;
