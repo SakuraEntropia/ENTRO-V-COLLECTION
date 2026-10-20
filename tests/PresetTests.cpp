@@ -24,7 +24,8 @@ int main()
 {
     for (const auto kind : { triad::InstrumentKind::Matriarch,
                              triad::InstrumentKind::PolyBrute,
-                             triad::InstrumentKind::MoogOne })
+                             triad::InstrumentKind::MoogOne,
+                             triad::InstrumentKind::Continuum })
     {
         const auto engine = triad::makeEngine (kind);
         const auto& definition = engine->definition();
@@ -37,9 +38,12 @@ int main()
         int bassCount = 0;
         bool hasReese = false;
 
-        const juce::StringArray categoryOrder { "Bass", "Lead", "Brass", "Pad", "Pluck",
-                                                "Keys", "Organ", "Strings", "Arp",
-                                                "Sequence", "Split", "FX" };
+        const juce::StringArray categoryOrder { "Bass", "Lead", "Brass", "Pad", "Strings",
+                                                "Winds", "Vocal", "Keyboard", "Classic", "Other",
+                                                "Percussion", "Tuned Percussion", "Processor",
+                                                "Drone", "Midi", "Surface", "Texture", "Pluck",
+                                                "Keys", "Organ", "Arp", "Sequence", "Split",
+                                                "Utility", "FX" };
 
         for (const auto& preset : presets)
         {
@@ -57,6 +61,18 @@ int main()
 
             if (preset.name.containsIgnoreCase ("Reese"))
                 hasReese = true;
+
+            for (const auto& cell : preset.matrix)
+            {
+                check (cell.source >= 0 && cell.source < engine->matrixRows(),
+                       "preset matrix source out of range", preset.name);
+                check (cell.destination >= 0 && cell.destination < engine->matrixColumns(),
+                       "preset matrix destination out of range", preset.name);
+                check (cell.formula >= 0 && cell.formula < engine->matrixFormulaCount(),
+                       "preset matrix formula out of range", preset.name);
+                check (cell.amount >= 0.0f && cell.amount <= 1.0f,
+                       "preset matrix amount out of range", preset.name);
+            }
 
             for (const auto& entry : preset.values)
             {
@@ -114,7 +130,12 @@ int main()
             }
 
             renderEngine->reset();
+            renderEngine->resetMatrix();
             renderEngine->setParameters (values.data(), (int) values.size());
+
+            for (const auto& cell : preset.matrix)
+                renderEngine->setMatrixCell (cell.source, cell.destination,
+                                             cell.formula, cell.amount);
 
             triad::MidiEvent note;
             note.type = triad::MidiEventType::NoteOn;

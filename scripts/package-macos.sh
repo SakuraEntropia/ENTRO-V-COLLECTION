@@ -28,12 +28,13 @@ if [[ ! -d "${BUILD_DIR}" ]]; then
 fi
 
 # target name -> displayed product name (bash 3.2 on macOS lacks associative arrays)
-INSTRUMENTS=("Matriarch" "PolyBrute" "MoogOne")
+INSTRUMENTS=("Matriarch" "PolyBrute" "MoogOne" "Continuum")
 product_name() {
     case "$1" in
         Matriarch) echo "MATRIARCH V" ;;
         PolyBrute) echo "POLYBRUTE V" ;;
         MoogOne)   echo "ONE V" ;;
+        Continuum) echo "CONTINUUM V" ;;
         *)         echo "$1" ;;
     esac
 }

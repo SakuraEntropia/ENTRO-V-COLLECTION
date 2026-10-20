@@ -375,6 +375,7 @@ int main()
     testInstrument (triad::InstrumentKind::Matriarch, "Matriarch");
     testInstrument (triad::InstrumentKind::PolyBrute, "PolyBrute");
     testInstrument (triad::InstrumentKind::MoogOne, "Moog One");
+    testInstrument (triad::InstrumentKind::Continuum, "Continuum");
     testTuning (triad::InstrumentKind::Matriarch, "Matriarch");
     testTuning (triad::InstrumentKind::PolyBrute, "PolyBrute");
     testTuning (triad::InstrumentKind::MoogOne, "Moog One");

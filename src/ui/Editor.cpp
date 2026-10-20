@@ -133,7 +133,8 @@ public:
                     juce::Justification::centredLeft);
         const auto subtitle = id == "matriarch" ? "SEMI-MODULAR ANALOG SYNTHESIZER"
                               : (id == "polybrute" ? "SIX-VOICE ANALOG SYNTHESIZER"
-                                                   : "POLYPHONIC ANALOG SYNTHESIZER");
+                              : (id == "continuum" ? "CONTINUOUS SURFACE / EIGEN MATRIX"
+                                                   : "POLYPHONIC ANALOG SYNTHESIZER"));
         g.setColour (juce::Colour (0xff9a968d));
         g.setFont (juce::Font (juce::FontOptions (8.5f)).withExtraKerningFactor (0.16f));
         g.drawText (subtitle, 70, 27, 420, 12, juce::Justification::centredLeft);
@@ -221,6 +222,9 @@ std::unique_ptr<PanelBase> createInstrumentPanel (EditorHost& host)
     if (id == "moogone" || id == "one")
         return std::make_unique<OnePanel> (host);
 
+    if (id == "continuum")
+        return std::make_unique<ContinuumPanel> (host);
+
     return std::make_unique<MatriarchPanel> (host);
 }
 
@@ -237,8 +241,9 @@ TriadEditor::TriadEditor (EditorHost& host)
     lookAndFeel_.accent = TriadLookAndFeel::accentFor (host.definition().displayName);
     lookAndFeel_.setHardwareStyle (instrumentId == "polybrute"
                                        ? HardwareStyle::PolyBrute
-                                       : (instrumentId == "moogone" ? HardwareStyle::MoogOne
-                                                                     : HardwareStyle::Matriarch));
+                                       : ((instrumentId == "moogone" || instrumentId == "continuum")
+                                              ? HardwareStyle::MoogOne
+                                              : HardwareStyle::Matriarch));
     setLookAndFeel (&lookAndFeel_);
 
     header_ = std::make_unique<HeaderBar> (host);
@@ -269,6 +274,9 @@ TriadEditor::TriadEditor (EditorHost& host)
 
     const auto id = juce::String (host.definition().id);
 
+    if (id == "continuum")
+        keyboard_.setVisible (false);
+
     int defaultWidth = 1600;
     int defaultHeight = 640;
 
@@ -281,6 +289,11 @@ TriadEditor::TriadEditor (EditorHost& host)
     {
         defaultWidth = 1680;
         defaultHeight = 800;
+    }
+    else if (id == "continuum")
+    {
+        defaultWidth = 1680;
+        defaultHeight = 1100;
     }
 
     auto maxWidth = 3000;
@@ -327,7 +340,9 @@ void TriadEditor::resized()
 {
     auto area = getLocalBounds();
     header_->setBounds (area.removeFromTop (52));
-    keyboard_.setBounds (area.removeFromBottom (132));
+
+    if (juce::String (host_.definition().id) != "continuum")
+        keyboard_.setBounds (area.removeFromBottom (132));
 
     auto panelArea = area.reduced (0, 4);
     viewport_.setBounds (panelArea);

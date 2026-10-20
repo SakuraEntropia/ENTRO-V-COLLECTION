@@ -49,6 +49,7 @@ add_library(triad_engines STATIC
     src/engines/Matriarch.cpp
     src/engines/PolyBrute.cpp
     src/engines/One.cpp
+    src/engines/Continuum.cpp
     src/engines/Factory.cpp
 )
 target_link_libraries(triad_engines PUBLIC triad_core)
@@ -67,6 +68,7 @@ add_library(triad_ui STATIC
     src/ui/MatriarchPanel.cpp
     src/ui/PolyBrutePanel.cpp
     src/ui/OnePanel.cpp
+    src/ui/ContinuumPanel.cpp
     src/ui/Editor.cpp
     src/plugin/Presets.cpp
 )
@@ -171,6 +173,7 @@ endfunction()
 triad_add_instrument(Matriarch "MATRIARCH V" Ma01 0)
 triad_add_instrument(PolyBrute "POLYBRUTE V" Pb02 1)
 triad_add_instrument(MoogOne "ONE V" Mo03 2)
+triad_add_instrument(Continuum "CONTINUUM V" Co04 3)
 
 # ---------------------------------------------------------------------------
 # Deterministic, framework-independent tests.

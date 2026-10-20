@@ -26,6 +26,7 @@ jobs:
           Matriarch_VST3 Matriarch_AU Matriarch_Standalone
           PolyBrute_VST3 PolyBrute_AU PolyBrute_Standalone
           MoogOne_VST3 MoogOne_AU MoogOne_Standalone
+          Continuum_VST3 Continuum_AU Continuum_Standalone
           triad_tests triad_preset_tests
 
       - name: Engine tests
@@ -61,6 +62,7 @@ jobs:
           --target Matriarch_VST3 Matriarch_Standalone
           PolyBrute_VST3 PolyBrute_Standalone
           MoogOne_VST3 MoogOne_Standalone
+          Continuum_VST3 Continuum_Standalone
           triad_tests triad_preset_tests
 
       - name: Engine tests

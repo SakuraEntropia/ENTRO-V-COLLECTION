@@ -595,6 +595,20 @@ void TriadAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     if (position < numSamples)
         engine_->render (left + position, right + position, numSamples - position);
 
+    if (isContinuum())
+    {
+        for (int note = 0; note < 128; ++note)
+        {
+            if (! keyboardState_.isNoteOn (1, note))
+                continue;
+
+            const auto base = (size_t) note * 3;
+            engine_->setNoteExpression (note,
+                                        expression_[base + 0].load(),
+                                        expression_[base + 1].load(),
+                                        expression_[base + 2].load());
+        }
+    }
 }
 
 void TriadAudioProcessor::captureMorphB()
@@ -732,6 +746,9 @@ void TriadAudioProcessor::initPatch()
     if (hasPatching())
         clearPatchCables();
 
+    if (engine_->matrixRows() > 0)
+        engine_->resetMatrix();
+
     currentPresetName_ = "INIT";
     currentProgram_ = 0;
 }
@@ -755,12 +772,52 @@ void TriadAudioProcessor::loadFactoryPreset (int index)
 
     const auto& preset = factoryPresets_[(size_t) index];
     applyPresetValues (preset.values, preset.name, true);
+
+    for (const auto& cell : preset.matrix)
+        engine_->setMatrixCell (cell.source, cell.destination, cell.formula, cell.amount);
+
     currentProgram_ = index + 1;
 }
 
 juce::String TriadAudioProcessor::currentPresetName() const
 {
     return currentPresetName_;
+}
+
+void TriadAudioProcessor::continuumNoteOn (int note, float pitchSemitones,
+                                           float timbre, float pressure)
+{
+    if (! isContinuum() || note < 0 || note > 127)
+        return;
+
+    continuumSetExpression (note, pitchSemitones, timbre, pressure);
+    keyboardState_.noteOn (1, note, juce::jlimit (0.05f, 1.0f, pressure));
+}
+
+void TriadAudioProcessor::continuumNoteOff (int note)
+{
+    if (note >= 0 && note <= 127)
+        keyboardState_.noteOff (1, note, 0.0f);
+}
+
+void TriadAudioProcessor::continuumSetExpression (int note, float pitchSemitones,
+                                                  float timbre, float pressure)
+{
+    if (note < 0 || note > 127)
+        return;
+
+    const auto base = (size_t) note * 3;
+    expression_[base + 0].store (juce::jlimit (-48.0f, 48.0f, pitchSemitones));
+    expression_[base + 1].store (juce::jlimit (0.0f, 1.0f, timbre));
+    expression_[base + 2].store (juce::jlimit (0.0f, 1.0f, pressure));
+}
+
+float TriadAudioProcessor::continuumExpression (int note, int axis) const
+{
+    if (note < 0 || note > 127 || axis < 0 || axis > 2)
+        return 0.0f;
+
+    return expression_[(size_t) note * 3 + (size_t) axis].load();
 }
 
 void TriadAudioProcessor::encodeState (juce::ValueTree& state)
@@ -785,6 +842,28 @@ void TriadAudioProcessor::encodeState (juce::ValueTree& state)
         state.addChild (morph, -1, nullptr);
     }
 
+    if (engine_->matrixRows() > 0 && engine_->matrixColumns() > 0)
+    {
+        juce::String matrixData;
+        for (int source = 0; source < engine_->matrixRows(); ++source)
+        {
+            for (int destination = 0; destination < engine_->matrixColumns(); ++destination)
+            {
+                const auto formula = engine_->matrixCellFormula (source, destination);
+                const auto amount = engine_->matrixCellAmount (source, destination);
+                if (formula == 0 && amount <= 0.0f)
+                    continue;
+
+                matrixData << source << ":" << destination << ":" << formula << ":"
+                           << juce::String (amount, 4) << ";";
+            }
+        }
+
+        juce::ValueTree matrix ("EIGEN_MATRIX");
+        matrix.setProperty ("cells", matrixData, nullptr);
+        state.addChild (matrix, -1, nullptr);
+    }
+
     juce::ValueTree sequence ("SEQUENCER");
     for (int i = 0; i < PatternSequencer::maxSteps; ++i)
     {
@@ -797,6 +876,26 @@ void TriadAudioProcessor::encodeState (juce::ValueTree& state)
 
 void TriadAudioProcessor::decodeState (const juce::ValueTree& state)
 {
+    const auto matrixTree = state.getChildWithName ("EIGEN_MATRIX");
+    if (matrixTree.isValid() && engine_->matrixRows() > 0)
+    {
+        engine_->resetMatrix();
+
+        const auto entries = juce::StringArray::fromTokens (
+            matrixTree.getProperty ("cells").toString(), ";", "");
+
+        for (const auto& entry : entries)
+        {
+            if (entry.isEmpty())
+                continue;
+
+            const auto fields = juce::StringArray::fromTokens (entry, ":", "");
+            if (fields.size() == 4)
+                engine_->setMatrixCell (fields[0].getIntValue(), fields[1].getIntValue(),
+                                        fields[2].getIntValue(), fields[3].getFloatValue());
+        }
+    }
+
     const auto morphTree = state.getChildWithName ("MORPH_B");
     if (morphTree.isValid() && morphValues_ != nullptr)
     {

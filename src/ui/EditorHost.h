@@ -58,6 +58,13 @@ public:
     virtual void savePreset() {}
     virtual void loadPreset() {}
     virtual juce::String currentPresetName() const { return "INIT"; }
+
+    // CONTINUUM V continuous surface ---------------------------------------
+    virtual bool isContinuum() const { return false; }
+    virtual void continuumNoteOn (int, float, float, float) {}
+    virtual void continuumNoteOff (int) {}
+    virtual void continuumSetExpression (int, float, float, float) {}
+    virtual float continuumExpression (int, int) const { return 0.0f; }
 };
 
 } // namespace triad

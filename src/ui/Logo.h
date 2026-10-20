@@ -9,7 +9,8 @@ enum class LogoKind
 {
     Matriarch,
     PolyBrute,
-    One
+    One,
+    Continuum
 };
 
 LogoKind logoKindForInstrument (const juce::String& instrumentId);

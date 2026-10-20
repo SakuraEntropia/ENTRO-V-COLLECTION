@@ -1,11 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="420" viewBox="0 0 900 420">
-  <rect width="900" height="420" fill="#121316"/>
-  <text x="450" y="58" fill="#EDE7DC" text-anchor="middle"
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="420" viewBox="0 0 1180 420">
+  <rect width="1180" height="420" fill="#121316"/>
+  <text x="590" y="58" fill="#EDE7DC" text-anchor="middle"
         font-family="Helvetica Neue, Arial, sans-serif" font-size="34"
         font-weight="700" letter-spacing="7">ENTRO <tspan fill="#CF4B2E">V</tspan> COLLECTION</text>
-  <text x="450" y="84" fill="#8F8C85" text-anchor="middle"
+  <text x="590" y="84" fill="#8F8C85" text-anchor="middle"
         font-family="Helvetica Neue, Arial, sans-serif" font-size="9"
-        font-weight="500" letter-spacing="4.4">THREE VIRTUAL-ANALOG INSTRUMENTS</text>
+        font-weight="500" letter-spacing="4.4">FOUR INSTRUMENTS  ·  THREE ANALOG  ·  ONE CONTINUOUS</text>
   <g transform="translate(54,150) scale(1.35)">
 xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 128 128">
   <g stroke="#EDE7DC" stroke-width="10" stroke-linecap="round">
@@ -16,7 +16,7 @@ xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 128 1
   </g>
   <path d="M16 96 H50 L64 106 L78 96 H112" fill="none" stroke="#CF4B2E" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
-  <g transform="translate(306,150) scale(1.35)">
+  <g transform="translate(334,150) scale(1.35)">
 xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 128 128">
   <g stroke="#EDE7DC" stroke-width="7" stroke-linecap="round">
     <line x1="22" y1="94" x2="22" y2="62"/>
@@ -28,15 +28,23 @@ xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 128 1
   <line x1="54" y1="94" x2="54" y2="30" stroke="#3F93E8" stroke-width="7" stroke-linecap="round"/>
   <path d="M16 96 H50 L64 106 L78 96 H112" fill="none" stroke="#3F93E8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
-  <g transform="translate(558,150) scale(1.35)">
+  <g transform="translate(614,150) scale(1.35)">
 xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 128 128">
   <path d="M 54.420 89.483 A 31.000 31.000 0 0 1 33.677 53.555 M 43.257 36.963 A 31.000 31.000 0 0 1 84.743 36.963 M 94.323 53.555 A 31.000 31.000 0 0 1 73.580 89.483" fill="none" stroke="#EDE7DC" stroke-width="9" stroke-linecap="round"/>
   <circle cx="64" cy="60" r="7" fill="#D9A441"/>
   </g>
+  <g transform="translate(894,150) scale(1.35)">
+xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 128 128">
+  <path d="M18 92 C34 20 54 20 64 62 C74 104 94 104 110 32" fill="none"
+        stroke="#EDE7DC" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="64" cy="62" r="6" fill="#2FB6A8"/>
+  </g>
   <text x="140" y="342" fill="#EDE7DC" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="2">MATRIARCH V</text>
   <rect x="98" y="354" width="84" height="3" fill="#CF4B2E"/>
-  <text x="392" y="342" fill="#EDE7DC" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="2">POLYBRUTE V</text>
-  <rect x="350" y="354" width="84" height="3" fill="#3F93E8"/>
-  <text x="644" y="342" fill="#EDE7DC" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="2">ONE V</text>
-  <rect x="602" y="354" width="84" height="3" fill="#D9A441"/>
+  <text x="420" y="342" fill="#EDE7DC" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="2">POLYBRUTE V</text>
+  <rect x="378" y="354" width="84" height="3" fill="#3F93E8"/>
+  <text x="700" y="342" fill="#EDE7DC" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="2">ONE V</text>
+  <rect x="658" y="354" width="84" height="3" fill="#D9A441"/>
+  <text x="980" y="342" fill="#EDE7DC" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="2">CONTINUUM V</text>
+  <rect x="938" y="354" width="84" height="3" fill="#2FB6A8"/>
 </svg>

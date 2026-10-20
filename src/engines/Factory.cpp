@@ -10,6 +10,7 @@ std::unique_ptr<SynthEngine> makeEngine (InstrumentKind kind)
         case InstrumentKind::Matriarch: return makeMatriarchEngine();
         case InstrumentKind::PolyBrute: return makePolyBruteEngine();
         case InstrumentKind::MoogOne:   return makeOneEngine();
+        case InstrumentKind::Continuum: return makeContinuumEngine();
     }
 
     return makeMatriarchEngine();

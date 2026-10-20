@@ -207,13 +207,30 @@ public:
     virtual bool supportsPatching() const { return false; }
     virtual void setPatchCable (int /*fromOutput*/, int /*toInput*/, bool /*connected*/) {}
     virtual void clearPatchCables() {}
+
+    // EaganMatrix-style routing matrix (only implemented by CONTINUUM V).
+    virtual int matrixRows() const { return 0; }
+    virtual int matrixColumns() const { return 0; }
+    virtual std::string matrixSourceName (int) const { return {}; }
+    virtual std::string matrixDestinationName (int) const { return {}; }
+    virtual int matrixFormulaCount() const { return 0; }
+    virtual std::string matrixFormulaName (int) const { return {}; }
+    virtual void setMatrixCell (int, int, int, float) {}
+    virtual int matrixCellFormula (int, int) const { return 0; }
+    virtual float matrixCellAmount (int, int) const { return 0.0f; }
+    virtual void resetMatrix() {}
+
+    /** Per-note continuous expression for the on-screen Continuum surface. */
+    virtual void setNoteExpression (int /*note*/, float /*pitchSemitones*/,
+                                    float /*timbre01*/, float /*pressure01*/) {}
 };
 
 enum class InstrumentKind
 {
     Matriarch = 0,
     PolyBrute = 1,
-    MoogOne = 2
+    MoogOne = 2,
+    Continuum = 3
 };
 
 /** Small deterministic RNG shared by analog-drift and noise code. */

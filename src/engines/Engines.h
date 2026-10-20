@@ -2,6 +2,7 @@
 
 #include "core/Engine.h"
 #include "engines/Matriarch.h"
+#include "engines/Continuum.h"
 #include "engines/One.h"
 #include "engines/PolyBrute.h"
 

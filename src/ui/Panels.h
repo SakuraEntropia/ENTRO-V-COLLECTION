@@ -2,6 +2,7 @@
 
 #include "ui/EditorHost.h"
 #include "ui/PanelBase.h"
+#include "ui/ContinuumPanel.h"
 
 #include <memory>
 

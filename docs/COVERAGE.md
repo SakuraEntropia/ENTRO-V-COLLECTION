@@ -16,7 +16,8 @@ Legend:
 |---|---:|---:|---:|---|
 | MATRIARCH V | 63 | 79 | 15 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
 | POLYBRUTE V | 117 | 0 | 17 | same |
-| ONE V | 408 (3 × 133 + 9 master) | 0 | 15 | same, channel → part, split/layer |
+| ONE V | 408 (3 × 133 + 9 master) | 0 | 15 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
+| CONTINUUM V | 102 | 0 (16×16 matrix) | 19 | MPE per-note pitch bend / CC74 / pressure; internal 3D surface |
 
 All parameters have stable string IDs, natural-unit ranges and group metadata. All are saved in the APVTS tree and exposed to host automation.
 
@@ -102,7 +103,7 @@ Reference: 2019 manual + 1.8.2 release notes; later firmware not audited page by
 | Item | Status | Notes |
 |---|---|---|
 | macOS arm64 VST3 | Built, tested | pluginval 1.0.4 strictness 5, including GUI tests |
-| macOS AUv2 | Built, tested | `auval` passes for all three |
+| macOS AUv2 | Built, tested | `auval` passes for all four |
 | macOS standalone | Built, tested | launches; used for screenshots; audio device selection is JUCE's panel |
 | Windows x64 | Configured, **not run** | CI workflow written; no Windows runner result yet |
 | Universal binary | Supported, **not built** | `-DTRIAD_UNIVERSAL=ON`; only arm64 artifacts inspected |
@@ -119,3 +120,21 @@ Reference: 2019 manual + 1.8.2 release notes; later firmware not audited page by
 4. Moog One's arpeggiator is shared rather than per-part; external audio and chord memory are absent.
 5. Windows artifacts and real-DAW loading remain unverified.
 6. No VST2, AAX, AUv3 or Linux builds.
+
+
+## CONTINUUM V / EIGEN MATRIX
+
+Reference: [Haken Continuum / EaganMatrix public documentation](https://www.hakenaudio.com/user-guides), especially the Continuum User Guide §8.4 system-preset categories. This is an original matrix engine, not a copy of EaganMatrix DSP or preset data. The public category codes are `ST`, `WI`, `VO`, `KY`, `CL`, `OT`, `PE`, `PT`, `PR`, `DO`, `MD`, `UT`; our bank uses those codes with original sounds.
+
+| Subsystem | Status | Notes |
+|---|---|---|
+| Continuous surface | Implemented, M1 | X pitch, Y timbre, wheel pressure; single-pointer UI; MPE input parsed |
+| EIGEN MATRIX | Implemented, M1 | 16 sources × 16 destinations; formula + amount per cell; UI click/drag |
+| Oscillators | Implemented | five summation-style oscillators, ratio/fine/phase/shape/level/wave |
+| Filters | Implemented | five multimode SVF filters, cutoff/resonance/env amount |
+| Biquad banks | Implemented, M1 | two 8-band banks; 48-band bank reserved for M2 |
+| Delays | Implemented | two delay modules + master delay |
+| Shape generators | Implemented | five generators, eight shapes including S&H |
+| FDN / reverb | Implemented, approximate | existing four-line FDN reverb; not EaganMatrix convolution/recirculator |
+| Formula language | Partial | 12 built-in formulas; user formula VM is M2 |
+| CVC | Not implemented | no hardware CVC output |

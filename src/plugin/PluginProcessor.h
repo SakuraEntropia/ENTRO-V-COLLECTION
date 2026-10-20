@@ -81,6 +81,12 @@ public:
     void loadPreset() override;
     juce::String currentPresetName() const override;
 
+    bool isContinuum() const override { return kind_ == InstrumentKind::Continuum; }
+    void continuumNoteOn (int note, float pitchSemitones, float timbre, float pressure) override;
+    void continuumNoteOff (int note) override;
+    void continuumSetExpression (int note, float pitchSemitones, float timbre, float pressure) override;
+    float continuumExpression (int note, int axis) const override;
+
 private:
     struct ScheduledEvent
     {
@@ -139,6 +145,7 @@ private:
     mutable juce::CriticalSection patchLock_;
     std::vector<PatchCable> patchCables_;
 
+    std::array<std::atomic<float>, 128 * 3> expression_ {};
     std::atomic<int> selectedPart_ { 1 };
     std::atomic<float> uiPitchBend_ { 0.0f };
     std::atomic<float> uiModWheel_ { 0.0f };

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#24252a"/>
+      <stop offset="1" stop-color="#0c0d0f"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.45" r="0.5">
+      <stop offset="0" stop-color="#2FB6A8" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#2FB6A8" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="clip"><rect width="1024" height="1024" rx="224"/></clipPath>
+  </defs>
+  <rect width="1024" height="1024" rx="224" fill="url(#bg)"/>
+  <g clip-path="url(#clip)"><rect x="0" y="0" width="28" height="1024" fill="#c51f27"/><rect x="42" y="0" width="28" height="1024" fill="#c51f27"/><rect x="84" y="0" width="28" height="1024" fill="#c51f27"/><rect x="126" y="0" width="28" height="1024" fill="#c51f27"/><rect x="168" y="0" width="28" height="1024" fill="#c51f27"/><rect x="210" y="0" width="28" height="1024" fill="#c51f27"/><rect x="252" y="0" width="28" height="1024" fill="#c51f27"/><rect x="294" y="0" width="28" height="1024" fill="#c51f27"/><rect x="336" y="0" width="28" height="1024" fill="#c51f27"/><rect x="378" y="0" width="28" height="1024" fill="#c51f27"/><rect x="420" y="0" width="28" height="1024" fill="#c51f27"/><rect x="462" y="0" width="28" height="1024" fill="#c51f27"/><rect x="504" y="0" width="28" height="1024" fill="#c51f27"/><rect x="546" y="0" width="28" height="1024" fill="#c51f27"/><rect x="588" y="0" width="28" height="1024" fill="#c51f27"/><rect x="630" y="0" width="28" height="1024" fill="#c51f27"/><rect x="672" y="0" width="28" height="1024" fill="#c51f27"/><rect x="714" y="0" width="28" height="1024" fill="#c51f27"/><rect x="756" y="0" width="28" height="1024" fill="#c51f27"/><rect x="798" y="0" width="28" height="1024" fill="#c51f27"/><rect x="840" y="0" width="28" height="1024" fill="#c51f27"/><rect x="882" y="0" width="28" height="1024" fill="#c51f27"/><rect x="924" y="0" width="28" height="1024" fill="#c51f27"/><rect x="966" y="0" width="28" height="1024" fill="#c51f27"/><rect x="1008" y="0" width="28" height="1024" fill="#c51f27"/><rect x="1050" y="0" width="28" height="1024" fill="#c51f27"/></g>
+  <rect width="1024" height="1024" rx="224" fill="url(#glow)"/>
+  <rect x="26" y="26" width="972" height="972" rx="202" fill="none"
+        stroke="#ffffff" stroke-opacity="0.10" stroke-width="3"/>
+  <g transform="translate(192,192) scale(5)">
+xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 128 128">
+  <path d="M18 92 C34 20 54 20 64 62 C74 104 94 104 110 32" fill="none"
+        stroke="#EDE7DC" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="64" cy="62" r="6" fill="#2FB6A8"/>
+  </g>
+</svg>

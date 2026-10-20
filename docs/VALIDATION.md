@@ -49,7 +49,7 @@ Start 2: triad_factory_presets ... Passed
 `triad_engine_contracts` covers:
 
 - unique parameter IDs, unique patch-point IDs, defaults inside ranges;
-- finite output with energy > 1e-6 at 44.1, 48 and 96 kHz for all three engines;
+- finite output with energy > 1e-6 at 44.1, 48 and 96 kHz for all four engines;
 - 12-note overlap, sustain pedal, pitch bend, channel pressure, all-notes-off;
 - every parameter at minimum and maximum;
 - Matriarch patch-cable creation and clearing;
@@ -83,7 +83,7 @@ auval -v aumu Pb02 Tria   # PolyBrute
 auval -v aumu Mo03 Tria   # Moog One
 ```
 
-Result for all three:
+Result for all four:
 
 ```
 * * PASS
@@ -102,7 +102,7 @@ pluginval --strictness-level 5 --output-dir /tmp/pv-pb  "…/POLYBRUTE V.vst3"
 pluginval --strictness-level 5 --output-dir /tmp/pv-one "…/ONE V.vst3"
 ```
 
-Result: `SUCCESS` for all three at strictness level 5. Matriarch was additionally run with GUI tests enabled and passed. PolyBrute and Moog One were run with the default test set (GUI tests included) in the final pass.
+Result: `SUCCESS` for all four at strictness level 5. Matriarch was additionally run with GUI tests enabled and passed. PolyBrute, ONE V and CONTINUUM V were run with the default test set (GUI tests included) in the final pass.
 
 ## Manual smoke checks
 
@@ -112,10 +112,12 @@ Result: `SUCCESS` for all three at strictness level 5. Matriarch was additionall
   - Moog One window shows the three-part console, per-part VCOs/filters/envelopes/LFOs/matrix/effects and the 61-key keyboard.
 - Parameter changes update audio and survive project-style state calls (pluginval state tests).
 - The `INIT` button resets all parameters.
+- CONTINUUM V launches with the surface and EIGEN MATRIX; its preset browser shows the Bass/Lead/Brass/Pad/Surface/Texture/Strings/FX bank.
 - `BROWSE` opens the searchable preset browser; the category filter, text search, list, detail pane, Load and Escape/Close paths were exercised in the standalone build.
 - The PolyBrute and ONE V panels were re-laid out from the manual diagrams and visually checked after the last build; both run with zero overlapping control bounds in the layout dump.
 - The header and panel-footer instrument marks render from the same vector grid as the SVG assets. Standalone bundles carry a real `AppIcon.icns` (443,685 / 473,960 / 501,764 bytes), not JUCE's empty 8-byte placeholder; `MATRIARCH V`, `POLYBRUTE V` and `ONE V` all resolve their icon in `Info.plist`. JUCE `ICON_BIG` is fed a 1024 PNG and generates the `.icns`/`.ico` itself.
 - The legacy names `Matriarch.app`, `PolyBrute.app` and `Moog One.app` (and their old VST3/AU bundles) were removed from `/Applications`, `dist`, build artefacts and the user plug-in folders.
+- CONTINUUM V's surface uses the original red/black stripe pattern; the EIGEN MATRIX preset bank exposes the original Continuum two-letter categories and 19 original presets. No Haken factory preset data is embedded.
 - The `BROWSE` browser opens with category headings (`Bass`, `Lead`, `Brass`, `Pad`, `Pluck`, `Keys`, `Organ`, `Arp`, `FX`) and prefixed names such as `BA - Reese Bass`.
 
 Screenshots were captured locally for layout review. They are not committed because they contain unrelated desktop content.

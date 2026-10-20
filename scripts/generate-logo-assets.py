@@ -47,6 +47,12 @@ INSTRUMENTS = {
         "accent": "#D9A441",
         "title": "ONE V",
     },
+    "continuum": {
+        "name": "CONTINUUM",
+        "subtitle": "CONTINUOUS SURFACE / EIGEN MATRIX",
+        "accent": "#2FB6A8",
+        "title": "CONTINUUM V",
+    },
 }
 
 
@@ -96,6 +102,14 @@ def mark_svg(kind: str) -> str:
   <line x1="54" y1="94" x2="54" y2="30" stroke="{accent}" stroke-width="7" stroke-linecap="round"/>
   {rail}"""
 
+    elif kind == "continuum":
+        return f"""<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 128 128">
+  <path d="M18 92 C34 20 54 20 64 62 C74 104 94 104 110 32" fill="none"
+        stroke="{SILVER}" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="64" cy="62" r="6" fill="{accent}"/>
+</svg>
+"""
+
     elif kind == "one":
         arcs = " ".join(
             arc(64, 60, 31, a0, a1)
@@ -129,6 +143,15 @@ def lockup_svg(kind: str) -> str:
 
 def icon_svg(kind: str) -> str:
     info = INSTRUMENTS[kind]
+    stripes = ""
+
+    if kind == "continuum":
+        stripes = '<g clip-path="url(#clip)">'
+        for i in range(26):
+            stripes += (f'<rect x="{i * 42}" y="0" width="28" height="1024" '
+                        f'fill="#c51f27"/>')
+        stripes += "</g>"
+
     return f"""<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
@@ -139,8 +162,10 @@ def icon_svg(kind: str) -> str:
       <stop offset="0" stop-color="{info['accent']}" stop-opacity="0.12"/>
       <stop offset="1" stop-color="{info['accent']}" stop-opacity="0"/>
     </radialGradient>
+    <clipPath id="clip"><rect width="1024" height="1024" rx="224"/></clipPath>
   </defs>
   <rect width="1024" height="1024" rx="224" fill="url(#bg)"/>
+  {stripes}
   <rect width="1024" height="1024" rx="224" fill="url(#glow)"/>
   <rect x="26" y="26" width="972" height="972" rx="202" fill="none"
         stroke="#ffffff" stroke-opacity="0.10" stroke-width="3"/>
@@ -155,7 +180,7 @@ def family_svg() -> str:
     marks = []
     labels = []
     x = 54
-    for kind in ("matriarch", "polybrute", "one"):
+    for kind in ("matriarch", "polybrute", "one", "continuum"):
         info = INSTRUMENTS[kind]
         body = mark_svg(kind).split('<svg', 1)[1].rsplit('</svg>', 1)[0].strip()
         marks.append(f'  <g transform="translate({x},150) scale(1.35)">\n{body}\n  </g>')
@@ -165,16 +190,16 @@ def family_svg() -> str:
             f'font-weight="700" letter-spacing="2">{info["title"]}</text>\n'
             f'  <rect x="{x + 44}" y="354" width="84" height="3" fill="{info["accent"]}"/>'
         )
-        x += 252
+        x += 280
 
-    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="900" height="420" viewBox="0 0 900 420">
-  <rect width="900" height="420" fill="{DARK}"/>
-  <text x="450" y="58" fill="{SILVER}" text-anchor="middle"
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="420" viewBox="0 0 1180 420">
+  <rect width="1180" height="420" fill="{DARK}"/>
+  <text x="590" y="58" fill="{SILVER}" text-anchor="middle"
         font-family="Helvetica Neue, Arial, sans-serif" font-size="34"
         font-weight="700" letter-spacing="7">ENTRO <tspan fill="#CF4B2E">V</tspan> COLLECTION</text>
-  <text x="450" y="84" fill="{MUTED}" text-anchor="middle"
+  <text x="590" y="84" fill="{MUTED}" text-anchor="middle"
         font-family="Helvetica Neue, Arial, sans-serif" font-size="9"
-        font-weight="500" letter-spacing="4.4">THREE VIRTUAL-ANALOG INSTRUMENTS</text>
+        font-weight="500" letter-spacing="4.4">FOUR INSTRUMENTS  ·  THREE ANALOG  ·  ONE CONTINUOUS</text>
 {chr(10).join(marks)}
 {chr(10).join(labels)}
 </svg>
@@ -253,7 +278,7 @@ def main() -> None:
 
     family = LOGO / "entro-v-collection.svg"
     family.write_text(family_svg(), encoding="utf-8")
-    render(family, 900, 420, LOGO / "entro-v-collection.png")
+    render(family, 1180, 420, LOGO / "entro-v-collection.png")
 
     print("Generated logo marks, lockups, icons and family image.")
 

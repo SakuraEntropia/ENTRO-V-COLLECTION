@@ -34,6 +34,8 @@ juce::Colour TriadLookAndFeel::metalLight() { return juce::Colour (0xff5a5a60); 
 
 juce::Colour TriadLookAndFeel::accentFor (const juce::String& instrument)
 {
+    if (instrument.containsIgnoreCase ("continuum"))
+        return juce::Colour (0xff2fb6a8);
     if (instrument.containsIgnoreCase ("polybrute"))
         return juce::Colour (0xff3f93e8);
     if (instrument.containsIgnoreCase ("moog one") || instrument.containsIgnoreCase ("one"))

@@ -5,7 +5,7 @@
 - The repository only contains source, tests and docs.
 - JUCE and CMake build trees live outside the repository (`../work/JUCE`, `../work/build-triad`).
 - `triad_core` is framework-independent and has no JUCE include path.
-- `triad_engines` links `triad_core` and contains the three independent engines.
+- `triad_engines` links `triad_core` and contains the four independent engines, including CONTINUUM V / EIGEN MATRIX.
 - `triad_ui` links JUCE modules and the engines; the plugin targets compile the host adapter.
 
 ## Real-time rules
@@ -79,7 +79,7 @@ When adding an engine feature, add a deterministic check that fails if the featu
 
 ## Brand assets
 
-The three instrument marks are defined twice from the same 128-unit grid:
+The four instrument marks are defined twice from the same 128-unit grid:
 
 - vector UI: `src/ui/Logo.cpp`;
 - design/export source: `scripts/generate-logo-assets.py` and `assets/logos/*.svg`.

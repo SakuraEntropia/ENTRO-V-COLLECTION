@@ -37,6 +37,9 @@ LogoKind logoKindForInstrument (const juce::String& instrumentId)
     if (instrumentId == "moogone" || instrumentId == "one")
         return LogoKind::One;
 
+    if (instrumentId == "continuum")
+        return LogoKind::Continuum;
+
     return LogoKind::Matriarch;
 }
 
@@ -96,6 +99,21 @@ void drawInstrumentMark (juce::Graphics& g, juce::Rectangle<float> area, LogoKin
                                                     juce::PathStrokeType::rounded));
 
         drawRail (g, accent);
+        return;
+    }
+
+    if (kind == LogoKind::Continuum)
+    {
+        juce::Path ribbon;
+        ribbon.startNewSubPath (18.0f, 92.0f);
+        ribbon.cubicTo (34.0f, 20.0f, 54.0f, 20.0f, 64.0f, 62.0f);
+        ribbon.cubicTo (74.0f, 104.0f, 94.0f, 104.0f, 110.0f, 32.0f);
+        g.setColour (foreground);
+        g.strokePath (ribbon, juce::PathStrokeType (9.0f, juce::PathStrokeType::curved,
+                                                    juce::PathStrokeType::rounded));
+
+        g.setColour (accent);
+        g.fillEllipse (58.0f, 56.0f, 12.0f, 12.0f);
         return;
     }
 

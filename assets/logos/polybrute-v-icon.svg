@@ -8,8 +8,10 @@
       <stop offset="0" stop-color="#3F93E8" stop-opacity="0.12"/>
       <stop offset="1" stop-color="#3F93E8" stop-opacity="0"/>
     </radialGradient>
+    <clipPath id="clip"><rect width="1024" height="1024" rx="224"/></clipPath>
   </defs>
   <rect width="1024" height="1024" rx="224" fill="url(#bg)"/>
+  
   <rect width="1024" height="1024" rx="224" fill="url(#glow)"/>
   <rect x="26" y="26" width="972" height="972" rx="202" fill="none"
         stroke="#ffffff" stroke-opacity="0.10" stroke-width="3"/>

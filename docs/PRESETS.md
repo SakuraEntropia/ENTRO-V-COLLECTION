@@ -17,21 +17,44 @@ Common practice, in short: a searchable browser rather than a plain dropdown; ty
 
 The factory bank is original sound design, grouped by the same kinds of categories and using short prefixes.
 
-| Code | Category | MATRIARCH V | POLYBRUTE V | ONE V |
-|---|---|---|---:|---:|
-| `BA` | Bass | 4 | 4 | 4 |
-| `LD` | Lead | 3 | 4 | 1 |
-| `BR` | Brass | 1 | 1 | 1 |
-| `PD` | Pad | 2 | 3 | 2 |
-| `PL` | Pluck | 1 | 1 | 1 |
-| `KY` | Keys | 0 | 1 | 1 |
-| `OR` | Organ | 1 | 1 | 1 |
-| `STR` | Strings | 1 | 0 | 0 |
-| `ARP` | Arp | 0 | 1 | 1 |
-| `SEQ` | Sequence | 1 | 0 | 0 |
-| `SPL` | Split | 0 | 0 | 1 |
-| `FX` | FX | 1 | 1 | 1 |
-| | **Total** | **15** | **17** | **15** |
+| Code | Category | MATRIARCH V | POLYBRUTE V | ONE V | CONTINUUM V |
+|---|---|---|---:|---:|---:|---:|
+| `BA` | Bass | 4 | 4 | 4 | 2 |
+| `LD` | Lead | 3 | 4 | 1 | 0 |
+| `BR` | Brass | 1 | 1 | 1 | 0 |
+| `PD` | Pad | 2 | 3 | 2 | 0 |
+| `ST` | Strings | 1 | 0 | 0 | 1 |
+| `WI` | Winds | 0 | 0 | 0 | 2 |
+| `VO` | Vocal | 0 | 0 | 0 | 2 |
+| `KY` | Keyboard | 0 | 1 | 1 | 2 |
+| `CL` | Classic | 0 | 0 | 0 | 2 |
+| `OT` | Other | 0 | 0 | 0 | 2 |
+| `PE` | Percussion | 0 | 0 | 0 | 1 |
+| `PT` | Tuned Percussion | 0 | 0 | 0 | 1 |
+| `PR` | Processor | 0 | 0 | 0 | 1 |
+| `DO` | Drone | 0 | 0 | 0 | 1 |
+| `MD` | Midi | 0 | 0 | 0 | 1 |
+| `SF` | Surface | 0 | 0 | 0 | 0 |
+| `TX` | Texture | 0 | 0 | 0 | 0 |
+| `PL` | Pluck | 1 | 1 | 1 | 0 |
+| `KEY` | Keys | 0 | 1 | 1 | 0 |
+| `OR` | Organ | 1 | 1 | 1 | 0 |
+| `ARP` | Arp | 0 | 1 | 1 | 0 |
+| `SEQ` | Sequence | 1 | 0 | 0 | 0 |
+| `SPL` | Split | 0 | 0 | 1 | 0 |
+| `UT` | Utility | 0 | 0 | 0 | 1 |
+| `FX` | FX | 1 | 1 | 1 | 0 |
+| | **Total** | **15** | **17** | **15** | **19** |
+
+### CONTINUUM V
+
+19 presets using the Continuum's public two-letter system categories:
+Strings `ST`, Winds `WI`, Vocal `VO`, Keyboard `KY`, Classic `CL`, Other `OT`,
+Percussion `PE`, Tuned Percussion `PT`, Processor `PR`, Drone `DO`, Midi `MD`,
+Utility `UT`, plus a small modern Bass group. The matrix cells are part of each
+preset; `PR - Broken Matrix`, `OT - Deep Field` and `MD - MPE Surface` carry
+custom routing. Names and parameter sets are original; no Haken factory preset
+data is included.
 
 Every category has a code used both in the preset name and in the list column, e.g. `BA - Reese Bass`, `LD - Supersaw Lead`, `PD - Warm Analog Pad`.
 
