@@ -114,7 +114,8 @@ Result: `SUCCESS` for all three at strictness level 5. Matriarch was additionall
 - The `INIT` button resets all parameters.
 - `BROWSE` opens the searchable preset browser; the category filter, text search, list, detail pane, Load and Escape/Close paths were exercised in the standalone build.
 - The PolyBrute and ONE V panels were re-laid out from the manual diagrams and visually checked after the last build; both run with zero overlapping control bounds in the layout dump.
-- The header and panel-footer instrument marks render from the same vector grid as the SVG assets. Standalone bundles carry `AppIcon.icns`; `MATRIARCH V`, `POLYBRUTE V` and `ONE V` all resolve their icon in `Info.plist`.
+- The header and panel-footer instrument marks render from the same vector grid as the SVG assets. Standalone bundles carry a real `AppIcon.icns` (443,685 / 473,960 / 501,764 bytes), not JUCE's empty 8-byte placeholder; `MATRIARCH V`, `POLYBRUTE V` and `ONE V` all resolve their icon in `Info.plist`. JUCE `ICON_BIG` is fed a 1024 PNG and generates the `.icns`/`.ico` itself.
+- The legacy names `Matriarch.app`, `PolyBrute.app` and `Moog One.app` (and their old VST3/AU bundles) were removed from `/Applications`, `dist`, build artefacts and the user plug-in folders.
 - The `BROWSE` browser opens with category headings (`Bass`, `Lead`, `Brass`, `Pad`, `Pluck`, `Keys`, `Organ`, `Arp`, `FX`) and prefixed names such as `BA - Reese Bass`.
 
 Screenshots were captured locally for layout review. They are not committed because they contain unrelated desktop content.

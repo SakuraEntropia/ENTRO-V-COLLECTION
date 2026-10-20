@@ -101,10 +101,10 @@ function(triad_add_instrument target product_name plugin_code instrument_kind)
         set(_triad_icon_base "one")
     endif()
 
-    if(APPLE)
-        set(_triad_icon "${CMAKE_CURRENT_SOURCE_DIR}/assets/icons/${_triad_icon_base}.icns")
-    elseif(WIN32)
-        set(_triad_icon "${CMAKE_CURRENT_SOURCE_DIR}/assets/icons/${_triad_icon_base}.ico")
+    # JUCE's ICON_BIG expects a raster image (PNG/JPEG); it generates the
+    # platform .icns/.ico itself. Passing an .icns here produces an empty icon.
+    if(APPLE OR WIN32)
+        set(_triad_icon "${CMAKE_CURRENT_SOURCE_DIR}/assets/icons/${_triad_icon_base}-1024.png")
     else()
         set(_triad_icon "")
     endif()

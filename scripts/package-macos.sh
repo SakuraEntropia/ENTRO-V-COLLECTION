@@ -40,6 +40,21 @@ product_name() {
 STAGE="${ROOT}/dist"
 mkdir -p "${STAGE}"
 
+# Legacy pre-V names must not linger in dist or in the user's plugin folders.
+cleanup_stage_legacy() {
+    for legacy in "Matriarch" "PolyBrute" "Moog One"; do
+        rm -rf "${STAGE}/${legacy}.app" "${STAGE}/${legacy}.vst3" "${STAGE}/${legacy}.component"
+    done
+}
+cleanup_installed_legacy() {
+    for legacy in "Matriarch" "PolyBrute" "Moog One"; do
+        rm -rf "/Applications/${legacy}.app"
+        rm -rf "${HOME}/Library/Audio/Plug-Ins/VST3/${legacy}.vst3"
+        rm -rf "${HOME}/Library/Audio/Plug-Ins/Components/${legacy}.component"
+    done
+}
+cleanup_stage_legacy
+
 found_any=0
 for name in "${INSTRUMENTS[@]}"; do
     base="${BUILD_DIR}/${name}_artefacts/Release"
@@ -78,6 +93,7 @@ for bundle in "${STAGE}"/*.vst3 "${STAGE}"/*.component "${STAGE}"/*.app; do
 done
 
 if [[ ${DO_INSTALL} -eq 1 ]]; then
+    cleanup_installed_legacy
     mkdir -p "${HOME}/Library/Audio/Plug-Ins/VST3" "${HOME}/Library/Audio/Plug-Ins/Components"
     for name in "${INSTRUMENTS[@]}"; do
         product="$(product_name "$name")"
