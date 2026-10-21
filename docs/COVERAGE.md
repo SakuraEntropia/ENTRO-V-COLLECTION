@@ -17,7 +17,7 @@ Legend:
 | MATRIARCH V | 63 | 79 | 15 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
 | POLYBRUTE V | 117 | 0 | 17 | same |
 | ONE V | 408 (3 × 133 + 9 master) | 0 | 15 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
-| CONTINUUM V | 106 | 0 (16×16 matrix) | 615 | MPE per-note pitch bend / CC74 / pressure; internal 3D surface |
+| CONTINUUM V | 116 | 0 (16×16 matrix) | 615 | MPE per-note pitch bend / CC74 / pressure; internal 3D surface |
 
 All parameters have stable string IDs, natural-unit ranges and group metadata. All are saved in the APVTS tree and exposed to host automation.
 
@@ -129,15 +129,16 @@ Reference: [Haken Continuum / EaganMatrix public documentation](https://www.hake
 
 | Subsystem | Status | Notes |
 |---|---|---|
-| Continuous surface | Implemented, M1 | X pitch (fixed note 60 + continuous ±24 st expression, no note retrigger), Y timbre, Z from touchpad pressure (wheel fallback); single-pointer UI; MPE input parsed |
+| Continuous surface | Implemented, M1 | X pitch (fixed note 60 + continuous ±24 st expression, no note retrigger), Y timbre, Z from touchpad pressure (wheel fallback); PITCH SNAP 0..1 blends continuous pitch into semitone-quantised notes; single-pointer UI; MPE input parsed |
+| Surface monitor / keyboard | Implemented | 3D display strip above the on-screen keyboard shows circle X/Y position, pressure radius, character line and numeric readout |
 | EIGEN MATRIX | Implemented, M1 | 16 sources × 16 destinations; formula + amount per cell; UI click/drag |
 | Oscillators | Implemented | five summation-style oscillators, ratio/fine/phase/shape/level/wave |
 | Filters | Implemented | five multimode SVF filters, cutoff/resonance/env amount |
 | Biquad banks | Implemented, M1 | two 8-band banks; 48-band bank reserved for M2 |
 | Delays | Implemented | two delay modules + master delay |
 | Shape generators | Implemented | five generators, eight shapes including S&H |
-| FDN / reverb | Implemented, approximate | existing four-line FDN reverb; not EaganMatrix convolution/recirculator |
-| Panel control coverage | Implemented | All 106 engine parameters have panel controls, including Envelope 1/2, noise colour/level, reverb size and delay time/feedback added in the 2026-10 pass |
+| FDN / reverb | Implemented, approximate | four-line FDN reverb plus chorus, phaser and modulated echo in the AUX FX row; not EaganMatrix convolution or the full six-mode Recirculator |
+| Panel control coverage | Implemented | All 116 engine parameters have panel controls, including Envelope 1/2, noise colour/level, reverb size and delay time/feedback added in the 2026-10 pass |
 | Formula language | Implemented | 12 built-in formulas plus an editable user formula VM (`s/x/y/z`, arithmetic, sin/cos/tan/abs/sqrt/exp/log); compiled to a fixed RPN buffer for the audio thread |
 | CVC output | Implemented (MIDI proxy) | Four CVC controls emit MIDI CC 20–23 on channel 1; this is the software equivalent for hosts, not a DC-coupled hardware CV jack |
 | CVC | Not implemented | no hardware CVC output |

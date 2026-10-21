@@ -111,6 +111,19 @@ void ContinuumEngine::buildDefinition()
                                                     0.0f, 1.0f, 0.0f);
     }
 
+    scalarIndex_[(size_t) PSurfaceQuantize] = add ("con.surface.quantize", "PITCH SNAP",
+                                                  "Surface", 0.0f, 1.0f, 0.0f);
+
+    scalarIndex_[(size_t) PFxChorusRate] = add ("con.fx.chorus.rate", "CHORUS RATE", "FX", 0.05f, 8.0f, 0.35f, ParamCurve::Log, {}, "Hz");
+    scalarIndex_[(size_t) PFxChorusDepth] = add ("con.fx.chorus.depth", "CHORUS DEPTH", "FX", 0.0f, 1.0f, 0.3f);
+    scalarIndex_[(size_t) PFxChorusMix] = add ("con.fx.chorus.mix", "CHORUS MIX", "FX", 0.0f, 1.0f, 0.0f);
+    scalarIndex_[(size_t) PFxPhaserRate] = add ("con.fx.phaser.rate", "PHASER RATE", "FX", 0.05f, 8.0f, 0.25f, ParamCurve::Log, {}, "Hz");
+    scalarIndex_[(size_t) PFxPhaserDepth] = add ("con.fx.phaser.depth", "PHASER DEPTH", "FX", 0.0f, 1.0f, 0.6f);
+    scalarIndex_[(size_t) PFxPhaserFeedback] = add ("con.fx.phaser.feedback", "PHASER FB", "FX", 0.0f, 0.95f, 0.4f);
+    scalarIndex_[(size_t) PFxPhaserMix] = add ("con.fx.phaser.mix", "PHASER MIX", "FX", 0.0f, 1.0f, 0.0f);
+    scalarIndex_[(size_t) PFxDelayModDepth] = add ("con.fx.delay.mod", "DELAY MOD", "FX", 0.0f, 1.0f, 0.0f);
+    scalarIndex_[(size_t) PFxDelayModRate] = add ("con.fx.delay.rate", "DELAY MOD RATE", "FX", 0.02f, 8.0f, 0.3f, ParamCurve::Log, {}, "Hz");
+
     scalarIndex_[(size_t) PNoiseLevel] = add ("con.noise.level", "NOISE", "Noise", 0.0f, 1.0f, 0.06f);
     scalarIndex_[(size_t) PNoiseColor] = add ("con.noise.color", "COLOR", "Noise", 0.0f, 1.0f, 0.5f);
 
@@ -200,6 +213,8 @@ void ContinuumEngine::prepare (double sampleRate, int maxBlockSize)
     maxBlock_ = maxBlockSize;
     noise_.prepare (sampleRate, 0x6d2b79f5u);
     delay_.prepare (sampleRate, 1.6f);
+    chorus_.prepare (sampleRate);
+    phaser_.prepare (sampleRate);
     reverb_.prepare (sampleRate);
 
     for (auto& voice : voices_)
@@ -257,6 +272,8 @@ void ContinuumEngine::reset()
 
     noise_.reset();
     delay_.reset();
+    chorus_.reset();
+    phaser_.reset();
     reverb_.reset();
     dcLeft_.reset();
     dcRight_.reset();
@@ -331,6 +348,18 @@ void ContinuumEngine::processMidi (const MidiEvent& event)
                     voice.pressure = value;
             break;
         }
+
+        case MidiEventType::NoteExpression:
+            if (auto* voice = findVoice (event.note))
+            {
+                if (event.controller == 0)
+                    voice->exprPitch = clampValue (event.value, -48.0f, 48.0f);
+                else if (event.controller == 1)
+                    voice->timbre = clamp01 (event.value);
+                else if (event.controller == 2)
+                    voice->pressure = clamp01 (event.value);
+            }
+            break;
 
         case MidiEventType::ControlChange:
             if (event.controller == 74)
@@ -908,6 +937,14 @@ void ContinuumEngine::render (float* left, float* right, int numSamples)
     delay_.setDelaySeconds (param (PMasterDelayTime), param (PMasterDelayTime) * 1.18f);
     delay_.setFeedback (param (PMasterDelayFeedback));
     delay_.setMix (param (PMasterDelayMix));
+    delay_.setModulation (param (PFxDelayModDepth), param (PFxDelayModRate));
+    chorus_.setRateHz (param (PFxChorusRate));
+    chorus_.setDepth (param (PFxChorusDepth));
+    chorus_.setMix (param (PFxChorusMix));
+    phaser_.setRateHz (param (PFxPhaserRate));
+    phaser_.setDepth (param (PFxPhaserDepth));
+    phaser_.setFeedback (param (PFxPhaserFeedback));
+    phaser_.setMix (param (PFxPhaserMix));
     reverb_.setSize (param (PMasterReverbSize));
     reverb_.setDamping (0.35f);
     reverb_.setMix (param (PMasterReverbMix));
@@ -1130,6 +1167,8 @@ void ContinuumEngine::render (float* left, float* right, int numSamples)
         }
 
         auto stereo = delay_.process (mixLeft, mixRight);
+        stereo = chorus_.process (stereo.left, stereo.right);
+        stereo = phaser_.process (stereo.left, stereo.right);
         stereo = reverb_.process (stereo.left, stereo.right);
 
         const auto gain = volumeSmoother_.next();

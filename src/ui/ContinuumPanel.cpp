@@ -59,7 +59,15 @@ float ContinuumSurface::pitchForX (float x) const
     const auto area = playingArea();
     const auto normalised = juce::jlimit (0.0f, 0.9999f,
                                           (x - area.getX()) / juce::jmax (1.0f, area.getWidth()));
-    return 36.0f + normalised * 48.0f;
+    auto pitch = 36.0f + normalised * 48.0f;
+
+    if (auto* quantize = host_.apvts().getRawParameterValue ("con.surface.quantize"))
+    {
+        const auto amount = juce::jlimit (0.0f, 1.0f, quantize->load());
+        pitch = pitch + (std::round (pitch) - pitch) * amount;
+    }
+
+    return pitch;
 }
 
 juce::Point<float> ContinuumSurface::pointFor (int note, float expr, float timbre) const
@@ -181,6 +189,11 @@ void ContinuumSurface::paint (juce::Graphics& g)
                                  + "  Z " + juce::String (pressure_, 2);
     g.drawText (readout, (int) point.x + 18, (int) point.y - 8, 280, 16,
                 juce::Justification::centredLeft);
+}
+
+ContinuumSurface::State ContinuumSurface::state() const
+{
+    return { active_, 60.0f + exprPitch_, timbre_, pressure_, timbre_ };
 }
 
 void ContinuumSurface::mouseDown (const juce::MouseEvent& event)
@@ -471,8 +484,88 @@ void ContinuumMatrix::timerCallback()
 }
 
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+class ContinuumMonitor final : public juce::Component, private juce::Timer
+{
+public:
+    explicit ContinuumMonitor (ContinuumSurface& surface) : surface_ (surface)
+    {
+        setInterceptsMouseClicks (false, false);
+        startTimerHz (30);
+    }
+
+    ~ContinuumMonitor() override { stopTimer(); }
+
+    void paint (juce::Graphics& g) override
+    {
+        const auto state = surface_.state();
+        auto bounds = getLocalBounds().toFloat();
+
+        g.setColour (juce::Colour (0xff071012));
+        g.fillRoundedRectangle (bounds.reduced (0.5f), 3.0f);
+        g.setColour (juce::Colour (0xff2fb6a8).withAlpha (0.55f));
+        g.drawRoundedRectangle (bounds.reduced (0.5f), 3.0f, 1.0f);
+
+        g.setColour (juce::Colour (0xff8ff3ea));
+        g.setFont (juce::Font (juce::FontOptions (10.0f, juce::Font::bold)));
+        g.drawText ("CONTINUUM 3D DISPLAY", 14, 9, 230, 14, juce::Justification::centredLeft);
+
+        auto stage = bounds.reduced (12.0f, 8.0f).withTrimmedTop (14.0f);
+        const auto infoWidth = 430.0f;
+        auto field = stage.withTrimmedRight (infoWidth);
+        g.setColour (juce::Colour (0xff0a1b1e));
+        g.fillRoundedRectangle (field, 2.0f);
+
+        for (int i = 1; i < 8; ++i)
+        {
+            g.setColour (juce::Colour (0xff5fd6d0).withAlpha (0.10f));
+            g.drawVerticalLine ((int) (field.getX() + field.getWidth() * (float) i / 8.0f),
+                                field.getY(), field.getBottom());
+        }
+
+        const auto pitchNorm = juce::jlimit (0.0f, 1.0f, (state.pitch - 36.0f) / 48.0f);
+        const auto timbreNorm = juce::jlimit (0.0f, 1.0f, state.timbre);
+        const auto point = juce::Point<float> (field.getX() + pitchNorm * field.getWidth(),
+                                                field.getY() + (1.0f - timbreNorm) * field.getHeight());
+        const auto radius = 4.0f + state.pressure * 15.0f;
+
+        g.setColour (juce::Colour (0xff5fd6d0).withAlpha (0.18f));
+        g.fillEllipse (point.x - radius, point.y - radius, radius * 2.0f, radius * 2.0f);
+        g.setColour (state.active ? juce::Colour (0xffdffbf6) : juce::Colour (0xff50706f));
+        g.drawEllipse (point.x - radius, point.y - radius, radius * 2.0f, radius * 2.0f, 1.2f);
+
+        // Character: a short line inside the circle, direction from timbre.
+        const auto angle = (state.character * 2.0f - 1.0f) * juce::MathConstants<float>::halfPi;
+        const auto lineLength = radius * 0.75f;
+        g.setColour (juce::Colour (0xff2fb6a8));
+        g.drawLine (point.x, point.y,
+                    point.x + std::sin (angle) * lineLength,
+                    point.y - std::cos (angle) * lineLength, 1.5f);
+
+        g.setColour (juce::Colour (0xff8ff3ea));
+        g.setFont (juce::Font (juce::FontOptions (8.0f)));
+        g.drawText ("X  PITCH   ·   Y  TIMBRE   ·   Z  PRESSURE",
+                    field.getX() + 5, field.getBottom() - 13, 420, 10,
+                    juce::Justification::centredLeft);
+
+        auto info = stage.removeFromRight (infoWidth).reduced (12.0f, 0.0f);
+        g.setColour (juce::Colour (0xffbdfaf3));
+        g.setFont (juce::Font (juce::FontOptions (9.0f)));
+        g.drawText ("PITCH  " + juce::String (state.pitch, 2), info.removeFromTop (14),
+                    juce::Justification::centredLeft);
+        g.drawText ("PRESSURE RADIUS  " + juce::String (state.pressure, 2),
+                    info.removeFromTop (14), juce::Justification::centredLeft);
+        g.drawText ("CHARACTER  " + juce::String (state.character, 2),
+                    info.removeFromTop (14), juce::Justification::centredLeft);
+    }
+
+private:
+    void timerCallback() override { repaint(); }
+    ContinuumSurface& surface_;
+};
+
 ContinuumPanel::ContinuumPanel (EditorHost& host)
-    : PanelBase (host, "CONTINUUM V", 2000, 1500, continuumAccent())
+    : PanelBase (host, "CONTINUUM V", 2000, 1740, continuumAccent())
 {
     setBranding ("CONTINUUM V", "EIGEN MATRIX  /  CONTINUOUS SURFACE");
 
@@ -484,12 +577,14 @@ ContinuumPanel::ContinuumPanel (EditorHost& host)
                                 "con.master.yDepth", "con.master.zDepth",
                                 "con.master.bendRange", "con.master.reverbMix",
                                 "con.master.delayMix", "con.master.noise",
-                                "con.cvc.1", "con.cvc.2", "con.cvc.3", "con.cvc.4" };
+                                "con.cvc.1", "con.cvc.2", "con.cvc.3", "con.cvc.4",
+                                "con.surface.quantize" };
     const char* masterLabels[] = { "VOLUME", "GLIDE", "Y DEPTH", "Z DEPTH",
                                    "MPE BEND", "REVERB", "DELAY", "NOISE",
-                                   "CVC 1", "CVC 2", "CVC 3", "CVC 4" };
-    for (int i = 0; i < 12; ++i)
-        addKnob (masterIds[i], masterLabels[i], { 16 + i * 163, 14, 158, 42 });
+                                   "CVC 1", "CVC 2", "CVC 3", "CVC 4",
+                                   "PITCH SNAP" };
+    for (int i = 0; i < 13; ++i)
+        addKnob (masterIds[i], masterLabels[i], { 12 + i * 151, 14, 146, 42 });
 
     surface_ = std::make_unique<ContinuumSurface> (host);
     surface_->setBounds (8, 72, 1984, 356);
@@ -602,6 +697,26 @@ ContinuumPanel::ContinuumPanel (EditorHost& host)
         addKnob ("con.master.delayTime", "DELAY TIME", { x + 522, y, 190, 142 });
         addKnob ("con.master.delayFeedback", "DELAY FB", { x + 720, y, 190, 142 });
     }
+
+    // Auxiliary effects modelled on the EaganMatrix Recirculator / VoiceDelay
+    // family: chorus, phaser and a modulated echo around the FDN reverb.
+    {
+        addModule ("AUX FX  /  RECIRCULATOR", { 8, 1452, 1984, 140 });
+        const char* ids[] = { "con.fx.chorus.rate", "con.fx.chorus.depth", "con.fx.chorus.mix",
+                              "con.fx.phaser.rate", "con.fx.phaser.depth", "con.fx.phaser.feedback",
+                              "con.fx.phaser.mix", "con.fx.delay.mod", "con.fx.delay.rate" };
+        const char* labels[] = { "CHOR RATE", "CHOR DEPTH", "CHOR MIX",
+                                 "PHASE RATE", "PHASE DEPTH", "PHASE FB",
+                                 "PHASE MIX", "DELAY MOD", "DELAY RATE" };
+        for (int i = 0; i < 9; ++i)
+            addKnob (ids[i], labels[i], { 18 + i * 218, 1478, 204, 94 });
+    }
+
+    monitor_ = std::make_unique<ContinuumMonitor> (*surface_);
+    monitor_->setBounds (8, 1604, 1984, 72);
+    addAndMakeVisible (*monitor_);
 }
+
+ContinuumPanel::~ContinuumPanel() = default;
 
 } // namespace triad::ui

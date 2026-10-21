@@ -26,6 +26,17 @@ public:
     void visibilityChanged() override;
     void focusLost (juce::Component::FocusChangeType) override;
 
+    struct State
+    {
+        bool active = false;
+        float pitch = 60.0f;
+        float timbre = 0.5f;
+        float pressure = 0.0f;
+        float character = 0.5f;
+    };
+
+    State state() const;
+
 private:
     void timerCallback() override;
     void updateFromPosition (juce::Point<float> position, bool allowNoteChange, float pressure);
@@ -75,14 +86,18 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ContinuumMatrix)
 };
 
+class ContinuumMonitor;
+
 class ContinuumPanel final : public PanelBase
 {
 public:
     explicit ContinuumPanel (EditorHost& host);
+    ~ContinuumPanel() override;
 
 private:
     std::unique_ptr<ContinuumSurface> surface_;
     std::unique_ptr<ContinuumMatrix> matrix_;
+    std::unique_ptr<ContinuumMonitor> monitor_;
 };
 
 } // namespace triad::ui

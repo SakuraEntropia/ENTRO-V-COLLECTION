@@ -143,6 +143,12 @@ TriadAudioProcessor::TriadAudioProcessor()
         morphValues_[(size_t) i].store (spec.def);
     }
 
+    for (int note = 0; note < 128; ++note)
+    {
+        expression_[(size_t) note * 3 + 1].store (0.5f);
+        expression_[(size_t) note * 3 + 2].store (0.8f);
+    }
+
     factoryPresets_ = factoryPresetsFor (definition.id);
 
     arpEnabledIndex_ = findParameterBySuffix (".arp.enabled");
@@ -594,6 +600,31 @@ void TriadAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         }
     }
 
+    if (isContinuum())
+    {
+        // Apply the on-screen surface expression after the NoteOn events above,
+        // but before rendering.  This removes the previous one-block pitch lag
+        // that made short taps all sound at the base note.
+        // The touch surface uses one fixed base note (60) plus continuous
+        // expression.  Do not overwrite ordinary keyboard/MIDI notes with the
+        // surface's expression array.
+        const auto note = 60;
+
+        if (keyboardState_.isNoteOn (1, note))
+        {
+            const auto base = (size_t) note * 3;
+            for (int axis = 0; axis < 3; ++axis)
+            {
+                MidiEvent expression;
+                expression.type = MidiEventType::NoteExpression;
+                expression.note = note;
+                expression.controller = axis;
+                expression.value = expression_[base + (size_t) axis].load();
+                addScheduledEvent (0, expression);
+            }
+        }
+    }
+
     std::stable_sort (scheduled_.begin(), scheduled_.begin() + scheduledCount_,
                       [] (const ScheduledEvent& a, const ScheduledEvent& b)
                       {
@@ -623,21 +654,6 @@ void TriadAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
 
     if (position < numSamples)
         engine_->render (left + position, right + position, numSamples - position);
-
-    if (isContinuum())
-    {
-        for (int note = 0; note < 128; ++note)
-        {
-            if (! keyboardState_.isNoteOn (1, note))
-                continue;
-
-            const auto base = (size_t) note * 3;
-            engine_->setNoteExpression (note,
-                                        expression_[base + 0].load(),
-                                        expression_[base + 1].load(),
-                                        expression_[base + 2].load());
-        }
-    }
 
     if (isContinuum())
     {

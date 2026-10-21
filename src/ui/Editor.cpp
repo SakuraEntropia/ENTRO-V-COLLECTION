@@ -304,9 +304,6 @@ TriadEditor::TriadEditor (EditorHost& host)
 
     const auto id = juce::String (host.definition().id);
 
-    if (id == "continuum")
-        keyboard_.setVisible (false);
-
     int defaultWidth = 1600;
     int defaultHeight = 640;
 
@@ -323,7 +320,7 @@ TriadEditor::TriadEditor (EditorHost& host)
     else if (id == "continuum")
     {
         defaultWidth = 1680;
-        defaultHeight = 1100;
+        defaultHeight = 1220;
     }
 
     auto maxWidth = 3000;
@@ -390,8 +387,7 @@ void TriadEditor::resized()
     auto area = getLocalBounds();
     header_->setBounds (area.removeFromTop (52));
 
-    if (juce::String (host_.definition().id) != "continuum")
-        keyboard_.setBounds (area.removeFromBottom (132));
+    keyboard_.setBounds (area.removeFromBottom (132));
 
     auto panelArea = area.reduced (0, 4);
     viewport_.setBounds (panelArea);

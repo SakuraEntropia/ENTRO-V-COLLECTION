@@ -369,6 +369,68 @@ void testContinuumUserFormula()
     checkFinite (left, right, "continuum invalid user formula");
 }
 
+void testContinuumPitchExpression()
+{
+    auto engine = triad::makeEngine (triad::InstrumentKind::Continuum);
+    const auto& definition = engine->definition();
+    std::vector<float> values (definition.params.size());
+    for (size_t i = 0; i < values.size(); ++i)
+        values[i] = definition.params[i].def;
+    auto set = [&] (const char* id, float value)
+    {
+        const auto index = definition.indexOf (id);
+        if (index >= 0)
+            values[(size_t) index] = value;
+    };
+
+    // Isolate oscillator 1 so zero crossings measure pitch, not fixed banks.
+    set ("con.osc1.level", 0.8f);
+    set ("con.osc2.level", 0.0f);
+    set ("con.osc3.level", 0.0f);
+    set ("con.osc4.level", 0.0f);
+    set ("con.osc5.level", 0.0f);
+    set ("con.noise.level", 0.0f);
+    set ("con.bank1.mix", 0.0f);
+    set ("con.bank2.mix", 0.0f);
+    set ("con.flt1.cutoff", 18000.0f);
+    set ("con.flt2.cutoff", 18000.0f);
+    set ("con.flt3.cutoff", 18000.0f);
+    set ("con.flt4.cutoff", 18000.0f);
+    set ("con.flt5.cutoff", 18000.0f);
+    set ("con.env1.attack", 0.001f);
+    set ("con.env1.sustain", 1.0f);
+    set ("con.master.reverbMix", 0.0f);
+    set ("con.master.delayMix", 0.0f);
+
+    engine->prepare (48000.0, 256);
+    engine->setParameters (values.data(), (int) values.size());
+
+    triad::MidiEvent on;
+    on.type = triad::MidiEventType::NoteOn;
+    on.note = 60;
+    on.value = 0.8f;
+    engine->processMidi (on);
+
+    auto crossings = [&engine] (float semis)
+    {
+        engine->setNoteExpression (60, semis, 0.5f, 0.8f);
+        std::vector<float> l, r;
+        renderSeconds (*engine, 0.35, 48000.0, l, r);
+        int count = 0;
+        for (size_t i = 1; i < l.size(); ++i)
+            if (l[i - 1] <= 0.0f && l[i] > 0.0f)
+                ++count;
+        return count;
+    };
+
+    const auto low = crossings (-12.0f);
+    engine->processMidi ({ triad::MidiEventType::NoteOff, 0, 60, 0, 0.0f });
+    engine->processMidi (on);
+    const auto high = crossings (12.0f);
+    std::printf ("continuum pitch crossings low=%d high=%d\n", low, high);
+    CHECK (high > low * 2);
+}
+
 void testMatriarchPatching()
 {
     auto engine = triad::makeEngine (triad::InstrumentKind::Matriarch);
@@ -414,6 +476,7 @@ int main()
     testTuning (triad::InstrumentKind::PolyBrute, "PolyBrute");
     testTuning (triad::InstrumentKind::MoogOne, "Moog One");
     testContinuumUserFormula();
+    testContinuumPitchExpression();
     testMatriarchPatching();
 
     if (failures == 0)

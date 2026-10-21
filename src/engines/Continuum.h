@@ -82,6 +82,10 @@ private:
         PMasterNoise, PMasterReverbMix, PMasterReverbSize,
         PMasterDelayMix, PMasterDelayTime, PMasterDelayFeedback,
         PCvc1, PCvc2, PCvc3, PCvc4,
+        PSurfaceQuantize,
+        PFxChorusRate, PFxChorusDepth, PFxChorusMix,
+        PFxPhaserRate, PFxPhaserDepth, PFxPhaserFeedback, PFxPhaserMix,
+        PFxDelayModDepth, PFxDelayModRate,
         PNoiseLevel, PNoiseColor,
         PScalarParamCount
     };
@@ -183,6 +187,8 @@ private:
 
     NoiseSource noise_;
     StereoDelay delay_;
+    ChorusEffect chorus_;
+    PhaserEffect phaser_;
     ReverbEffect reverb_;
     Smoother volumeSmoother_;
     DCBlocker dcLeft_, dcRight_;

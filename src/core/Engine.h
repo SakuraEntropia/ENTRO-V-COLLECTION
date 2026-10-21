@@ -157,7 +157,8 @@ enum class MidiEventType
     ModWheel,
     ChannelPressure,
     SustainPedal,
-    ControlChange
+    ControlChange,
+    NoteExpression
 };
 
 struct MidiEvent
