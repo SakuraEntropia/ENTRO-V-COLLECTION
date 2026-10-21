@@ -435,7 +435,7 @@ void ContinuumMatrix::timerCallback()
 
 // ---------------------------------------------------------------------------
 ContinuumPanel::ContinuumPanel (EditorHost& host)
-    : PanelBase (host, "CONTINUUM V", 2000, 1300, continuumAccent())
+    : PanelBase (host, "CONTINUUM V", 2000, 1500, continuumAccent())
 {
     setBranding ("CONTINUUM V", "EIGEN MATRIX  /  CONTINUOUS SURFACE");
 
@@ -530,6 +530,38 @@ ContinuumPanel::ContinuumPanel (EditorHost& host)
         addKnob (prefix + "rate", "RATE", { x, 1120, 72, 92 });
         addChoice (prefix + "shape", "SHAPE", { x + 76, 1140, 86, 42 });
         addKnob (prefix + "level", "LEVEL", { x + 168, 1120, 66, 92 });
+    }
+
+    // -----------------------------------------------------------------------
+    // Envelopes, noise and the master space controls. These parameters were
+    // previously editable only through automation/state, not from the panel.
+    // -----------------------------------------------------------------------
+    for (int env = 0; env < 2; ++env)
+    {
+        const auto x = 8 + env * 492;
+        const auto stem = "con.env" + juce::String (env + 1) + ".";
+        addModule ("ENVELOPE " + juce::String (env + 1), { x, 1246, 484, 196 });
+
+        const auto innerX = x + 8;
+        const auto innerY = 1274;
+        const auto cellW = 112;
+        const char* ids[] = { "attack", "decay", "sustain", "release" };
+        const char* labels[] = { "ATTACK", "DECAY", "SUSTAIN", "RELEASE" };
+
+        for (int i = 0; i < 4; ++i)
+            addKnob (stem + ids[i], labels[i],
+                     { innerX + i * cellW, innerY, cellW, 142 });
+    }
+
+    {
+        addModule ("NOISE / SPACE", { 992, 1246, 992, 196 });
+        const auto x = 1000;
+        auto y = 1274;
+        addKnob ("con.noise.level", "NOISE", { x, y, 150, 142 });
+        addKnob ("con.noise.color", "COLOR", { x + 158, y, 150, 142 });
+        addKnob ("con.master.reverbSize", "REVERB SIZE", { x + 324, y, 190, 142 });
+        addKnob ("con.master.delayTime", "DELAY TIME", { x + 522, y, 190, 142 });
+        addKnob ("con.master.delayFeedback", "DELAY FB", { x + 720, y, 190, 142 });
     }
 }
 

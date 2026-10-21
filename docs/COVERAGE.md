@@ -136,5 +136,6 @@ Reference: [Haken Continuum / EaganMatrix public documentation](https://www.hake
 | Delays | Implemented | two delay modules + master delay |
 | Shape generators | Implemented | five generators, eight shapes including S&H |
 | FDN / reverb | Implemented, approximate | existing four-line FDN reverb; not EaganMatrix convolution/recirculator |
+| Panel control coverage | Implemented | All 102 engine parameters have panel controls, including Envelope 1/2, noise colour/level, reverb size and delay time/feedback added in the 2026-10 pass |
 | Formula language | Partial | 12 built-in formulas; user formula VM is M2 |
 | CVC | Not implemented | no hardware CVC output |

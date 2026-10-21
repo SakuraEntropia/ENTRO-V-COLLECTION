@@ -65,7 +65,11 @@ Every category has a code used both in the preset name and in the list column, e
 - `ST - Harp`: short plucked attack, sine fundamental with triangle upper partials, two biquad banks at 523 Hz / 1046 Hz, high-cut filters and a medium room. Envelope 1 closes to zero sustain so each note decays like a string.
 - `Kevin Penkin Style Eharp`: the requested project preset. Exact preset name; ethereal electric harp with a soft attack, long release, two detuned upper partials, 1.76 kHz bank air, filtered noise, long hall reverb and dotted delay. It is an original approximation of that cinematic e-harp colour, not a transcription of any existing cue.
 - `PT - Glass Harp`: brighter tuned-percussion harp with 880 Hz / 2640 Hz banks and a shorter decay.
-- `ST - Koto` / `Kevin Penkin Style E Koto`: guzheng-like plucked zither with paired detuned strings, a 0.5× sub-octave, 196/392 Hz wooden cavity banks, filter envelope and a long string ring. `Kevin Penkin Style E Koto` uses the same hall/delay space as `Kevin Penkin Style Eharp`, but a sharper pluck and a more organic, less plastic body.
+- `ST - Koto` / `Kevin Penkin Style E Koto`: guzheng-like filtered pluck with paired detuned triangle strings (no saw), a 0.5× sub-octave, 196/392 Hz wooden cavity banks, filter envelope and a long string ring. `Kevin Penkin Style E Koto` uses the same hall/delay space as `Kevin Penkin Style Eharp`, but a sharper pluck and a more organic, less plastic body.
+
+### Organ correction
+
+All four instruments now use an additive organ voicing rather than a detuned saw stack: triangle/sine 8′ + 4′ + 16′ + 2′ layers, optional fifth, no saw, near-instant attack, full sustain and short release. Matriarch adds a small LFO vibrato; PolyBrute and ONE use chorus; Continuum's Organ-named Haken presets use the same additive base.
 
 ### Bass highlights
 

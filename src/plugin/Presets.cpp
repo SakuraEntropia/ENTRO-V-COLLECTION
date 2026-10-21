@@ -288,22 +288,31 @@ std::vector<FactoryPreset> matriarchPresets()
               { "mat.delay.sync", 1.0f }, { "mat.delay.mix", 0.35f },
               { "mat.delay.feedback", 0.4f }
           } },
-        { "OR - Organ", "Organ",
+                                        { "OR - Organ", "Organ",
           Values {
-              { "mat.master.volume", 0.6f }, { "mat.master.paraphony", 2.0f },
-              { "mat.vco1.octave", 1.0f }, { "mat.vco1.wave", 2.0f },
-              { "mat.vco2.octave", 2.0f }, { "mat.vco2.wave", 2.0f },
-              { "mat.vco3.octave", 0.0f }, { "mat.vco3.wave", 0.0f },
-              { "mat.vco4.octave", 2.0f }, { "mat.vco4.wave", 2.0f },
-              { "mat.mix.osc1", 0.7f }, { "mat.mix.osc2", 0.5f },
-              { "mat.mix.osc3", 0.4f }, { "mat.mix.osc4", 0.3f },
-              { "mat.flt.mode", 0.0f }, { "mat.flt.cutoff", 4500.0f },
-              { "mat.flt.res1", 0.1f }, { "mat.flt.res2", 0.1f },
-              { "mat.env1.attack", 0.002f }, { "mat.env1.decay", 0.1f },
-              { "mat.env1.sustain", 1.0f }, { "mat.env1.release", 0.06f },
-              { "mat.env2.attack", 0.002f }, { "mat.env2.decay", 0.1f },
-              { "mat.env2.sustain", 1.0f }, { "mat.env2.release", 0.05f },
-              { "mat.delay.mix", 0.08f }
+              { "mat.master.volume", 0.62f }, { "mat.master.paraphony", 2.0f },
+              { "mat.output.velocity", 0.1f },
+              { "mat.vco1.octave", 1.0f }, { "mat.vco1.wave", 1.0f },
+              { "mat.vco2.octave", 2.0f }, { "mat.vco2.freq", 0.0f },
+              { "mat.vco2.wave", 1.0f },
+              { "mat.vco3.octave", 0.0f }, { "mat.vco3.freq", 7.0f },
+              { "mat.vco3.wave", 0.0f },
+              { "mat.vco4.octave", 3.0f }, { "mat.vco4.freq", 0.0f },
+              { "mat.vco4.wave", 1.0f },
+              { "mat.mix.osc1", 0.8f }, { "mat.mix.osc2", 0.5f },
+              { "mat.mix.osc3", 0.25f }, { "mat.mix.osc4", 0.25f },
+              { "mat.mix.noise", 0.0f },
+              { "mat.flt.mode", 0.0f }, { "mat.flt.cutoff", 9000.0f },
+              { "mat.flt.res1", 0.02f }, { "mat.flt.res2", 0.02f },
+              { "mat.flt.envAmt", 0.0f }, { "mat.flt.kbTrack", 0.0f },
+              { "mat.env1.attack", 0.003f }, { "mat.env1.decay", 0.1f },
+              { "mat.env1.sustain", 1.0f }, { "mat.env1.release", 0.1f },
+              { "mat.env2.attack", 0.003f }, { "mat.env2.decay", 0.1f },
+              { "mat.env2.sustain", 1.0f }, { "mat.env2.release", 0.1f },
+              { "mat.lfo.rate", 5.5f }, { "mat.lfo.pitchAmt", 0.008f },
+              { "mat.lfo.cutoffAmt", 0.0f },
+              { "mat.delay.time", 0.28f }, { "mat.delay.mix", 0.06f },
+              { "mat.delay.feedback", 0.15f }
           } },
         { "PL - Analog Pluck", "Pluck",
           Values {
@@ -599,20 +608,29 @@ std::vector<FactoryPreset> polyBrutePresets()
               { "poly.fx.chorus.mix", 0.4f }, { "poly.fx.reverb.mix", 0.35f },
               { "poly.fx.reverb.size", 0.75f }, { "poly.fx.delay.mix", 0.15f }
           } },
-        { "OR - Organ", "Organ",
+                { "OR - Organ", "Organ",
           Values {
-              { "poly.vcoA.octave", 1.0f }, { "poly.vcoA.pulse", 0.7f },
-              { "poly.vcoA.pw", 0.5f }, { "poly.vcoA.level", 0.8f },
-              { "poly.vcoB.octave", 2.0f }, { "poly.vcoB.pulse", 0.5f },
-              { "poly.vcoB.level", 0.4f }, { "poly.vcoB.sub", 0.0f },
-              { "poly.steiner.cutoff", 4000.0f }, { "poly.steiner.resonance", 0.1f },
-              { "poly.steiner.envAmt", 0.0f },
-              { "poly.ladder.cutoff", 5000.0f }, { "poly.ladder.drive", 1.0f },
-              { "poly.env1.attack", 0.002f }, { "poly.env1.decay", 0.2f },
-              { "poly.env1.sustain", 1.0f }, { "poly.env1.release", 0.08f },
-              { "poly.env2.attack", 0.002f }, { "poly.env2.decay", 0.2f },
-              { "poly.env2.sustain", 1.0f }, { "poly.env2.release", 0.08f },
-              { "poly.fx.chorus.mix", 0.3f }, { "poly.fx.reverb.mix", 0.15f }
+              { "poly.voice.mode", 0.0f }, { "poly.voice.analog", 0.05f },
+              { "poly.voice.spread", 0.15f },
+              { "poly.vcoA.octave", 1.0f }, { "poly.vcoA.wave", 1.0f },
+              { "poly.vcoA.pw", 0.5f }, { "poly.vcoA.pulse", 0.5f },
+              { "poly.vcoA.level", 0.8f }, { "poly.vcoA.metalizer", 0.0f },
+              { "poly.vcoB.octave", 2.0f }, { "poly.vcoB.wave", 1.0f },
+              { "poly.vcoB.tune", 7.0f }, { "poly.vcoB.pulse", 0.5f },
+              { "poly.vcoB.level", 0.45f }, { "poly.vcoB.sub", 0.2f },
+              { "poly.steiner.mode", 0.0f }, { "poly.steiner.cutoff", 8000.0f },
+              { "poly.steiner.resonance", 0.02f }, { "poly.steiner.envAmt", 0.0f },
+              { "poly.ladder.cutoff", 9000.0f }, { "poly.ladder.resonance", 0.02f },
+              { "poly.ladder.drive", 1.0f }, { "poly.ladder.envAmt", 0.0f },
+              { "poly.env1.attack", 0.003f }, { "poly.env1.decay", 0.1f },
+              { "poly.env1.sustain", 1.0f }, { "poly.env1.release", 0.1f },
+              { "poly.env2.attack", 0.003f }, { "poly.env2.decay", 0.1f },
+              { "poly.env2.sustain", 1.0f }, { "poly.env2.release", 0.1f },
+              { "poly.env3.attack", 0.003f }, { "poly.env3.decay", 0.1f },
+              { "poly.env3.sustain", 1.0f }, { "poly.env3.release", 0.1f },
+              { "poly.fx.chorus.rate", 0.25f }, { "poly.fx.chorus.depth", 0.3f },
+              { "poly.fx.chorus.mix", 0.35f }, { "poly.fx.reverb.mix", 0.12f },
+              { "poly.fx.delay.mix", 0.05f }
           } },
         { "PL - Analog Pluck", "Pluck",
           Values {
@@ -845,22 +863,28 @@ std::vector<FactoryPreset> onePresets()
               { "one.p1.fx.reverb.send", 0.4f },
               { "one.master.reverbSize", 0.8f }, { "one.master.reverbMix", 0.3f }
           } },
-        { "OR - Organ", "Organ",
+                { "OR - Organ", "Organ",
           Values {
               { "one.p1.enabled", 1.0f },
-              { "one.p1.vco1.shape", 0.8f }, { "one.p1.vco1.level", 0.8f },
-              { "one.p1.vco2.octave", 2.0f }, { "one.p1.vco2.level", 0.5f },
-              { "one.p1.vco3.octave", 0.0f }, { "one.p1.vco3.level", 0.4f },
-              { "one.p1.svf.cutoff", 4500.0f }, { "one.p1.svf.resonance", 0.1f },
+              { "one.p1.vco1.octave", 1.0f }, { "one.p1.vco1.waveAngle", 0.5f },
+              { "one.p1.vco1.shape", 0.0f }, { "one.p1.vco1.level", 0.8f },
+              { "one.p1.vco2.octave", 2.0f }, { "one.p1.vco2.waveAngle", 0.5f },
+              { "one.p1.vco2.shape", 0.0f }, { "one.p1.vco2.tune", 7.0f },
+              { "one.p1.vco2.level", 0.5f },
+              { "one.p1.vco3.octave", 0.0f }, { "one.p1.vco3.waveAngle", 0.5f },
+              { "one.p1.vco3.shape", 0.0f }, { "one.p1.vco3.level", 0.35f },
+              { "one.p1.svf.cutoff", 8000.0f }, { "one.p1.svf.resonance", 0.05f },
               { "one.p1.svf.envAmt", 0.0f },
-              { "one.p1.ladder.cutoff", 5000.0f }, { "one.p1.ladder.drive", 0.1f },
-              { "one.p1.env1.attack", 0.002f }, { "one.p1.env1.decay", 0.2f },
-              { "one.p1.env1.sustain", 1.0f }, { "one.p1.env1.release", 0.08f },
-              { "one.p1.env2.attack", 0.002f }, { "one.p1.env2.decay", 0.2f },
-              { "one.p1.env2.sustain", 1.0f }, { "one.p1.env2.release", 0.08f },
-              { "one.p1.env3.attack", 0.002f }, { "one.p1.env3.decay", 0.1f },
-              { "one.p1.env3.sustain", 1.0f }, { "one.p1.env3.release", 0.05f },
-              { "one.p1.fx.chorus.mix", 0.3f }, { "one.p1.fx.reverb.send", 0.15f }
+              { "one.p1.ladder.cutoff", 9000.0f }, { "one.p1.ladder.drive", 0.1f },
+              { "one.p1.env1.attack", 0.003f }, { "one.p1.env1.decay", 0.1f },
+              { "one.p1.env1.sustain", 1.0f }, { "one.p1.env1.release", 0.1f },
+              { "one.p1.env2.attack", 0.003f }, { "one.p1.env2.decay", 0.1f },
+              { "one.p1.env2.sustain", 1.0f }, { "one.p1.env2.release", 0.1f },
+              { "one.p1.env3.attack", 0.003f }, { "one.p1.env3.decay", 0.1f },
+              { "one.p1.env3.sustain", 1.0f }, { "one.p1.env3.release", 0.1f },
+              { "one.p1.fx.chorus.mix", 0.35f },
+              { "one.p1.fx.reverb.send", 0.12f },
+              { "one.master.reverbMix", 0.15f }, { "one.master.reverbSize", 0.5f }
           } },
         { "PL - Analog Pluck", "Pluck",
           Values {
@@ -1583,6 +1607,51 @@ Values hakenValues (const juce::String& code, const juce::String& name)
     setPresetValue (values, "con.env2.sustain", 0.15f);
     setPresetValue (values, "con.env2.release", 0.9f);
 
+    if (name.containsIgnoreCase ("organ"))
+    {
+        // Additive organ: no saw, full sustain, octave/fifth layers.
+        setPresetValue (values, "con.master.volume", 0.62f);
+        setPresetValue (values, "con.master.yDepth", 0.7f);
+        setPresetValue (values, "con.master.zDepth", 0.85f);
+        setPresetValue (values, "con.master.reverbMix", 0.16f);
+        setPresetValue (values, "con.master.reverbSize", 0.6f);
+        setPresetValue (values, "con.master.delayMix", 0.04f);
+        setPresetValue (values, "con.osc1.wave", 0.0f);
+        setPresetValue (values, "con.osc1.level", 0.58f);
+        setPresetValue (values, "con.osc2.wave", 1.0f);
+        setPresetValue (values, "con.osc2.ratio", 2.0f);
+        setPresetValue (values, "con.osc2.level", 0.32f);
+        setPresetValue (values, "con.osc3.wave", 0.0f);
+        setPresetValue (values, "con.osc3.ratio", 0.5f);
+        setPresetValue (values, "con.osc3.level", 0.5f);
+        setPresetValue (values, "con.osc4.wave", 1.0f);
+        setPresetValue (values, "con.osc4.ratio", 3.0f);
+        setPresetValue (values, "con.osc4.level", 0.16f);
+        setPresetValue (values, "con.osc5.wave", 0.0f);
+        setPresetValue (values, "con.osc5.ratio", 4.0f);
+        setPresetValue (values, "con.osc5.level", 0.1f);
+        setPresetValue (values, "con.noise.level", 0.003f);
+        setPresetValue (values, "con.flt1.cutoff", 7500.0f);
+        setPresetValue (values, "con.flt1.res", 0.04f);
+        setPresetValue (values, "con.flt2.cutoff", 8500.0f);
+        setPresetValue (values, "con.flt3.cutoff", 9500.0f);
+        setPresetValue (values, "con.flt4.cutoff", 10500.0f);
+        setPresetValue (values, "con.flt5.cutoff", 11500.0f);
+        setPresetValue (values, "con.bank1.freq", 440.0f);
+        setPresetValue (values, "con.bank1.mix", 0.12f);
+        setPresetValue (values, "con.bank2.freq", 880.0f);
+        setPresetValue (values, "con.bank2.mix", 0.10f);
+        setPresetValue (values, "con.env1.attack", 0.004f);
+        setPresetValue (values, "con.env1.decay", 0.1f);
+        setPresetValue (values, "con.env1.sustain", 1.0f);
+        setPresetValue (values, "con.env1.release", 0.2f);
+        setPresetValue (values, "con.env2.attack", 0.004f);
+        setPresetValue (values, "con.env2.decay", 0.1f);
+        setPresetValue (values, "con.env2.sustain", 1.0f);
+        setPresetValue (values, "con.env2.release", 0.2f);
+        return values;
+    }
+
     if (name.containsIgnoreCase ("koto"))
     {
         // Plucked Chinese/Japanese zither body: paired detuned strings,
@@ -1597,7 +1666,7 @@ Values hakenValues (const juce::String& code, const juce::String& name)
         setPresetValue (values, "con.master.delayFeedback", 0.28f);
         setPresetValue (values, "con.osc1.wave", 1.0f);
         setPresetValue (values, "con.osc1.level", 0.56f);
-        setPresetValue (values, "con.osc2.wave", 2.0f);
+        setPresetValue (values, "con.osc2.wave", 1.0f);
         setPresetValue (values, "con.osc2.ratio", 1.0f);
         setPresetValue (values, "con.osc2.fine", 3.0f);
         setPresetValue (values, "con.osc2.level", 0.30f);
@@ -2294,7 +2363,7 @@ std::vector<FactoryPreset> continuumCustomPresets()
               { "con.master.delayMix", 0.24f }, { "con.master.delayTime", 0.36f },
               { "con.master.delayFeedback", 0.38f },
               { "con.osc1.wave", 1.0f }, { "con.osc1.level", 0.56f },
-              { "con.osc2.wave", 2.0f }, { "con.osc2.ratio", 1.0f },
+              { "con.osc2.wave", 1.0f }, { "con.osc2.ratio", 1.0f },
               { "con.osc2.fine", 3.2f }, { "con.osc2.level", 0.32f },
               { "con.osc3.wave", 1.0f }, { "con.osc3.ratio", 2.0f },
               { "con.osc3.fine", -2.1f }, { "con.osc3.level", 0.20f },
