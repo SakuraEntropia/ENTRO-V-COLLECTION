@@ -1591,10 +1591,10 @@ Values hakenValues (const juce::String& code, const juce::String& name)
         setPresetValue (values, "con.master.yDepth", 0.72f);
         setPresetValue (values, "con.master.zDepth", 0.9f);
         setPresetValue (values, "con.master.reverbMix", 0.34f);
-        setPresetValue (values, "con.master.reverbSize", 0.82f);
-        setPresetValue (values, "con.master.delayMix", 0.12f);
-        setPresetValue (values, "con.master.delayTime", 0.18f);
-        setPresetValue (values, "con.master.delayFeedback", 0.2f);
+        setPresetValue (values, "con.master.reverbSize", 0.84f);
+        setPresetValue (values, "con.master.delayMix", 0.14f);
+        setPresetValue (values, "con.master.delayTime", 0.25f);
+        setPresetValue (values, "con.master.delayFeedback", 0.28f);
         setPresetValue (values, "con.osc1.wave", 1.0f);
         setPresetValue (values, "con.osc1.level", 0.58f);
         setPresetValue (values, "con.osc2.wave", 2.0f);
@@ -2286,32 +2286,32 @@ std::vector<FactoryPreset> continuumCustomPresets()
         { "Kevin Penkin Style E Koto", "Strings",
           Values {
               { "con.master.volume", 0.64f }, { "con.master.glide", 0.002f },
-              { "con.master.yDepth", 0.72f }, { "con.master.zDepth", 0.92f },
-              { "con.master.reverbMix", 0.42f }, { "con.master.reverbSize", 0.88f },
-              { "con.master.delayMix", 0.20f }, { "con.master.delayTime", 0.22f },
-              { "con.master.delayFeedback", 0.28f },
-              { "con.osc1.wave", 1.0f }, { "con.osc1.level", 0.60f },
+              { "con.master.yDepth", 0.70f }, { "con.master.zDepth", 0.92f },
+              { "con.master.reverbMix", 0.48f }, { "con.master.reverbSize", 0.92f },
+              { "con.master.delayMix", 0.24f }, { "con.master.delayTime", 0.36f },
+              { "con.master.delayFeedback", 0.38f },
+              { "con.osc1.wave", 1.0f }, { "con.osc1.level", 0.62f },
               { "con.osc2.wave", 2.0f }, { "con.osc2.ratio", 2.0f },
-              { "con.osc2.fine", 0.03f }, { "con.osc2.level", 0.26f },
+              { "con.osc2.fine", 0.02f }, { "con.osc2.level", 0.34f },
               { "con.osc3.wave", 0.0f }, { "con.osc3.ratio", 0.5f },
-              { "con.osc3.level", 0.36f }, { "con.osc4.wave", 0.0f },
-              { "con.osc4.ratio", 3.0f }, { "con.osc4.level", 0.15f },
-              { "con.osc5.wave", 0.0f }, { "con.osc5.ratio", 4.0f },
-              { "con.osc5.level", 0.09f }, { "con.noise.level", 0.012f },
-              { "con.noise.color", 0.68f },
-              { "con.flt1.cutoff", 7200.0f }, { "con.flt1.res", 0.14f },
-              { "con.flt2.cutoff", 8200.0f }, { "con.flt3.cutoff", 9000.0f },
-              { "con.flt4.cutoff", 10000.0f }, { "con.flt5.cutoff", 11000.0f },
-              { "con.bank1.freq", 392.0f }, { "con.bank1.spread", 0.52f },
-              { "con.bank1.bandwidth", 0.13f }, { "con.bank1.mix", 0.44f },
-              { "con.bank1.level", 0.84f }, { "con.bank2.freq", 784.0f },
-              { "con.bank2.spread", 0.48f }, { "con.bank2.bandwidth", 0.10f },
-              { "con.bank2.mix", 0.32f }, { "con.bank2.level", 0.74f },
-              { "con.env1.attack", 0.0012f }, { "con.env1.decay", 0.46f },
-              { "con.env1.sustain", 0.0f }, { "con.env1.release", 1.3f },
-              { "con.env2.attack", 0.001f }, { "con.env2.decay", 0.24f },
-              { "con.env2.sustain", 0.0f }, { "con.env2.release", 0.9f },
-              { "con.sg1.rate", 0.30f }, { "con.sg1.level", 0.03f }
+              { "con.osc3.level", 0.30f }, { "con.osc4.wave", 0.0f },
+              { "con.osc4.ratio", 3.0f }, { "con.osc4.level", 0.20f },
+              { "con.osc5.wave", 0.0f }, { "con.osc5.ratio", 5.0f },
+              { "con.osc5.level", 0.11f }, { "con.noise.level", 0.025f },
+              { "con.noise.color", 0.62f },
+              { "con.flt1.cutoff", 7600.0f }, { "con.flt1.res", 0.16f },
+              { "con.flt2.cutoff", 8600.0f }, { "con.flt3.cutoff", 9400.0f },
+              { "con.flt4.cutoff", 10400.0f }, { "con.flt5.cutoff", 11400.0f },
+              { "con.bank1.freq", 392.0f }, { "con.bank1.spread", 0.54f },
+              { "con.bank1.bandwidth", 0.14f }, { "con.bank1.mix", 0.46f },
+              { "con.bank1.level", 0.86f }, { "con.bank2.freq", 784.0f },
+              { "con.bank2.spread", 0.50f }, { "con.bank2.bandwidth", 0.11f },
+              { "con.bank2.mix", 0.34f }, { "con.bank2.level", 0.76f },
+              { "con.env1.attack", 0.0010f }, { "con.env1.decay", 0.32f },
+              { "con.env1.sustain", 0.0f }, { "con.env1.release", 1.1f },
+              { "con.env2.attack", 0.001f }, { "con.env2.decay", 0.20f },
+              { "con.env2.sustain", 0.0f }, { "con.env2.release", 0.8f },
+              { "con.sg1.rate", 0.30f }, { "con.sg1.level", 0.02f }
           } },
         { "PT - Glass Harp", "Tuned Percussion",
           Values {
