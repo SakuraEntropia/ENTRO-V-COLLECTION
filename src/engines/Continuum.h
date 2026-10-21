@@ -29,7 +29,7 @@ public:
     static constexpr int kEnvCount = 2;
     static constexpr int kSources = 16;
     static constexpr int kDestinations = 16;
-    static constexpr int kFormulaCount = 12;
+    static constexpr int kFormulaCount = 13;
 
     ContinuumEngine();
 
@@ -57,6 +57,23 @@ public:
 
     void setNoteExpression (int note, float pitchSemitones,
                             float timbre01, float pressure01) override;
+    void setUserFormula (const std::string& formula) override;
+
+    struct UserFormula
+    {
+        enum Op : uint8_t
+        {
+            Const, Source, X, Y, Z, Add, Sub, Mul, Div, Pow,
+            Neg, Sin, Cos, Tan, Abs, Sqrt, Exp, Log, Min, Max
+        };
+
+        std::array<uint8_t, 128> ops {};
+        std::array<float, 64> constants {};
+        int opCount = 0;
+        bool valid = false;
+
+        float eval (float source, float x, float y, float z) const;
+    };
 
 private:
     enum ScalarParam
@@ -64,6 +81,7 @@ private:
         PMasterVolume, PMasterGlide, PMasterY, PMasterZ, PMasterBendRange,
         PMasterNoise, PMasterReverbMix, PMasterReverbSize,
         PMasterDelayMix, PMasterDelayTime, PMasterDelayFeedback,
+        PCvc1, PCvc2, PCvc3, PCvc4,
         PNoiseLevel, PNoiseColor,
         PScalarParamCount
     };
@@ -126,7 +144,7 @@ private:
         return (float) ((packed >> 8) & 0xffffu) / 65535.0f;
     }
 
-    static float evalFormula (int formula, float source, float x, float y, float z);
+    float evalFormula (int formula, float source, float x, float y, float z);
 
     int allocateVoice (int note, int channel);
     Voice* findVoice (int note);
@@ -150,6 +168,8 @@ private:
     int maxBlock_ = 512;
     uint64_t ageCounter_ = 0;
     float meter_ = 0.0f;
+    std::array<UserFormula, 2> userFormulas_ {};
+    std::atomic<int> activeUserFormula_ { 0 };
 
     std::array<Voice, kVoices> voices_ {};
     std::array<float, 16> channelBend_ {};

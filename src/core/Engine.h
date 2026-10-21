@@ -219,6 +219,7 @@ public:
     virtual int matrixCellFormula (int, int) const { return 0; }
     virtual float matrixCellAmount (int, int) const { return 0.0f; }
     virtual void resetMatrix() {}
+    virtual void setUserFormula (const std::string&) {}
 
     /** Per-note continuous expression for the on-screen Continuum surface. */
     virtual void setNoteExpression (int /*note*/, float /*pitchSemitones*/,

@@ -1,8 +1,13 @@
 #include "engines/Continuum.h"
 
 #include <algorithm>
+#include <cctype>
 #include <cmath>
+#include <cstdlib>
 #include <cstring>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace triad
 {
@@ -36,7 +41,7 @@ const char* const kDestinationNames[ContinuumEngine::kDestinations] =
 const char* const kFormulaNames[ContinuumEngine::kFormulaCount] =
 {
     "Off", "Direct", "X", "Y", "Z", "X*Y", "X*Z", "Y*Z", "X*Y*Z",
-    "Invert", "Soft", "Gate"
+    "Invert", "Soft", "Gate", "User"
 };
 
 template <typename T>
@@ -98,6 +103,14 @@ void ContinuumEngine::buildDefinition()
     scalarIndex_[(size_t) PMasterDelayMix] = add ("con.master.delayMix", "DELAY MIX", "Master", 0.0f, 1.0f, 0.15f);
     scalarIndex_[(size_t) PMasterDelayTime] = add ("con.master.delayTime", "DELAY TIME", "Master", 0.02f, 1.5f, 0.35f, ParamCurve::Log, {}, "s");
     scalarIndex_[(size_t) PMasterDelayFeedback] = add ("con.master.delayFeedback", "DELAY FB", "Master", 0.0f, 0.9f, 0.32f);
+    for (int cvc = 0; cvc < 4; ++cvc)
+    {
+        const auto id = std::string ("con.cvc.") + std::to_string (cvc + 1);
+        const auto name = std::string ("CVC ") + std::to_string (cvc + 1) + " OUT";
+        scalarIndex_[(size_t) (PCvc1 + cvc)] = add (id.c_str(), name.c_str(), "CVC",
+                                                    0.0f, 1.0f, 0.0f);
+    }
+
     scalarIndex_[(size_t) PNoiseLevel] = add ("con.noise.level", "NOISE", "Noise", 0.0f, 1.0f, 0.06f);
     scalarIndex_[(size_t) PNoiseColor] = add ("con.noise.color", "COLOR", "Noise", 0.0f, 1.0f, 0.5f);
 
@@ -177,6 +190,8 @@ void ContinuumEngine::buildDefinition()
     defaults_.resize (definition_.params.size());
     for (size_t i = 0; i < defaults_.size(); ++i)
         defaults_[i] = definition_.params[i].def;
+
+    setUserFormula ("sin(pi*x)*y");
 }
 
 void ContinuumEngine::prepare (double sampleRate, int maxBlockSize)
@@ -512,6 +527,344 @@ void ContinuumEngine::refreshMatrix()
     }
 }
 
+
+namespace
+{
+struct FormulaToken
+{
+    enum Type { Number, Variable, Function, Operator, LParen, RParen } type = Number;
+    float number = 0.0f;
+    int code = 0;
+    int precedence = 0;
+    bool rightAssociative = false;
+};
+
+std::vector<FormulaToken> tokenizeFormula (const std::string& text, bool& ok)
+{
+    std::vector<FormulaToken> tokens;
+    ok = true;
+    const auto* p = text.c_str();
+
+    auto skipSpace = [&p]
+    {
+        while (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r')
+            ++p;
+    };
+
+    while (true)
+    {
+        skipSpace();
+        if (*p == '\0')
+            break;
+
+        if ((*p >= '0' && *p <= '9') || *p == '.')
+        {
+            char* end = nullptr;
+            const auto value = std::strtof (p, &end);
+            if (end == p)
+            {
+                ok = false;
+                return {};
+            }
+            FormulaToken token;
+            token.type = FormulaToken::Number;
+            token.number = value;
+            tokens.push_back (token);
+            p = end;
+            continue;
+        }
+
+        if ((*p >= 'a' && *p <= 'z') || (*p >= 'A' && *p <= 'Z'))
+        {
+            std::string name;
+            while ((*p >= 'a' && *p <= 'z') || (*p >= 'A' && *p <= 'Z')
+                   || (*p >= '0' && *p <= '9') || *p == '_')
+            {
+                name.push_back ((char) std::tolower ((unsigned char) *p));
+                ++p;
+            }
+
+            FormulaToken token;
+            if (name == "x" || name == "y" || name == "z" || name == "s")
+            {
+                token.type = FormulaToken::Variable;
+                token.code = name == "s" ? 1 : (name == "x" ? 2 : (name == "y" ? 3 : 4));
+            }
+            else if (name == "pi")
+            {
+                token.type = FormulaToken::Number;
+                token.number = 3.14159265358979323846f;
+            }
+            else
+            {
+                static const std::pair<const char*, int> functions[] = {
+                    { "sin", 1 }, { "cos", 2 }, { "tan", 3 }, { "abs", 4 },
+                    { "sqrt", 5 }, { "exp", 6 }, { "log", 7 }
+                };
+
+                int code = 0;
+                for (const auto& fn : functions)
+                    if (name == fn.first)
+                        code = fn.second;
+
+                if (code == 0)
+                {
+                    ok = false;
+                    return {};
+                }
+
+                token.type = FormulaToken::Function;
+                token.code = code;
+            }
+            tokens.push_back (token);
+            continue;
+        }
+
+        if (*p == '(')
+        {
+            FormulaToken token;
+            token.type = FormulaToken::LParen;
+            tokens.push_back (token);
+            ++p;
+            continue;
+        }
+
+        if (*p == ')')
+        {
+            FormulaToken token;
+            token.type = FormulaToken::RParen;
+            tokens.push_back (token);
+            ++p;
+            continue;
+        }
+
+        if (*p == '+' || *p == '-' || *p == '*' || *p == '/' || *p == '^')
+        {
+            FormulaToken token;
+            token.type = FormulaToken::Operator;
+            const auto op = *p++;
+
+            // Unary minus / plus.
+            const auto previousIsOperand = ! tokens.empty()
+                && (tokens.back().type == FormulaToken::Number
+                    || tokens.back().type == FormulaToken::Variable
+                    || tokens.back().type == FormulaToken::RParen);
+
+            if (op == '-' && ! previousIsOperand)
+            {
+                token.code = 10; // Neg
+                token.precedence = 5;
+                token.rightAssociative = true;
+            }
+            else if (op == '+')
+            {
+                if (! previousIsOperand)
+                    continue;
+                token.code = 1; // Add
+                token.precedence = 2;
+            }
+            else if (op == '-')
+            {
+                token.code = 2; // Sub
+                token.precedence = 2;
+            }
+            else if (op == '*')
+            {
+                token.code = 3;
+                token.precedence = 3;
+            }
+            else if (op == '/')
+            {
+                token.code = 4;
+                token.precedence = 3;
+            }
+            else
+            {
+                token.code = 5; // Pow
+                token.precedence = 4;
+                token.rightAssociative = true;
+            }
+
+            tokens.push_back (token);
+            continue;
+        }
+
+        ok = false;
+        return {};
+    }
+
+    return tokens;
+}
+
+bool compileUserFormula (const std::string& text, ContinuumEngine::UserFormula& formula)
+{
+    formula = {};
+    bool ok = false;
+    const auto tokens = tokenizeFormula (text, ok);
+    if (! ok || tokens.empty())
+        return false;
+
+    std::vector<FormulaToken> output;
+    std::vector<FormulaToken> stack;
+
+    auto popOperator = [&output, &stack]
+    {
+        if (stack.empty() || stack.back().type == FormulaToken::LParen)
+            return false;
+        output.push_back (stack.back());
+        stack.pop_back();
+        return true;
+    };
+
+    for (const auto& token : tokens)
+    {
+        if (token.type == FormulaToken::Number || token.type == FormulaToken::Variable)
+        {
+            output.push_back (token);
+        }
+        else if (token.type == FormulaToken::Function)
+        {
+            stack.push_back (token);
+        }
+        else if (token.type == FormulaToken::Operator)
+        {
+            while (! stack.empty() && stack.back().type == FormulaToken::Operator
+                   && (stack.back().precedence > token.precedence
+                       || (stack.back().precedence == token.precedence
+                           && ! token.rightAssociative)))
+                popOperator();
+            stack.push_back (token);
+        }
+        else if (token.type == FormulaToken::LParen)
+        {
+            stack.push_back (token);
+        }
+        else if (token.type == FormulaToken::RParen)
+        {
+            while (! stack.empty() && stack.back().type != FormulaToken::LParen)
+                popOperator();
+
+            if (stack.empty())
+                return false;
+            stack.pop_back();
+
+            if (! stack.empty() && stack.back().type == FormulaToken::Function)
+                popOperator();
+        }
+    }
+
+    while (! stack.empty())
+    {
+        if (stack.back().type == FormulaToken::LParen)
+            return false;
+        popOperator();
+    }
+
+    int constCount = 0;
+
+    for (const auto& token : output)
+    {
+        if (formula.opCount >= (int) formula.ops.size())
+            return false;
+
+        if (token.type == FormulaToken::Number)
+        {
+            if (constCount >= (int) formula.constants.size())
+                return false;
+            formula.ops[(size_t) formula.opCount++] = (uint8_t) ContinuumEngine::UserFormula::Const;
+            formula.constants[(size_t) constCount++] = token.number;
+        }
+        else if (token.type == FormulaToken::Variable)
+        {
+            const auto op = token.code == 1 ? ContinuumEngine::UserFormula::Source
+                          : token.code == 2 ? ContinuumEngine::UserFormula::X
+                          : token.code == 3 ? ContinuumEngine::UserFormula::Y
+                                            : ContinuumEngine::UserFormula::Z;
+            formula.ops[(size_t) formula.opCount++] = (uint8_t) op;
+        }
+        else if (token.type == FormulaToken::Function)
+        {
+            const auto op = token.code == 1 ? ContinuumEngine::UserFormula::Sin
+                          : token.code == 2 ? ContinuumEngine::UserFormula::Cos
+                          : token.code == 3 ? ContinuumEngine::UserFormula::Tan
+                          : token.code == 4 ? ContinuumEngine::UserFormula::Abs
+                          : token.code == 5 ? ContinuumEngine::UserFormula::Sqrt
+                          : token.code == 6 ? ContinuumEngine::UserFormula::Exp
+                          : token.code == 7 ? ContinuumEngine::UserFormula::Log
+                          : token.code == 8 ? ContinuumEngine::UserFormula::Min
+                                            : ContinuumEngine::UserFormula::Max;
+            formula.ops[(size_t) formula.opCount++] = (uint8_t) op;
+        }
+        else
+        {
+            const auto op = token.code == 1 ? ContinuumEngine::UserFormula::Add
+                          : token.code == 2 ? ContinuumEngine::UserFormula::Sub
+                          : token.code == 3 ? ContinuumEngine::UserFormula::Mul
+                          : token.code == 4 ? ContinuumEngine::UserFormula::Div
+                          : token.code == 5 ? ContinuumEngine::UserFormula::Pow
+                                            : ContinuumEngine::UserFormula::Neg;
+            formula.ops[(size_t) formula.opCount++] = (uint8_t) op;
+        }
+    }
+
+    formula.valid = formula.opCount > 0;
+    return formula.valid;
+}
+} // namespace
+
+float ContinuumEngine::UserFormula::eval (float source, float x, float y, float z) const
+{
+    if (! valid)
+        return 0.0f;
+
+    float stack[32] {};
+    int sp = 0;
+    int ci = 0;
+
+    auto pop = [&stack, &sp] { return sp > 0 ? stack[--sp] : 0.0f; };
+
+    for (int i = 0; i < opCount; ++i)
+    {
+        const auto op = (Op) ops[(size_t) i];
+        switch (op)
+        {
+            case Const: if (ci < (int) constants.size() && sp < 32) stack[sp++] = constants[(size_t) ci++]; break;
+            case Source: if (sp < 32) stack[sp++] = source; break;
+            case X: if (sp < 32) stack[sp++] = x; break;
+            case Y: if (sp < 32) stack[sp++] = y; break;
+            case Z: if (sp < 32) stack[sp++] = z; break;
+            case Neg: { const auto a = pop(); if (sp < 32) stack[sp++] = -a; break; }
+            case Sin: { const auto a = pop(); if (sp < 32) stack[sp++] = std::sin (a); break; }
+            case Cos: { const auto a = pop(); if (sp < 32) stack[sp++] = std::cos (a); break; }
+            case Tan: { const auto a = pop(); if (sp < 32) stack[sp++] = std::tan (a); break; }
+            case Abs: { const auto a = pop(); if (sp < 32) stack[sp++] = std::abs (a); break; }
+            case Sqrt: { const auto a = pop(); if (sp < 32) stack[sp++] = std::sqrt (std::max (0.0f, a)); break; }
+            case Exp: { const auto a = pop(); if (sp < 32) stack[sp++] = std::exp (clampValue (a, -8.0f, 8.0f)); break; }
+            case Log: { const auto a = pop(); if (sp < 32) stack[sp++] = std::log (std::max (1.0e-6f, a)); break; }
+            case Add: { const auto b = pop(); const auto a = pop(); if (sp < 32) stack[sp++] = a + b; break; }
+            case Sub: { const auto b = pop(); const auto a = pop(); if (sp < 32) stack[sp++] = a - b; break; }
+            case Mul: { const auto b = pop(); const auto a = pop(); if (sp < 32) stack[sp++] = a * b; break; }
+            case Div: { const auto b = pop(); const auto a = pop(); if (sp < 32) stack[sp++] = std::abs (b) > 1.0e-8f ? a / b : 0.0f; break; }
+            case Pow: { const auto b = pop(); const auto a = pop(); if (sp < 32) stack[sp++] = std::pow (std::abs (a), b); break; }
+            case Min: { const auto b = pop(); const auto a = pop(); if (sp < 32) stack[sp++] = std::min (a, b); break; }
+            case Max: { const auto b = pop(); const auto a = pop(); if (sp < 32) stack[sp++] = std::max (a, b); break; }
+        }
+    }
+
+    return sp > 0 ? stack[sp - 1] : 0.0f;
+}
+
+void ContinuumEngine::setUserFormula (const std::string& text)
+{
+    const auto inactive = 1 - activeUserFormula_.load (std::memory_order_acquire);
+    UserFormula parsed;
+    if (compileUserFormula (text, parsed))
+    {
+        userFormulas_[(size_t) inactive] = parsed;
+        activeUserFormula_.store (inactive, std::memory_order_release);
+    }
+}
+
 float ContinuumEngine::evalFormula (int formula, float source, float x, float y, float z)
 {
     switch (formula)
@@ -527,6 +880,11 @@ float ContinuumEngine::evalFormula (int formula, float source, float x, float y,
         case 9:  return -source;
         case 10: return source * (0.2f + 0.8f * z);
         case 11: return source > 0.5f ? 1.0f : 0.0f;
+        case 12:
+        {
+            const auto index = activeUserFormula_.load (std::memory_order_acquire);
+            return userFormulas_[(size_t) index].eval (source, x, y, z);
+        }
         default: return 0.0f;
     }
 }

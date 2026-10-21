@@ -104,6 +104,26 @@ public:
         addAndMakeVisible (zoomInButton_);
         addAndMakeVisible (zoomLabel_);
 
+        globalGain_.setSliderStyle (juce::Slider::LinearHorizontal);
+        globalGain_.setTextBoxStyle (juce::Slider::TextBoxRight, false, 54, 18);
+        globalGain_.setRange (-60.0, 12.0, 0.1);
+        globalGain_.setValue (host_.globalGainDb(), juce::dontSendNotification);
+        globalGain_.setTextValueSuffix (" dB");
+        globalGain_.setColour (juce::Slider::backgroundColourId, juce::Colour (0xff26262b));
+        globalGain_.setColour (juce::Slider::trackColourId, accent_);
+        globalGain_.setColour (juce::Slider::thumbColourId, juce::Colour (0xffe9e6df));
+        globalGain_.setTooltip ("Global output trim (independent of presets)");
+        gainLabel_.setText ("OUT", juce::dontSendNotification);
+        gainLabel_.setJustificationType (juce::Justification::centredRight);
+        gainLabel_.setFont (juce::Font (juce::FontOptions (8.0f, juce::Font::bold)));
+        gainLabel_.setColour (juce::Label::textColourId, juce::Colour (0xff9a968d));
+        addAndMakeVisible (gainLabel_);
+        globalGain_.onValueChange = [this]
+        {
+            host_.setGlobalGainDb ((float) globalGain_.getValue());
+        };
+        addAndMakeVisible (globalGain_);
+
         startTimerHz (6);
     }
 
@@ -155,6 +175,10 @@ public:
         browseButton_.setBounds (area.removeFromRight (68).reduced (2, 0));
         presetBox_.setBounds (area.removeFromRight (190).reduced (4, 0));
 
+        auto gainArea = area.removeFromRight (142).reduced (4, 0);
+        gainLabel_.setBounds (gainArea.removeFromLeft (26));
+        globalGain_.setBounds (gainArea);
+
         auto zoomArea = area.removeFromRight (154).reduced (4, 0);
         zoomOutButton_.setBounds (zoomArea.removeFromLeft (30));
         fitButton_.setBounds (zoomArea.removeFromLeft (42).reduced (2, 0));
@@ -164,6 +188,9 @@ public:
 
     void refresh()
     {
+        if (std::abs (globalGain_.getValue() - (double) host_.globalGainDb()) > 0.05)
+            globalGain_.setValue (host_.globalGainDb(), juce::dontSendNotification);
+
         const auto name = host_.currentPresetName();
 
         for (int i = 0; i < presetBox_.getNumItems(); ++i)
@@ -181,6 +208,7 @@ public:
     void setAccent (juce::Colour colour)
     {
         accent_ = colour;
+        globalGain_.setColour (juce::Slider::trackColourId, accent_);
         repaint();
     }
 
@@ -204,6 +232,8 @@ private:
     juce::ComboBox presetBox_;
     juce::TextButton initButton_, saveButton_, loadButton_, browseButton_;
     juce::TextButton zoomOutButton_, fitButton_, zoomInButton_;
+    juce::Slider globalGain_;
+    juce::Label gainLabel_;
     juce::Label zoomLabel_;
     juce::Colour accent_ { 0xffcf4b2e };
 };

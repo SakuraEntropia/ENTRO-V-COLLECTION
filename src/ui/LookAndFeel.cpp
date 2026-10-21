@@ -259,6 +259,24 @@ void TriadLookAndFeel::drawLinearSlider (juce::Graphics& g, int x, int y, int wi
             g.drawRoundedRectangle (grip, 3.0f, 1.0f);
         }
     }
+    else if (style == juce::Slider::LinearHorizontal)
+    {
+        const auto track = juce::Rectangle<float> (bounds.getX() + 5.0f, bounds.getCentreY() - 2.5f,
+                                                   bounds.getWidth() - 10.0f, 5.0f);
+        g.setColour (juce::Colour (0xff2b2b30));
+        g.fillRoundedRectangle (track, 2.5f);
+        g.setColour (accent.withAlpha (0.85f));
+        g.fillRoundedRectangle (track.withRight (juce::jlimit (track.getX() + 3.0f,
+                                                               track.getRight(),
+                                                               sliderPos)),
+                                2.5f);
+
+        const auto thumbX = juce::jlimit (track.getX(), track.getRight(), sliderPos);
+        g.setColour (juce::Colour (0xffe9e6df));
+        g.fillEllipse (thumbX - 4.0f, track.getCentreY() - 4.0f, 8.0f, 8.0f);
+        g.setColour (juce::Colours::black.withAlpha (0.55f));
+        g.drawEllipse (thumbX - 4.0f, track.getCentreY() - 4.0f, 8.0f, 8.0f, 1.0f);
+    }
     else
     {
         g.setColour (juce::Colour (0xff2b2b30));

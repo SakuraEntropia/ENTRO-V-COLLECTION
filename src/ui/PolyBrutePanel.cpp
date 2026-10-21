@@ -9,6 +9,166 @@ namespace
 juce::Colour polyAccent() { return juce::Colour (0xff3f93e8); }
 }
 
+class MorphPad final : public juce::Component, private juce::Timer
+{
+public:
+    explicit MorphPad (EditorHost& host)
+        : host_ (host)
+    {
+        pressure_.setSliderStyle (juce::Slider::LinearVertical);
+        pressure_.setRange (0.0, 1.0, 0.001);
+        pressure_.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
+        pressure_.setValue (0.0, juce::dontSendNotification);
+        pressure_.setColour (juce::Slider::backgroundColourId, juce::Colour (0xff15181a));
+        pressure_.setColour (juce::Slider::trackColourId, juce::Colour (0xff2fb6a8));
+        pressure_.setColour (juce::Slider::thumbColourId, juce::Colour (0xffe9e6df));
+        pressure_.setTooltip ("Pressure / Z (mouse fallback; force-touch updates automatically)");
+        pressure_.onValueChange = [this]
+        {
+            pressureValue_ = (float) pressure_.getValue();
+            host_.setMorphPad (x_, y_, pressureValue_);
+            repaint();
+        };
+        addAndMakeVisible (pressure_);
+        setWantsKeyboardFocus (false);
+        startTimerHz (15);
+    }
+
+    ~MorphPad() override { stopTimer(); }
+
+    void paint (juce::Graphics& g) override
+    {
+        auto bounds = getLocalBounds().toFloat();
+        auto pad = padArea();
+
+        g.setColour (juce::Colour (0xff07090b));
+        g.fillRoundedRectangle (pad, 4.0f);
+        g.setColour (juce::Colour (0xff2fb6a8).withAlpha (0.18f));
+        g.drawRoundedRectangle (pad.reduced (0.5f), 4.0f, 1.0f);
+
+        for (int i = 1; i < 4; ++i)
+        {
+            const auto x = pad.getX() + pad.getWidth() * (float) i / 4.0f;
+            const auto y = pad.getY() + pad.getHeight() * (float) i / 4.0f;
+            g.setColour (juce::Colour (0xff5fd6d0).withAlpha (0.11f));
+            g.drawVerticalLine ((int) x, pad.getY(), pad.getBottom());
+            g.drawHorizontalLine ((int) y, pad.getX(), pad.getRight());
+        }
+
+        const auto point = juce::Point<float> (pad.getX() + x_ * pad.getWidth(),
+                                                pad.getY() + (1.0f - y_) * pad.getHeight());
+        const auto radius = 5.0f + pressureValue_ * 10.0f;
+        g.setColour (juce::Colour (0xff5fd6d0).withAlpha (0.14f));
+        g.fillEllipse (point.x - radius, point.y - radius, radius * 2.0f, radius * 2.0f);
+        g.setColour (juce::Colour (0xffdffbf6));
+        g.fillEllipse (point.x - 4.0f, point.y - 4.0f, 8.0f, 8.0f);
+        g.setColour (juce::Colour (0xff2fb6a8));
+        g.drawLine (pad.getX(), point.y, pad.getRight(), point.y, 0.7f);
+        g.drawLine (point.x, pad.getY(), point.x, pad.getBottom(), 0.7f);
+
+        g.setColour (juce::Colour (0xff7fd8d0));
+        g.setFont (juce::Font (juce::FontOptions (7.5f)));
+        g.drawText ("X MORPH", (int) pad.getX() + 5, (int) pad.getBottom() - 13, 60, 10,
+                    juce::Justification::centredLeft);
+        g.drawText ("Y SPREAD", (int) pad.getRight() - 64, (int) pad.getY() + 3, 60, 10,
+                    juce::Justification::centredRight);
+        g.drawText ("Z", (int) pad.getRight() + 12, (int) pad.getY() + 2, 20, 10,
+                    juce::Justification::centredRight);
+    }
+
+    void resized() override
+    {
+        auto area = getLocalBounds().reduced (4);
+        pressure_.setBounds (area.removeFromRight (34).reduced (3, 0));
+    }
+
+    void mouseDown (const juce::MouseEvent& event) override
+    {
+        if (! padArea().contains (event.position))
+            return;
+
+        dragging_ = true;
+        updateFromEvent (event);
+    }
+
+    void mouseDrag (const juce::MouseEvent& event) override
+    {
+        if (dragging_)
+            updateFromEvent (event);
+    }
+
+    void mouseUp (const juce::MouseEvent&) override
+    {
+        if (! dragging_)
+            return;
+
+        dragging_ = false;
+
+        // On a pressure-capable touchpad, releasing the finger ends the
+        // expression.  A mouse-only user keeps the manual pressure slider.
+        if (pressureWasValid_)
+        {
+            pressureValue_ = 0.0f;
+            pressure_.setValue (0.0, juce::dontSendNotification);
+            host_.setMorphPad (x_, y_, 0.0f);
+        }
+
+        repaint();
+    }
+
+    void mouseWheelMove (const juce::MouseEvent&, const juce::MouseWheelDetails& wheel) override
+    {
+        pressureValue_ = juce::jlimit (0.0f, 1.0f, pressureValue_ + wheel.deltaY * 0.6f);
+        pressure_.setValue (pressureValue_, juce::dontSendNotification);
+        host_.setMorphPad (x_, y_, pressureValue_);
+        repaint();
+    }
+
+private:
+    juce::Rectangle<float> padArea() const
+    {
+        return getLocalBounds().toFloat().reduced (4.0f).withTrimmedRight (40.0f);
+    }
+
+    void updateFromEvent (const juce::MouseEvent& event)
+    {
+        auto pad = padArea();
+        x_ = juce::jlimit (0.0f, 1.0f, (event.position.x - pad.getX()) / pad.getWidth());
+        y_ = juce::jlimit (0.0f, 1.0f, 1.0f - (event.position.y - pad.getY()) / pad.getHeight());
+
+        pressureWasValid_ = event.isPressureValid();
+        if (pressureWasValid_)
+        {
+            pressureValue_ = juce::jlimit (0.0f, 1.0f, event.pressure);
+            pressure_.setValue (pressureValue_, juce::dontSendNotification);
+        }
+
+        host_.setMorphPad (x_, y_, pressureValue_);
+        repaint();
+    }
+
+    void timerCallback() override
+    {
+        if (dragging_)
+            return;
+
+        if (auto* morph = host_.apvts().getRawParameterValue ("poly.voice.morph"))
+            x_ = juce::jlimit (0.0f, 1.0f, morph->load());
+        if (auto* spread = host_.apvts().getRawParameterValue ("poly.voice.spread"))
+            y_ = juce::jlimit (0.0f, 1.0f, spread->load());
+
+        repaint();
+    }
+
+    EditorHost& host_;
+    juce::Slider pressure_;
+    float x_ = 0.5f;
+    float y_ = 0.5f;
+    float pressureValue_ = 0.0f;
+    bool dragging_ = false;
+    bool pressureWasValid_ = false;
+};
+
 PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
     : PanelBase (editorHost, "POLYBRUTE V", 1900, 1000, polyAccent())
 {
@@ -19,8 +179,8 @@ PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
     // Layout follows the hardware: performance at the far left, voice
     // management next, then a three-row synthesis block, matrix, effects and
     // arpeggiator.
-    const juce::Rectangle<int> perfArea { 8, 8, 168, 852 };
-    const juce::Rectangle<int> voiceArea { 184, 8, 150, 852 };
+    const juce::Rectangle<int> perfArea { 8, 8, 168, 820 };
+    const juce::Rectangle<int> voiceArea { 184, 8, 150, 820 };
 
     const juce::Rectangle<int> vco1Area { 342, 8, 150, 268 };
     const juce::Rectangle<int> mixerArea { 500, 8, 120, 268 };
@@ -250,24 +410,25 @@ PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
     buildLfo (3, lfo3Area, "poly.lfo3.cutoffAmt", "CUTOFF");
 
     // -----------------------------------------------------------------------
-    // Morph control: a single large knob below the voice panel, as on the
-    // hardware, rather than a module in the middle of the synth block.
+    // Morph performance pad, lower-left: X = morph A/B, Y = spread,
+    // Z = touch pressure / aftertouch.  The pressure slider is the fallback
+    // for Windows machines and mice without force/pressure data.
     // -----------------------------------------------------------------------
     {
-        const juce::Rectangle<int> morphBar { 342, 836, 740, 108 };
-        addModule ("MORPH", morphBar);
+        const juce::Rectangle<int> morphBar { 8, 836, 740, 108 };
+        addModule ("MORPH PERFORMANCE", morphBar);
 
-        auto& knob = addKnob ("poly.voice.morph", "MORPH A/B",
-                              { morphBar.getX() + 10, morphBar.getY() + 26, 94, 72 });
-        knob.getProperties().set ("silverKnob", true);
+        morphPad_ = std::make_unique<MorphPad> (host());
+        morphPad_->setBounds (morphBar.getX() + 8, morphBar.getY() + 26, 280, 72);
+        addAndMakeVisible (*morphPad_);
 
-        addButton ("CAPTURE B", { morphBar.getX() + 120, morphBar.getY() + 34, 150, 28 },
+        addButton ("CAPTURE B", { morphBar.getX() + 300, morphBar.getY() + 30, 150, 28 },
                    [this] { host().captureMorphB(); });
-        addButton ("SWAP A/B", { morphBar.getX() + 282, morphBar.getY() + 34, 150, 28 },
+        addButton ("SWAP A/B", { morphBar.getX() + 460, morphBar.getY() + 30, 150, 28 },
                    [this] { host().swapMorphB(); });
 
-        addCaption ("A / B PARAMETER INTERPOLATION",
-                    { morphBar.getX() + 450, morphBar.getY() + 36, 270, 24 },
+        addCaption ("X = MORPH A/B   Y = SPREAD   Z = PRESSURE / AFTERTOUCH",
+                    { morphBar.getX() + 300, morphBar.getY() + 66, 430, 24 },
                     juce::Justification::centredLeft, 7.0f,
                     juce::Colour (0xffd0ccc3));
     }
@@ -374,5 +535,7 @@ void PolyBrutePanel::paint (juce::Graphics& g)
 {
     PanelBase::paint (g);
 }
+
+PolyBrutePanel::~PolyBrutePanel() = default;
 
 } // namespace triad::ui

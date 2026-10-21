@@ -41,6 +41,14 @@ public:
     virtual void setUiPitchBend (float) {}
     virtual void setUiModWheel (float) {}
 
+    // Global output trim, common to every instrument.  Stored outside APVTS
+    // so it survives presets and applies to the final stereo output.
+    virtual float globalGainDb() const { return 0.0f; }
+    virtual void setGlobalGainDb (float) {}
+
+    // PolyBrute 3D morph pad: x = morph A/B, y = spread, z = pressure.
+    virtual void setMorphPad (float, float, float) {}
+
     virtual void captureMorphB() {}
     virtual void swapMorphB() {}
     virtual bool hasMorph() const { return false; }

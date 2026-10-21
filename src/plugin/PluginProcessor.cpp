@@ -155,6 +155,9 @@ TriadAudioProcessor::TriadAudioProcessor()
     morphParameterIndex_ = findMorphParameter();
     selectedPartIndex_ = findParameterBySuffix (".master.selectedPart");
 
+    for (int i = 0; i < 4; ++i)
+        cvcIndices_[(size_t) i] = findParameterBySuffix (".cvc." + juce::String (i + 1));
+
     sequencer_.prepare (44100.0);
     setLatencySamples (0);
 }
@@ -228,6 +231,8 @@ void TriadAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 
     lastPitchBendSent_ = 0.0f;
     lastModWheelSent_ = -1.0f;
+    lastAftertouchSent_ = -1.0f;
+    lastCvc_.fill (-1.0f);
     lastSequencerEnabled_ = false;
     scheduledCount_ = 0;
 }
@@ -499,6 +504,16 @@ void TriadAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         lastModWheelSent_ = uiMod;
     }
 
+    const auto uiPressure = uiAftertouch_.load();
+    if (std::abs (uiPressure - lastAftertouchSent_) > 1.0e-4f)
+    {
+        MidiEvent event;
+        event.type = MidiEventType::ChannelPressure;
+        event.value = uiPressure;
+        addScheduledEvent (0, event);
+        lastAftertouchSent_ = uiPressure;
+    }
+
     const auto sequencerEnabled = arpEnabledIndex_ >= 0
                                && naturalValues_[(size_t) arpEnabledIndex_] > 0.5f;
 
@@ -623,6 +638,46 @@ void TriadAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
                                         expression_[base + 2].load());
         }
     }
+
+    if (isContinuum())
+    {
+        for (int i = 0; i < 4; ++i)
+        {
+            const auto index = cvcIndices_[(size_t) i];
+            if (index < 0)
+                continue;
+
+            const auto value = juce::jlimit (0.0f, 1.0f, naturalValues_[(size_t) index]);
+            if (std::abs (value - lastCvc_[(size_t) i]) > 1.0e-4f)
+            {
+                midi.addEvent (juce::MidiMessage::controllerEvent (
+                                   1, 20 + i, juce::jlimit (0, 127, juce::roundToInt (value * 127.0f))),
+                               0);
+                lastCvc_[(size_t) i] = value;
+            }
+        }
+    }
+
+    const auto outputGain = juce::Decibels::decibelsToGain (globalGainDb_.load());
+    if (std::abs (outputGain - 1.0f) > 1.0e-5f)
+    {
+        for (int channel = 0; channel < juce::jmin (2, numChannels); ++channel)
+            buffer.applyGain (channel, 0, numSamples, outputGain);
+    }
+}
+
+void TriadAudioProcessor::setMorphPad (float x, float y, float pressure)
+{
+    auto setNatural = [this] (const char* id, float value)
+    {
+        if (auto* parameter = apvts_.getParameter (id))
+            parameter->setValueNotifyingHost (
+                parameter->convertTo0to1 (juce::jlimit (0.0f, 1.0f, value)));
+    };
+
+    setNatural ("poly.voice.morph", x);
+    setNatural ("poly.voice.spread", y);
+    uiAftertouch_.store (juce::jlimit (0.0f, 1.0f, pressure));
 }
 
 void TriadAudioProcessor::captureMorphB()
@@ -843,6 +898,7 @@ void TriadAudioProcessor::encodeState (juce::ValueTree& state)
     state.setProperty ("instrument", juce::String (engine_->definition().id), nullptr);
     state.setProperty ("formatVersion", 2, nullptr);
     state.setProperty ("presetName", currentPresetName_, nullptr);
+    state.setProperty ("globalGainDb", globalGainDb_.load(), nullptr);
 
     juce::String cables;
     {
@@ -939,6 +995,10 @@ void TriadAudioProcessor::decodeState (const juce::ValueTree& state)
                 sequencer_.setStepVelocity (i, (int) sequence.getProperty ("v" + index));
         }
     }
+
+    if (state.hasProperty ("globalGainDb"))
+        globalGainDb_.store (juce::jlimit (-60.0f, 12.0f,
+                                          (float) state.getProperty ("globalGainDb")));
 
     currentPresetName_ = state.getProperty ("presetName", "INIT").toString();
 

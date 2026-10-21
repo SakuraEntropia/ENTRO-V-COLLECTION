@@ -335,6 +335,40 @@ void testTuning (triad::InstrumentKind kind, const char* name)
     }
 }
 
+void testContinuumUserFormula()
+{
+    auto engine = triad::makeEngine (triad::InstrumentKind::Continuum);
+    const auto& definition = engine->definition();
+
+    std::vector<float> values (definition.params.size());
+    for (size_t i = 0; i < values.size(); ++i)
+        values[i] = definition.params[i].def;
+
+    engine->prepare (48000.0, 256);
+    engine->setParameters (values.data(), (int) values.size());
+
+    CHECK (engine->matrixFormulaCount() == 13);
+    CHECK (engine->matrixFormulaName (12) == "User");
+
+    engine->setUserFormula ("sin(pi*x)*y + z");
+    engine->setMatrixCell (0, 0, 12, 1.0f);
+
+    triad::MidiEvent on;
+    on.type = triad::MidiEventType::NoteOn;
+    on.note = 60;
+    on.value = 0.8f;
+    engine->processMidi (on);
+
+    std::vector<float> left, right;
+    renderSeconds (*engine, 0.2, 48000.0, left, right);
+    checkFinite (left, right, "continuum user formula");
+
+    // Invalid expressions must be rejected without killing the engine.
+    engine->setUserFormula ("sin(");
+    renderSeconds (*engine, 0.05, 48000.0, left, right);
+    checkFinite (left, right, "continuum invalid user formula");
+}
+
 void testMatriarchPatching()
 {
     auto engine = triad::makeEngine (triad::InstrumentKind::Matriarch);
@@ -379,6 +413,7 @@ int main()
     testTuning (triad::InstrumentKind::Matriarch, "Matriarch");
     testTuning (triad::InstrumentKind::PolyBrute, "PolyBrute");
     testTuning (triad::InstrumentKind::MoogOne, "Moog One");
+    testContinuumUserFormula();
     testMatriarchPatching();
 
     if (failures == 0)

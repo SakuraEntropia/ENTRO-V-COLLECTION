@@ -33,7 +33,7 @@ public:
 
     const juce::String getName() const override;
     bool acceptsMidi() const override { return true; }
-    bool producesMidi() const override { return false; }
+    bool producesMidi() const override { return isContinuum(); }
     bool isMidiEffect() const override { return false; }
     double getTailLengthSeconds() const override { return 8.0; }
 
@@ -62,6 +62,10 @@ public:
     float uiModWheel() const override { return uiModWheel_.load(); }
     void setUiPitchBend (float value) override { uiPitchBend_.store (value); }
     void setUiModWheel (float value) override { uiModWheel_.store (value); }
+
+    float globalGainDb() const override { return globalGainDb_.load(); }
+    void setGlobalGainDb (float value) override { globalGainDb_.store (juce::jlimit (-60.0f, 12.0f, value)); }
+    void setMorphPad (float x, float y, float pressure) override;
 
     void captureMorphB() override;
     void swapMorphB() override;
@@ -120,6 +124,8 @@ private:
     std::vector<float> morphScratch_;
     int morphParameterIndex_ = -1;
     int selectedPartIndex_ = -1;
+    std::array<int, 4> cvcIndices_ { -1, -1, -1, -1 };
+    std::array<float, 4> lastCvc_ { -1.0f, -1.0f, -1.0f, -1.0f };
 
     juce::MidiKeyboardState keyboardState_;
     PatternSequencer sequencer_;
@@ -150,6 +156,9 @@ private:
     std::atomic<int> selectedPart_ { 1 };
     std::atomic<float> uiPitchBend_ { 0.0f };
     std::atomic<float> uiModWheel_ { 0.0f };
+    std::atomic<float> uiAftertouch_ { 0.0f };
+    std::atomic<float> globalGainDb_ { 0.0f };
+    float lastAftertouchSent_ = -1.0f;
 
     juce::String currentPresetName_ { "INIT" };
     int currentProgram_ = 0;

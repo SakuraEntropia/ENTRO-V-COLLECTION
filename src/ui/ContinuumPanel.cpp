@@ -83,27 +83,31 @@ void ContinuumSurface::paint (juce::Graphics& g)
     g.fillRect (bounds.withHeight (24.0f));
     g.fillRect (bounds.withTrimmedTop (bounds.getBottom() - 24.0f));
 
-    // Four octaves of a piano layout: seven equal white keys and five
-    // narrower black keys per octave.  Red = white key, black = black key.
-    const auto octaveWidth = area.getWidth() / 4.0f;
-    const auto whiteWidth = octaveWidth / 7.0f;
-    const auto blackWidth = whiteWidth * 0.58f;
-    static const int blackOffsets[] = { 1, 2, 4, 5, 6 };
+    // Four octaves = 48 continuous semitone cells.  Red cells are the
+    // white-key pitch classes, black cells the black-key pitch classes.
+    // One cell = exactly one semitone, so the visual blocks and the linear
+    // X-pitch mapping share the same boundaries.
+    const auto semitoneWidth = area.getWidth() / 48.0f;
+    static constexpr bool blackKey[12] = { false, true, false, true, false, false,
+                                           true, false, true, false, true, false };
 
-    for (int octave = 0; octave < 4; ++octave)
+    for (int semitone = 0; semitone < 48; ++semitone)
     {
-        const auto octaveX = area.getX() + (float) octave * octaveWidth;
+        const auto x = area.getX() + (float) semitone * semitoneWidth;
+        const auto isBlack = blackKey[semitone % 12];
 
-        g.setColour (juce::Colour (0xffd8232a));
-        g.fillRect (octaveX, area.getY(), octaveWidth, area.getHeight());
+        g.setColour (isBlack ? juce::Colour (0xff08090a) : juce::Colour (0xffd8232a));
+        g.fillRect (x, area.getY(), semitoneWidth + 0.5f, area.getHeight());
 
-        for (const auto offset : blackOffsets)
+        g.setColour (isBlack ? juce::Colour (0xff4b4b4d).withAlpha (0.72f)
+                             : juce::Colour (0xff6f1013).withAlpha (0.85f));
+        g.drawVerticalLine ((int) x, area.getY(), area.getBottom());
+
+        if (isBlack)
         {
-            const auto x = octaveX + (float) offset * whiteWidth - blackWidth * 0.5f;
-            g.setColour (juce::Colour (0xff0a0a0b));
-            g.fillRect (x, area.getY(), blackWidth, area.getHeight());
-            g.setColour (juce::Colour (0xff3a3a3c).withAlpha (0.7f));
-            g.drawVerticalLine ((int) (x + blackWidth - 1.0f), area.getY(), area.getBottom());
+            g.setColour (juce::Colour (0xff3c3c40).withAlpha (0.8f));
+            g.drawVerticalLine ((int) (x + semitoneWidth - 1.0f),
+                                area.getY(), area.getBottom());
         }
     }
 
@@ -172,8 +176,7 @@ void ContinuumSurface::paint (juce::Graphics& g)
 
     g.setColour (juce::Colour (0xffe9f7f3));
     g.setFont (juce::Font (juce::FontOptions (10.0f)));
-    const juce::String readout = "NOTE " + juce::String (note_)
-                                 + "  X " + juce::String (exprPitch_, 2)
+    const juce::String readout = "PITCH " + juce::String (60.0f + exprPitch_, 2)
                                  + "  Y " + juce::String (timbre_, 2)
                                  + "  Z " + juce::String (pressure_, 2);
     g.drawText (readout, (int) point.x + 18, (int) point.y - 8, 280, 16,
@@ -185,37 +188,37 @@ void ContinuumSurface::mouseDown (const juce::MouseEvent& event)
     if (active_)
         endNote();
 
-    beginNote (event.position);
+    const auto pressure = event.isPressureValid()
+                              ? juce::jlimit (0.02f, 1.0f, event.pressure)
+                              : pressure_;
+    beginNote (event.position, pressure);
 }
 
-void ContinuumSurface::beginNote (juce::Point<float> position)
+void ContinuumSurface::beginNote (juce::Point<float> position, float pressure)
 {
     const auto pitch = pitchForX (position.x);
-    note_ = juce::jlimit (0, 127, (int) std::floor (pitch));
-    exprPitch_ = pitch - (float) note_;
+    // One fixed voice + a continuous ±24-semitone expression offset.  Changing
+    // MIDI notes at every semitone boundary retriggered the envelope and made
+    // the surface sound stepped; the hardware surface is continuous.
+    note_ = 60;
+    exprPitch_ = pitch - 60.0f;
     timbre_ = juce::jlimit (0.02f, 0.98f, 1.0f - (position.y - playingArea().getY()) / juce::jmax (1.0f, playingArea().getHeight()));
-    pressure_ = 0.8f;
+    pressure_ = pressure;
     active_ = true;
     lastPoint_ = pointFor (note_, exprPitch_, timbre_);
     host_.continuumNoteOn (note_, exprPitch_, timbre_, pressure_);
     repaint();
 }
 
-void ContinuumSurface::updateFromPosition (juce::Point<float> position, bool allowNoteChange)
+void ContinuumSurface::updateFromPosition (juce::Point<float> position, bool allowNoteChange,
+                                           float pressure)
 {
+    juce::ignoreUnused (allowNoteChange);
+
     const auto pitch = pitchForX (position.x);
-    const auto newNote = juce::jlimit (0, 127, (int) std::floor (pitch));
-    const auto newExpr = pitch - (float) newNote;
-
-    if (allowNoteChange && newNote != note_)
-    {
-        host_.continuumNoteOff (note_);
-        note_ = newNote;
-        host_.continuumNoteOn (note_, newExpr, timbre_, pressure_);
-    }
-
-    exprPitch_ = newExpr;
+    exprPitch_ = pitch - 60.0f;
     timbre_ = juce::jlimit (0.02f, 0.98f, 1.0f - (position.y - playingArea().getY()) / juce::jmax (1.0f, playingArea().getHeight()));
+    pressure_ = juce::jlimit (0.02f, 1.0f, pressure);
     lastPoint_ = pointFor (note_, exprPitch_, timbre_);
     host_.continuumSetExpression (note_, exprPitch_, timbre_, pressure_);
     repaint();
@@ -223,8 +226,13 @@ void ContinuumSurface::updateFromPosition (juce::Point<float> position, bool all
 
 void ContinuumSurface::mouseDrag (const juce::MouseEvent& event)
 {
-    if (active_)
-        updateFromPosition (event.position, true);
+    if (! active_)
+        return;
+
+    if (event.isPressureValid())
+        updateFromPosition (event.position, true, event.pressure);
+    else
+        updateFromPosition (event.position, true, pressure_);
 }
 
 void ContinuumSurface::mouseUp (const juce::MouseEvent&)
@@ -279,12 +287,41 @@ void ContinuumSurface::focusLost (juce::Component::FocusChangeType)
 ContinuumMatrix::ContinuumMatrix (EditorHost& host) : host_ (host)
 {
     setOpaque (true);
+
+    formulaEditor_.setText ("sin(pi*x)*y", false);
+    formulaEditor_.setFont (juce::Font (juce::FontOptions (10.0f)));
+    formulaEditor_.setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xff071012));
+    formulaEditor_.setColour (juce::TextEditor::textColourId, juce::Colour (0xffbdfaf3));
+    formulaEditor_.setColour (juce::TextEditor::outlineColourId, juce::Colour (0xff2fb6a8).withAlpha (0.45f));
+    formulaEditor_.setTooltip ("User formula: s, x, y, z; sin/cos/tan/abs/sqrt/exp/log; + - * / ^");
+    addAndMakeVisible (formulaEditor_);
+
+    applyFormula_.setButtonText ("APPLY");
+    applyFormula_.setTooltip ("Compile the user formula for cells set to user formula");
+    applyFormula_.onClick = [this]
+    {
+        host_.engine().setUserFormula (formulaEditor_.getText().toStdString());
+    };
+    addAndMakeVisible (applyFormula_);
+
     startTimerHz (10);
+}
+
+juce::Rectangle<float> ContinuumMatrix::matrixArea() const
+{
+    return getLocalBounds().toFloat().reduced (6.0f).withTrimmedBottom (54.0f);
+}
+
+void ContinuumMatrix::resized()
+{
+    auto footer = getLocalBounds().removeFromBottom (46).reduced (8, 6);
+    applyFormula_.setBounds (footer.removeFromRight (62));
+    formulaEditor_.setBounds (footer.reduced (0, 0));
 }
 
 juce::Rectangle<float> ContinuumMatrix::cellBounds (int source, int destination) const
 {
-    const auto area = getLocalBounds().toFloat().reduced (6.0f);
+    const auto area = matrixArea();
     const auto left = 104.0f;
     const auto top = 100.0f;
     const auto cellW = (area.getWidth() - left) / (float) ContinuumEngine::kDestinations;
@@ -296,7 +333,7 @@ juce::Rectangle<float> ContinuumMatrix::cellBounds (int source, int destination)
 
 juce::Point<int> ContinuumMatrix::cellAt (juce::Point<float> position) const
 {
-    const auto area = getLocalBounds().toFloat().reduced (6.0f);
+    const auto area = matrixArea();
     const auto left = 104.0f;
     const auto top = 100.0f;
 
@@ -332,7 +369,7 @@ void ContinuumMatrix::paint (juce::Graphics& g)
                 14, 27, 600, 12, juce::Justification::centredLeft);
 
     auto& engine = host_.engine();
-    const auto area = getLocalBounds().toFloat().reduced (6.0f);
+    const auto area = matrixArea();
     const auto left = 104.0f;
     const auto top = 100.0f;
     const auto cellW = (area.getWidth() - left) / (float) ContinuumEngine::kDestinations;
@@ -446,11 +483,13 @@ ContinuumPanel::ContinuumPanel (EditorHost& host)
     const char* masterIds[] = { "con.master.volume", "con.master.glide",
                                 "con.master.yDepth", "con.master.zDepth",
                                 "con.master.bendRange", "con.master.reverbMix",
-                                "con.master.delayMix", "con.master.noise" };
+                                "con.master.delayMix", "con.master.noise",
+                                "con.cvc.1", "con.cvc.2", "con.cvc.3", "con.cvc.4" };
     const char* masterLabels[] = { "VOLUME", "GLIDE", "Y DEPTH", "Z DEPTH",
-                                   "MPE BEND", "REVERB", "DELAY", "NOISE" };
-    for (int i = 0; i < 8; ++i)
-        addKnob (masterIds[i], masterLabels[i], { 16 + i * 245, 14, 240, 42 });
+                                   "MPE BEND", "REVERB", "DELAY", "NOISE",
+                                   "CVC 1", "CVC 2", "CVC 3", "CVC 4" };
+    for (int i = 0; i < 12; ++i)
+        addKnob (masterIds[i], masterLabels[i], { 16 + i * 163, 14, 158, 42 });
 
     surface_ = std::make_unique<ContinuumSurface> (host);
     surface_->setBounds (8, 72, 1984, 356);

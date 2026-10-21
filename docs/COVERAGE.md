@@ -17,7 +17,7 @@ Legend:
 | MATRIARCH V | 63 | 79 | 15 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
 | POLYBRUTE V | 117 | 0 | 17 | same |
 | ONE V | 408 (3 × 133 + 9 master) | 0 | 15 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
-| CONTINUUM V | 102 | 0 (16×16 matrix) | 615 | MPE per-note pitch bend / CC74 / pressure; internal 3D surface |
+| CONTINUUM V | 106 | 0 (16×16 matrix) | 615 | MPE per-note pitch bend / CC74 / pressure; internal 3D surface |
 
 All parameters have stable string IDs, natural-unit ranges and group metadata. All are saved in the APVTS tree and exposed to host automation.
 
@@ -30,6 +30,7 @@ All parameters have stable string IDs, natural-unit ranges and group metadata. A
 | Audio engine contract | Implemented, tested | prepare/reset/setParameters/processMidi/render; finite audio at 44.1/48/96 kHz |
 | Real-time discipline | Implemented | no allocation in render/MIDI paths; subagent tests instrumented `new` |
 | Voice allocation | Implemented | PolyBrute 6 voices; One shared 8-voice pool; Matriarch 1/2/4-note paraphony |
+| Global output trim | Implemented | Header `OUT` -60..+12 dB on all four instruments; applies after the engine and is stored in project state, independent of presets |
 | Sustain / overlap / panic | Implemented, tested | engine contract test and pluginval MIDI tests |
 | State persistence | Implemented, tested | APVTS + cables + Morph B + sequencer; pluginval state round-trip |
 | Host automation | Implemented, partial | block-rate snapshot; sample-accurate automation is not claimed |
@@ -74,7 +75,7 @@ Reference: original 6-voice PolyBrute, manual 3.0.1; firmware 3.1.1 differences 
 | Mod matrix | Partial | 8 slots; hardware provides 12 sources / 32 target slots / up to 64 connections |
 | Morph A/B | Implemented, partial | all continuous parameters interpolate; discrete choices switch at 0.5; B is captured from the panel (no independent B editing workflow) |
 | Effects | Implemented, partial | distortion (4 types), chorus, stereo delay with sync/ping-pong, FDN reverb; not the proprietary algorithms or the full v3 effect list |
-| Morphée / ribbon | Not implemented | no XYZ pad or ribbon surface in this build |
+| Morph performance pad | Implemented, M1 | lower-left 2D pad: X = morph A/B, Y = spread, Z = touch pressure/aftertouch; vertical pressure slider and mouse wheel are the non-touchpad fallback |
 | Sequencer / Motion | Not implemented | host-wrapper arp only; no 64-step sequencer or Motion recorder |
 | Factory presets | Implemented, categorized | 17 presets in Bass / Lead / Brass / Pad / Pluck / Keys / Organ / Arp / FX, incl. Reese, Acid, Supersaw and Hoover; not hardware preset data |
 | Oversampling | Not implemented | PolyBLEP oscillators and host-rate nonlinear stages; hard sync is a phase reset without BLEP |
@@ -128,7 +129,7 @@ Reference: [Haken Continuum / EaganMatrix public documentation](https://www.hake
 
 | Subsystem | Status | Notes |
 |---|---|---|
-| Continuous surface | Implemented, M1 | X pitch, Y timbre, wheel pressure; single-pointer UI; MPE input parsed |
+| Continuous surface | Implemented, M1 | X pitch (fixed note 60 + continuous ±24 st expression, no note retrigger), Y timbre, Z from touchpad pressure (wheel fallback); single-pointer UI; MPE input parsed |
 | EIGEN MATRIX | Implemented, M1 | 16 sources × 16 destinations; formula + amount per cell; UI click/drag |
 | Oscillators | Implemented | five summation-style oscillators, ratio/fine/phase/shape/level/wave |
 | Filters | Implemented | five multimode SVF filters, cutoff/resonance/env amount |
@@ -136,6 +137,7 @@ Reference: [Haken Continuum / EaganMatrix public documentation](https://www.hake
 | Delays | Implemented | two delay modules + master delay |
 | Shape generators | Implemented | five generators, eight shapes including S&H |
 | FDN / reverb | Implemented, approximate | existing four-line FDN reverb; not EaganMatrix convolution/recirculator |
-| Panel control coverage | Implemented | All 102 engine parameters have panel controls, including Envelope 1/2, noise colour/level, reverb size and delay time/feedback added in the 2026-10 pass |
-| Formula language | Partial | 12 built-in formulas; user formula VM is M2 |
+| Panel control coverage | Implemented | All 106 engine parameters have panel controls, including Envelope 1/2, noise colour/level, reverb size and delay time/feedback added in the 2026-10 pass |
+| Formula language | Implemented | 12 built-in formulas plus an editable user formula VM (`s/x/y/z`, arithmetic, sin/cos/tan/abs/sqrt/exp/log); compiled to a fixed RPN buffer for the audio thread |
+| CVC output | Implemented (MIDI proxy) | Four CVC controls emit MIDI CC 20–23 on channel 1; this is the software equivalent for hosts, not a DC-coupled hardware CV jack |
 | CVC | Not implemented | no hardware CVC output |

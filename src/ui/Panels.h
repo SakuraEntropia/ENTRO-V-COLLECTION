@@ -15,11 +15,17 @@ public:
     explicit MatriarchPanel (EditorHost& host);
 };
 
+class MorphPad;
+
 class PolyBrutePanel final : public PanelBase
 {
 public:
     explicit PolyBrutePanel (EditorHost& host);
+    ~PolyBrutePanel() override;
     void paint (juce::Graphics&) override;
+
+private:
+    std::unique_ptr<MorphPad> morphPad_;
 };
 
 class OnePanel final : public PanelBase

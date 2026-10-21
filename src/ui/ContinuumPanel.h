@@ -28,8 +28,8 @@ public:
 
 private:
     void timerCallback() override;
-    void updateFromPosition (juce::Point<float> position, bool allowNoteChange);
-    void beginNote (juce::Point<float> position);
+    void updateFromPosition (juce::Point<float> position, bool allowNoteChange, float pressure);
+    void beginNote (juce::Point<float> position, float pressure);
     void endNote();
     juce::Point<float> pointFor (int note, float expr, float timbre) const;
     float pitchForX (float x) const;
@@ -53,11 +53,13 @@ public:
     explicit ContinuumMatrix (EditorHost& host);
 
     void paint (juce::Graphics&) override;
+    void resized() override;
     void mouseDown (const juce::MouseEvent&) override;
     void mouseDrag (const juce::MouseEvent&) override;
 
 private:
     void timerCallback() override;
+    juce::Rectangle<float> matrixArea() const;
     juce::Rectangle<float> cellBounds (int source, int destination) const;
     juce::Point<int> cellAt (juce::Point<float> position) const;
 
@@ -67,6 +69,8 @@ private:
     float dragStartAmount_ = 0.0f;
     float dragStartY_ = 0.0f;
     int dragFormula_ = 0;
+    juce::TextEditor formulaEditor_;
+    juce::TextButton applyFormula_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ContinuumMatrix)
 };
