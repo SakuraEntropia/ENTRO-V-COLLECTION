@@ -17,7 +17,7 @@ Legend:
 | MATRIARCH V | 63 | 79 | 15 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
 | POLYBRUTE V | 117 | 0 | 17 | same |
 | ONE V | 408 (3 × 133 + 9 master) | 0 | 15 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
-| CONTINUUM V | 102 | 0 (16×16 matrix) | 614 | MPE per-note pitch bend / CC74 / pressure; internal 3D surface |
+| CONTINUUM V | 102 | 0 (16×16 matrix) | 615 | MPE per-note pitch bend / CC74 / pressure; internal 3D surface |
 
 All parameters have stable string IDs, natural-unit ranges and group metadata. All are saved in the APVTS tree and exposed to host automation.
 

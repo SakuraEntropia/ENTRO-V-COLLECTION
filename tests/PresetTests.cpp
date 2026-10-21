@@ -38,6 +38,7 @@ int main()
         int bassCount = 0;
         bool hasReese = false;
         bool hasKevinEharp = false;
+        bool hasKevinKoto = false;
 
         const juce::StringArray categoryOrder { "Bass", "Lead", "Brass", "Pad", "Strings",
                                                 "Winds", "Vocal", "Keyboard", "Classic", "Other",
@@ -65,6 +66,9 @@ int main()
 
             if (preset.name == "Kevin Penkin Style Eharp")
                 hasKevinEharp = true;
+
+            if (preset.name == "Kevin Penkin Style E Koto")
+                hasKevinKoto = true;
 
             for (const auto& cell : preset.matrix)
             {
@@ -116,7 +120,10 @@ int main()
         check (hasReese, "missing Reese bass preset", definition.id);
 
         if (kind == triad::InstrumentKind::Continuum)
+        {
             check (hasKevinEharp, "missing Kevin Penkin Style Eharp preset", definition.id);
+            check (hasKevinKoto, "missing Kevin Penkin Style E Koto preset", definition.id);
+        }
 
         // Render each preset to make sure it is audible, finite and bounded.
         auto renderEngine = triad::makeEngine (kind);
