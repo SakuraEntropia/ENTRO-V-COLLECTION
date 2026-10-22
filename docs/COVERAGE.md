@@ -14,7 +14,7 @@ Legend:
 
 | Instrument | Parameters | Patch points | Factory presets | MIDI handling |
 |---|---:|---:|---:|---|
-| MATRIARCH V | 63 | 79 | 15 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
+| MATRIARCH V | 64 | 79 | 15 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
 | POLYBRUTE V | 117 | 0 | 17 | same |
 | ONE V | 408 (3 × 133 + 9 master) | 0 | 15 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
 | CONTINUUM V | 126 | 0 (16×16 matrix) | 615 | MPE per-note pitch bend / CC74 / pressure; internal 3D surface |
