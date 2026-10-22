@@ -122,6 +122,10 @@ void verifyPanel (PanelHost& host, PanelBase& panel)
             shape->setValueNotifyingHost (0); angle->setValueNotifyingHost (0);
             const auto saw = oled->waveform();
             angle->setValueNotifyingHost (0.5f); const auto triangle = oled->waveform();
+            for (int n = 1; n < 85; ++n)
+                require (std::abs (saw[(size_t) n] - saw[(size_t) n + 85]) < .0001f
+                      && std::abs (saw[(size_t) n] - saw[(size_t) n + 170]) < .0001f,
+                         "OLED contains three identical periods");
             require (saw != triangle, "OLED follows oscillator angle / selected part");
             shape->setValueNotifyingHost (1); pw->setValueNotifyingHost (0.25f);
             const auto narrow = oled->waveform(); pw->setValueNotifyingHost (0.75f);
@@ -250,7 +254,8 @@ void verifyPanel (PanelHost& host, PanelBase& panel)
     }
     for (size_t a = 0; a < interactive.size(); ++a)
         for (size_t b = a + 1; b < interactive.size(); ++b)
-            require (! interactive[a]->getBounds().intersects (interactive[b]->getBounds()),
+            require (! interactive[a]->isVisible() || ! interactive[b]->isVisible()
+                     || ! interactive[a]->getBounds().intersects (interactive[b]->getBounds()),
                      "Controls overlap: " + interactive[a]->getName() + " / " + interactive[b]->getName());
     require (jacks.size() == host.definition().patchPoints.size(), "Patch point coverage");
     if (! jacks.empty())
@@ -296,6 +301,7 @@ int main (int argc, char** argv)
                     const auto file = folder.getChildFile (host.definition().id + "-part" + std::to_string (part) + ".png");
                     if (auto stream = file.createOutputStream())
                     {
+                        stream->setPosition (0); stream->truncate();
                         juce::PNGImageFormat png;
                         png.writeImageToStream (panel->createComponentSnapshot (panel->getLocalBounds()), *stream);
                     }
@@ -305,7 +311,8 @@ int main (int argc, char** argv)
                         keyboard.setSize (1680, kind == 1 ? 210 : 176);
                         if (auto stream = folder.getChildFile (host.definition().id + "-keyboard.png").createOutputStream())
                         {
-                            juce::PNGImageFormat png;
+                            stream->setPosition (0); stream->truncate();
+                        juce::PNGImageFormat png;
                             png.writeImageToStream (keyboard.createComponentSnapshot (keyboard.getLocalBounds()), *stream);
                         }
                         keyboard.setLookAndFeel (nullptr);

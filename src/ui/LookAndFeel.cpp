@@ -96,100 +96,100 @@ void TriadLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, int wi
                                                       juce::PathStrokeType::rounded));
     }
 
-    // Drop shadow and metal skirt.
-    g.setColour (juce::Colours::black.withAlpha (0.6f));
-    g.fillEllipse (juce::Rectangle<float> (knobRadius * 2.0f + 4.0f, knobRadius * 2.0f + 4.0f)
-                       .withCentre (centre).translated (0.0f, 2.0f));
+    // Hardware-specific grip silhouettes: Moog scallops, Matriarch flutes,
+    // and the narrower Arturia rubber grip. These are geometry, not a texture.
+    const bool silver = (bool) slider.getProperties()["silverKnob"];
+    const bool one = style == HardwareStyle::MoogOne;
+    const bool mat = style == HardwareStyle::Matriarch;
+    const auto body = juce::Rectangle<float> (knobRadius * 2.0f, knobRadius * 2.0f).withCentre (centre);
+    g.setColour (juce::Colours::black.withAlpha (0.65f));
+    g.fillEllipse (body.expanded (1.8f).translated (0.0f, 2.0f));
 
-    const auto silverKnob = (bool) slider.getProperties()["silverKnob"];
+    juce::Path grip;
+    const int lobes = one ? 10 : (mat ? 24 : 32);
+    constexpr int segments = 256;
+    for (int i = 0; i <= segments; ++i)
+    {
+        const float a = juce::MathConstants<float>::twoPi * (float) i / segments;
+        const float depth = one ? 0.065f : (mat ? 0.027f : 0.018f);
+        const float r = knobRadius * (1.0f - depth * (0.5f + 0.5f * std::cos (lobes * (a - angle))));
+        const juce::Point<float> point (centre.x + r * std::sin (a), centre.y - r * std::cos (a));
+        if (i == 0) grip.startNewSubPath (point); else grip.lineTo (point);
+    }
+    grip.closeSubPath();
+    juce::ColourGradient rubber (juce::Colour (silver ? 0xffe1dfd7 : 0xff454649),
+                                centre.x, body.getY(),
+                                juce::Colour (silver ? 0xff797a78 : 0xff090a0c),
+                                centre.x, body.getBottom(), false);
+    rubber.addColour (0.45, juce::Colour (silver ? 0xffb9bcb9 : 0xff202125));
+    g.setGradientFill (rubber);
+    g.fillPath (grip);
+    g.setColour (juce::Colour (one ? 0xffaaa9a3 : 0xff55565a));
+    g.strokePath (grip, juce::PathStrokeType (one ? 0.85f : 0.5f));
 
-    juce::Colour top, bottom, rim, pointer;
-    if (silverKnob)
+    if ((bool) slider.getProperties()["chickenHead"])
     {
-        top = juce::Colour (0xffe6e2d8);
-        bottom = juce::Colour (0xff7d786e);
-        rim = juce::Colour (0xff35332f);
-        pointer = juce::Colour (0xff17161a);
+        juce::Path selector;
+        selector.startNewSubPath (-knobRadius * .29f, knobRadius * .75f);
+        selector.lineTo (-knobRadius * .43f, -knobRadius * .05f);
+        selector.lineTo (-knobRadius * .11f, -knobRadius * 1.05f);
+        selector.lineTo (knobRadius * .11f, -knobRadius * 1.05f);
+        selector.lineTo (knobRadius * .43f, -knobRadius * .05f);
+        selector.lineTo (knobRadius * .29f, knobRadius * .75f);
+        selector.closeSubPath();
+        const auto transform = juce::AffineTransform::rotation (angle).translated (centre.x, centre.y);
+        g.setColour (juce::Colour (0xff111215)); g.fillPath (selector, transform);
+        g.setColour (juce::Colour (0xffd3d6d1)); g.strokePath (selector, juce::PathStrokeType (1.0f), transform);
+        g.fillEllipse (juce::Rectangle<float> (knobRadius * .65f, knobRadius * .65f).withCentre (centre));
+        return;
     }
-    else if (style == HardwareStyle::Matriarch)
+
+    const auto capRadius = knobRadius * (one ? 0.66f : (mat ? 0.67f : 0.78f));
+    const auto cap = juce::Rectangle<float> (capRadius * 2.0f, capRadius * 2.0f).withCentre (centre);
+    if (mat || one || silver)
     {
-        top = juce::Colour (0xff4a4a4d);
-        bottom = juce::Colour (0xff080809);
-        rim = juce::Colour (0xff9b9ba1);
-        pointer = juce::Colour (0xfff4f1e8);
-    }
-    else if (style == HardwareStyle::PolyBrute)
-    {
-        top = juce::Colour (0xff33343a);
-        bottom = juce::Colour (0xff050506);
-        rim = juce::Colour (0xffe2ded4);
-        pointer = juce::Colour (0xfff7f3ea);
+        // Spun aluminium inset, surrounded by the black scalloped skirt.
+        juce::ColourGradient metal (juce::Colour (0xffe0e3df), cap.getX(), cap.getY(),
+                                   juce::Colour (0xff686f70), cap.getRight(), cap.getBottom(), false);
+        metal.addColour (0.40, juce::Colour (0xffaeb6b6));
+        metal.addColour (0.53, juce::Colour (0xfff3f3e9));
+        metal.addColour (0.65, juce::Colour (0xffb7bfbd));
+        g.setGradientFill (metal);
+        g.fillEllipse (cap);
+        g.setColour (juce::Colour (0xff43494a));
+        g.drawEllipse (cap, 0.65f);
+        // Fine concentric machining, kept subtle at the smaller control sizes.
+        g.setColour (juce::Colours::black.withAlpha (0.07f));
+        for (float r = capRadius * 0.25f; r < capRadius; r += 2.2f)
+            g.drawEllipse (juce::Rectangle<float> (r * 2, r * 2).withCentre (centre), 0.4f);
     }
     else
     {
-        top = juce::Colour (0xffd6d0c2);
-        bottom = juce::Colour (0xff5a564d);
-        rim = juce::Colour (0xff28282a);
-        pointer = juce::Colour (0xff17161a);
-    }
-
-    const auto body = juce::Rectangle<float> (knobRadius * 2.0f, knobRadius * 2.0f).withCentre (centre);
-    juce::ColourGradient bodyGradient (top, centre.x, body.getY(), bottom, centre.x, body.getBottom(), false);
-    bodyGradient.addColour (0.5, style == HardwareStyle::MoogOne
-                                     ? juce::Colour (0xffa49e90)
-                                     : (style == HardwareStyle::PolyBrute
-                                            ? juce::Colour (0xff18191c)
-                                            : juce::Colour (0xff2b2b2f)));
-    g.setGradientFill (bodyGradient);
-    g.fillEllipse (body);
-
-    // Knurled rim.
-    g.setColour (rim.withAlpha (0.9f));
-    g.drawEllipse (body.reduced (0.7f), 1.2f);
-    g.setColour (juce::Colours::black.withAlpha (0.35f));
-    for (int i = 0; i < 40; ++i)
-    {
-        const auto a = juce::MathConstants<float>::twoPi * (float) i / 40.0f;
-        const auto p1 = juce::Point<float> (centre.x + std::sin (a) * knobRadius * 0.94f,
-                                            centre.y - std::cos (a) * knobRadius * 0.94f);
-        const auto p2 = juce::Point<float> (centre.x + std::sin (a) * knobRadius * 1.0f,
-                                            centre.y - std::cos (a) * knobRadius * 1.0f);
-        g.drawLine ({ p1, p2 }, 0.7f);
-    }
-
-    if (style == HardwareStyle::Matriarch)
-    {
-        const auto cap = body.reduced (knobRadius * 0.25f);
-        juce::ColourGradient aluminium (juce::Colour (0xfff0efdf), cap.getX(), cap.getY(),
-                                       juce::Colour (0xff686e70), cap.getRight(), cap.getBottom(), false);
-        aluminium.addColour (0.42, juce::Colour (0xffc2c8c7));
-        aluminium.addColour (0.56, juce::Colour (0xfff3f4e8));
-        g.setGradientFill (aluminium);
+        juce::ColourGradient capShade (juce::Colour (0xff2a2c30), cap.getX(), cap.getY(),
+                                      juce::Colour (0xff111216), cap.getRight(), cap.getBottom(), false);
+        g.setGradientFill (capShade);
         g.fillEllipse (cap);
-        pointer = juce::Colour (0xff222627);
+        g.setColour (juce::Colour (0xff55565a));
+        g.drawEllipse (cap, 0.6f);
     }
 
-    // Soft specular highlight makes the knob read as a machined part.
-    g.setColour (juce::Colours::white.withAlpha (style == HardwareStyle::PolyBrute ? 0.16f : 0.10f));
-    g.fillEllipse (juce::Rectangle<float> (knobRadius * 0.90f, knobRadius * 0.58f)
-                       .withCentre ({ centre.x - knobRadius * 0.18f,
-                                      centre.y - knobRadius * 0.30f }));
-
-    // Pointer.
-    const auto pointerLength = knobRadius * 0.82f;
-    const auto pointerStart = knobRadius * 0.18f;
-    const auto pointerEnd = juce::Point<float> (centre.x + std::sin (angle) * pointerLength,
-                                                centre.y - std::cos (angle) * pointerLength);
-    const auto pointerBegin = juce::Point<float> (centre.x + std::sin (angle) * pointerStart,
-                                                  centre.y - std::cos (angle) * pointerStart);
-    g.setColour (pointer);
-    g.drawLine ({ pointerBegin, pointerEnd }, juce::jmax (1.6f, radius * 0.06f));
-
-    if (style == HardwareStyle::Matriarch)
+    const auto polar = [&] (float r) { return juce::Point<float> (centre.x + std::sin (angle) * r,
+                                                               centre.y - std::cos (angle) * r); };
+    if (one)
     {
-        g.setColour (juce::Colours::white.withAlpha (0.15f));
-        g.drawEllipse (body.reduced (2.0f), 0.8f);
+        // Traditional One controls have a white index dot in the black skirt.
+        g.setColour (juce::Colour (0xfff5f3e9));
+        const float dot = juce::jmax (1.8f, knobRadius * 0.11f);
+        g.fillEllipse (juce::Rectangle<float> (dot * 2, dot * 2).withCentre (polar (knobRadius * 0.82f)));
     }
+    else
+    {
+        g.setColour (mat || silver ? juce::Colour (0xff25292b) : juce::Colour (0xfff1eee5));
+        g.drawLine ({ polar (capRadius * (mat ? 0.08f : 0.30f)),
+                      polar (mat ? capRadius * 0.93f : knobRadius * 0.94f) },
+                    juce::jmax (1.5f, knobRadius * 0.09f));
+    }
+
 }
 
 void TriadLookAndFeel::drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height,

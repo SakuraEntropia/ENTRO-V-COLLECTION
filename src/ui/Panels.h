@@ -32,6 +32,9 @@ public:
     explicit OnePanel (EditorHost& host);
     void rebuildForPart();
 private:
+    void updateConsolePage();
+    bool modulationPage_ = false;
+    std::vector<juce::Component*> consoleControls_, modulationControls_;
     std::array<std::unique_ptr<OneWaveDisplay>, 3> waveformDisplays_;
 };
 

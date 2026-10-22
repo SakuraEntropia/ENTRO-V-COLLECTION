@@ -13,56 +13,62 @@ OnePanel::OnePanel (EditorHost& host)
 
 void OnePanel::rebuildForPart()
 {
+    consoleControls_.clear();
+    modulationControls_.clear();
     clearControls();
     const auto part = juce::jlimit (1, 3, host().selectedPart());
     const auto prefix = "one.p" + juce::String (part) + ".";
     auto knob = [this] (const juce::String& id, const char* label, int x, int y, int d = 44)
     { addKnob (id, label, { x, y }, d); };
 
-    // Three continuous black instrument plates, enclosed by silver trim.
+    // Same spatial hierarchy as the instrument: LFO strip at the far left,
+    // three oscillators beside it, noise on their right, performance below.
+    for (int lfo = 1; lfo <= 4; ++lfo)
+    {
+        const int y = 24 + (lfo - 1) * 115;
+        const auto stem = prefix + "lfo" + juce::String (lfo) + ".";
+        addModule ("LFO " + juce::String (lfo), { 24, y, 150, 107 });
+        knob (stem + "rate", "RATE", 62, y + 46, 36);
+        knob (stem + "fade", "FADE", 132, y + 46, 36);
+        addChoice (stem + "wave", "", { 32, y + 80, 62, 22 });
+        addLed (stem + "sync", "SYNC", { 100, y + 80, 30, 20 });
+        addLed (stem + "retrig", "R", { 136, y + 80, 30, 20 });
+    }
     for (int i = 0; i < 3; ++i)
     {
-        const auto x = 24 + i * 290;
+        const int x = 182 + i * 210;
         const auto stem = prefix + "vco" + juce::String (i + 1) + ".";
-        addModule ("OSCILLATOR " + juce::String (i + 1), { x, 24, 282, 296 });
-        addChoice (stem + "octave", "OCTAVE", { x + 22, 61, 104, 36 });
-        if (i == 0)
-            addLed (stem + "on", "ON", { x + 160, 61, 90, 24 });
-        else
-            addLed (stem + "sync", "SYNC", { x + 160, 61, 90, 24 });
-        knob (stem + "tune", "FREQUENCY", x + 72, 145, 60);
-        knob (stem + "waveAngle", "WAVE ANGLE", x + 210, 145, 54);
+        addModule ("OSCILLATOR " + juce::String (i + 1), { x, 24, 202, 350 });
+        auto& octave = addKnob (stem + "octave", "OCTAVE", { x + 34, 82 }, 38);
+        octave.getProperties().set ("chickenHead", true);
+        knob (stem + "tune", "FREQUENCY", x + 101, 82, 46);
+        knob (stem + "shape", "MIX", x + 168, 82, 38);
+        knob (stem + "waveAngle", "WAVE ANGLE", x + 42, 176, 46);
+        knob (stem + "pw", "PULSE WIDTH", x + 160, 176, 46);
         auto& display = waveformDisplays_[(size_t) i];
         display = std::make_unique<OneWaveDisplay> (apvts(), stem);
-        display->setBounds (x + 111, 121, 64, 46);
+        display->setBounds (x + 69, 239, 64, 46);
         addAndMakeVisible (*display);
-        knob (stem + "shape", "SHAPE", x + 48, 251);
-        knob (stem + "pw", "PULSE WIDTH", x + 141, 251);
-        knob (stem + "level", "LEVEL", x + 234, 251);
-        if (i == 2)
-            knob (stem + "fm", "3 > 1 FM", x + 141, 200, 32);
+        addLed (stem + (i == 0 ? "on" : "sync"), i == 0 ? "ON" : "HARD SYNC",
+                { x + 53, 324, 96, 24 });
     }
+    addModule ("NOISE", { 820, 24, 66, 350 });
+    knob (prefix + "mix.noise", "LEVEL", 853, 94, 38);
+    addSwitch (prefix + "mix.noiseColor", "COLOR", { 826, 178, 54, 40 });
+    addModule ("PITCH MOD", { 182, 386, 202, 98 });
+    knob (prefix + "lfo1.pitchAmt", "LFO 1", 283, 431, 38);
+    addModule ("WAVEFORM MODULATION", { 392, 386, 412, 98 });
+    knob (prefix + "lfo2.pwmAmt", "PULSE MOD", 474, 431, 38);
+    knob (prefix + "lfo3.cutoffAmt", "FILTER MOD", 597, 431, 38);
+    knob (prefix + "vco3.fm", "3 > 1 FM", 726, 431, 38);
 
-    addModule ("ARPEGGIATOR", { 24, 332, 862, 122 });
-    addLed (prefix + "arp.enabled", "ARP", { 42, 375, 72, 25 });
-    addLed (prefix + "arp.hold", "HOLD", { 42, 412, 72, 24 });
-    addChoice (prefix + "arp.mode", "MODE", { 138, 382, 180, 38 });
-    addChoice (prefix + "arp.rate", "RATE / DIV", { 336, 382, 176, 38 });
-    addSwitch (prefix + "arp.octaves", "OCTAVES", { 530, 382, 158, 38 });
-    addChoice (prefix + "arp.length", "LENGTH", { 706, 382, 160, 38 });
-
-    addModule ("MODULATION MATRIX", { 24, 466, 862, 178 });
-    // Two rows, four slots per row. Every slot retains source/destination/amount.
-    for (int slot = 1; slot <= 8; ++slot)
-    {
-        const auto stem = prefix + "mod.slot" + juce::String (slot) + ".";
-        const auto x = 38 + (slot - 1) % 4 * 212;
-        const auto y = 503 + (slot - 1) / 4 * 68;
-        addCaption (juce::String (slot), { x, y, 16, 16 }, juce::Justification::centred, 10.0f);
-        addChoice (stem + "source", "", { x + 18, y, 122, 24 });
-        addChoice (stem + "dest", "", { x + 18, y + 29, 122, 24 });
-        knob (stem + "amount", "AMT", x + 173, y + 19, 34);
-    }
+    addModule ("ARPEGGIATOR", { 24, 496, 862, 148 });
+    addLed (prefix + "arp.enabled", "ARP", { 42, 542, 72, 25 });
+    addLed (prefix + "arp.hold", "HOLD", { 42, 594, 72, 24 });
+    addChoice (prefix + "arp.mode", "MODE", { 138, 555, 180, 38 });
+    addChoice (prefix + "arp.rate", "RATE / DIV", { 336, 555, 176, 38 });
+    addSwitch (prefix + "arp.octaves", "OCTAVES", { 530, 555, 158, 38 });
+    addChoice (prefix + "arp.length", "LENGTH", { 706, 555, 160, 38 });
 
     addModule ("CENTER CONSOLE", { 900, 24, 326, 620 });
     for (int i = 0; i < 3; ++i)
@@ -76,6 +82,7 @@ void OnePanel::rebuildForPart()
             });
         button.setToggleState (i + 1 == part, juce::dontSendNotification);
     }
+    const int consoleStart = getNumChildComponents();
     auto& lcd = addLcd ({ 918, 104, 290, 108 });
     lcd.setText ("ONE V   /   PART " + juce::String (part),
                  "TIMBRE " + juce::String (part) + "    MIDI CH " + juce::String (part), "SHARED 8-VOICE POOL");
@@ -94,37 +101,59 @@ void OnePanel::rebuildForPart()
     knob ("one.master.aftertouch", "AFTERTOUCH", 1063, 594, 40);
     knob ("one.master.pitchBendRange", "BEND RANGE", 1166, 594, 40);
 
-    addModule ("MIXER", { 1240, 24, 140, 306 });
-    knob (prefix + "mix.noise", "NOISE", 1310, 80, 42);
-    addSwitch (prefix + "mix.noiseColor", "COLOR", { 1254, 129, 112, 34 });
-    knob (prefix + "mix.ring", "RING MOD", 1310, 208, 42);
-    knob (prefix + "mix.ext", "EXTERNAL", 1310, 282, 42);
+    for (int i = consoleStart; i < getNumChildComponents(); ++i)
+        consoleControls_.push_back (getChildComponent (i));
+    const int modStart = getNumChildComponents();
+    for (int slot = 1; slot <= 8; ++slot)
+    {
+        const auto stem = prefix + "mod.slot" + juce::String (slot) + ".";
+        const int y = 116 + (slot - 1) * 61;
+        addCaption (juce::String (slot), { 916, y + 10, 16, 20 });
+        addChoice (stem + "source", "", { 936, y, 172, 24 });
+        addChoice (stem + "dest", "", { 936, y + 28, 172, 24 });
+        knob (stem + "amount", "AMT", 1164, y + 20, 34);
+    }
+    for (int i = modStart; i < getNumChildComponents(); ++i)
+        modulationControls_.push_back (getChildComponent (i));
+    addButton ("MOD / HOME", { 936, 632, 254, 26 }, [this]
+    {
+        modulationPage_ = ! modulationPage_;
+        updateConsolePage();
+    });
+    updateConsolePage();
 
-    addModule ("STATE VARIABLE FILTER", { 1388, 24, 214, 306 });
+    addModule ("MIXER", { 1240, 24, 140, 460 });
+    for (int i = 1; i <= 3; ++i)
+        knob (prefix + "vco" + juce::String (i) + ".level", ("OSC " + juce::String (i)).toRawUTF8(),
+              1310, 78 + (i - 1) * 80, 42);
+    knob (prefix + "mix.ring", "RING MOD", 1310, 318, 42);
+    knob (prefix + "mix.ext", "EXTERNAL", 1310, 414, 42);
+
+    addModule ("STATE VARIABLE FILTER", { 1388, 24, 436, 250 });
     knob (prefix + "svf.cutoff", "CUTOFF", 1444, 90, 58);
     knob (prefix + "svf.resonance", "RESONANCE", 1546, 90, 44);
-    addChoice (prefix + "svf.mode", "MODE", { 1402, 147, 88, 34 });
-    addChoice (prefix + "svf.slope", "SLOPE", { 1500, 147, 88, 34 });
-    knob (prefix + "svf.envAmt", "ENV AMT", 1444, 225, 40);
-    knob (prefix + "svf.keyTrack", "KEY TRACK", 1546, 225, 40);
-    knob (prefix + "svf.level", "LEVEL", 1424, 296, 32);
-    addChoice (prefix + "filters.routing", "", { 1458, 282, 88, 24 });
-    knob (prefix + "filters.mix", "MIX", 1572, 296, 32);
+    addChoice (prefix + "svf.mode", "MODE", { 1618, 74, 88, 34 });
+    addChoice (prefix + "svf.slope", "SLOPE", { 1720, 74, 88, 34 });
+    knob (prefix + "svf.envAmt", "ENV AMT", 1444, 196, 40);
+    knob (prefix + "svf.keyTrack", "KEY TRACK", 1546, 196, 40);
+    knob (prefix + "svf.level", "LEVEL", 1648, 196, 32);
+    addChoice (prefix + "filters.routing", "", { 1618, 238, 88, 24 });
+    knob (prefix + "filters.mix", "MIX", 1750, 196, 32);
 
-    addModule ("LADDER FILTER", { 1610, 24, 214, 306 });
-    knob (prefix + "ladder.cutoff", "CUTOFF", 1666, 90, 58);
-    knob (prefix + "ladder.resonance", "RESONANCE", 1768, 90, 44);
-    knob (prefix + "ladder.drive", "DRIVE", 1666, 185, 44);
-    addChoice (prefix + "ladder.slope", "SLOPE", { 1726, 167, 84, 34 });
-    knob (prefix + "ladder.envAmt", "ENV AMT", 1666, 282, 44);
-    knob (prefix + "ladder.keyTrack", "KEY TRACK", 1768, 282, 44);
+    addModule ("LADDER FILTER", { 1388, 286, 436, 198 });
+    knob (prefix + "ladder.cutoff", "CUTOFF", 1444, 346, 58);
+    knob (prefix + "ladder.resonance", "RESONANCE", 1546, 346, 44);
+    knob (prefix + "ladder.drive", "DRIVE", 1648, 346, 44);
+    addChoice (prefix + "ladder.slope", "SLOPE", { 1718, 328, 90, 34 });
+    knob (prefix + "ladder.envAmt", "ENV AMT", 1444, 434, 44);
+    knob (prefix + "ladder.keyTrack", "KEY TRACK", 1546, 434, 44);
 
-    addModule ("ENVELOPE GENERATORS", { 1832, 24, 384, 306 });
+    addModule ("ENVELOPE GENERATORS", { 1832, 24, 384, 460 });
     const char* envIds[] = { "delay", "attack", "hold", "decay", "sustain", "release", "velocity" };
     const char* envLabels[] = { "DELAY", "ATT", "HOLD", "DEC", "SUS", "REL", "VELO" };
     for (int env = 1; env <= 3; ++env)
     {
-        const auto y = 86 + (env - 1) * 91;
+        const auto y = 100 + (env - 1) * 145;
         const auto stem = prefix + "env" + juce::String (env) + ".";
         addCaption (env == 1 ? "AMP" : (env == 2 ? "FILTER" : "MOD"), { 1840, y - 29, 50, 12 },
                     juce::Justification::centredLeft, 9.0f);
@@ -132,21 +161,6 @@ void OnePanel::rebuildForPart()
             knob (stem + envIds[i], envLabels[i], 1860 + i * 54, y, 36);
         if (env < 3)
             addLed (stem + "loop", "LOOP", { 2128, y + 30, 72, 18 });
-    }
-
-    for (int lfo = 1; lfo <= 4; ++lfo)
-    {
-        const auto x = 1240 + (lfo - 1) * 246;
-        const auto stem = prefix + "lfo" + juce::String (lfo) + ".";
-        addModule ("LFO " + juce::String (lfo), { x, 342, 238, 142 });
-        knob (stem + "rate", "RATE", x + 36, 394, 38);
-        knob (stem + "fade", "FADE", x + 116, 394, 38);
-        const char* amounts[] = { "pitchAmt", "pwmAmt", "cutoffAmt" };
-        const char* names[] = { "PITCH", "PWM", "CUTOFF" };
-        if (lfo < 4) knob (stem + amounts[lfo - 1], names[lfo - 1], x + 198, 394, 38);
-        addChoice (stem + "wave", "", { x + 10, 448, 84, 24 });
-        addLed (stem + "sync", "SYNC", { x + 100, 448, 58, 22 });
-        addLed (stem + "retrig", "RETRIG", { x + 164, 448, 64, 22 });
     }
 
     addModule ("TIMBRE EFFECTS", { 1240, 496, 976, 148 });
@@ -160,5 +174,10 @@ void OnePanel::rebuildForPart()
     knob (prefix + "fx.delay.feedback", "FEEDBACK", 1912, 562, 40);
     knob (prefix + "fx.delay.mix", "MIX", 1988, 562, 40);
     knob (prefix + "fx.reverb.send", "REVERB SEND", 2132, 562, 54);
+}
+void OnePanel::updateConsolePage()
+{
+    for (auto* c : consoleControls_) c->setVisible (! modulationPage_);
+    for (auto* c : modulationControls_) c->setVisible (modulationPage_);
 }
 } // namespace triad::ui

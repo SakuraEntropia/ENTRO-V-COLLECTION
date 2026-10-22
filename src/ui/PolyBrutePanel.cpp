@@ -242,7 +242,10 @@ PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
         addModule (m.first, m.second);
 
     auto knob = [this] (const juce::String& id, const char* label, int x, int y, int d = 42)
-    { addKnob (id, label, { x, y }, d); };
+    {
+        auto& control = addKnob (id, label, { x, y }, d);
+        if (id == "poly.ladder.cutoff") control.getProperties().set ("silverKnob", true);
+    };
     addButton ("CAPTURE B", { 38, 52, 148, 26 }, [this] { host().captureMorphB(); });
     addButton ("SWAP A/B", { 38, 86, 148, 26 }, [this] { host().swapMorphB(); });
     wheels_ = std::make_unique<PolyPerformanceWheels> (host());

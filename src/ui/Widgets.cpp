@@ -488,7 +488,7 @@ std::array<float, 256> OneWaveDisplay::waveform() const
     std::array<float, 256> result {};
     for (size_t i = 0; i < result.size(); ++i)
     {
-        oscillator.setPhase ((double) i / (result.size() - 1));
+        oscillator.setPhase (std::fmod (3.0 * (double) i / (result.size() - 1), 1.0));
         const auto saw = oscillator.sample (Oscillator::Wave::Saw);
         const auto triangle = oscillator.sample (Oscillator::Wave::Triangle);
         const auto analog = angle < 0.5f ? lerpf (saw, triangle, angle * 2.0f)
