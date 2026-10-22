@@ -1607,6 +1607,220 @@ Values hakenValues (const juce::String& code, const juce::String& name)
     setPresetValue (values, "con.env2.sustain", 0.15f);
     setPresetValue (values, "con.env2.release", 0.9f);
 
+    const auto containsAny = [&name] (std::initializer_list<const char*> needles)
+    {
+        for (const auto* needle : needles)
+            if (name.containsIgnoreCase (needle))
+                return true;
+        return false;
+    };
+
+    // Instrument-named Haken entries get a dedicated physical model rather
+    // than the generic category pad.  These are still original approximations.
+    if (containsAny ({ "piano", "pianoforte", "rhodes", "wurli", "wurlitzer" }))
+    {
+        setPresetValue (values, "con.master.volume", 0.62f);
+        setPresetValue (values, "con.master.reverbMix", 0.28f);
+        setPresetValue (values, "con.master.delayMix", 0.05f);
+        setPresetValue (values, "con.osc1.wave", 0.0f);
+        setPresetValue (values, "con.osc1.level", 0.58f);
+        setPresetValue (values, "con.osc2.wave", 1.0f);
+        setPresetValue (values, "con.osc2.ratio", 2.0f);
+        setPresetValue (values, "con.osc2.level", 0.24f);
+        setPresetValue (values, "con.osc3.wave", 0.0f);
+        setPresetValue (values, "con.osc3.ratio", 3.0f);
+        setPresetValue (values, "con.osc3.level", 0.14f);
+        setPresetValue (values, "con.osc4.wave", 0.0f);
+        setPresetValue (values, "con.osc4.ratio", 4.0f);
+        setPresetValue (values, "con.osc4.level", 0.08f);
+        setPresetValue (values, "con.noise.level", 0.004f);
+        setPresetValue (values, "con.flt1.cutoff", 5200.0f);
+        setPresetValue (values, "con.flt1.res", 0.08f);
+        setPresetValue (values, "con.flt2.cutoff", 6200.0f);
+        setPresetValue (values, "con.flt3.cutoff", 7200.0f);
+        setPresetValue (values, "con.bank1.freq", 440.0f);
+        setPresetValue (values, "con.bank1.bandwidth", 0.10f);
+        setPresetValue (values, "con.bank1.mix", 0.18f);
+        setPresetValue (values, "con.bank2.freq", 880.0f);
+        setPresetValue (values, "con.bank2.mix", 0.12f);
+        setPresetValue (values, "con.env1.attack", 0.001f);
+        setPresetValue (values, "con.env1.decay", 1.6f);
+        setPresetValue (values, "con.env1.sustain", 0.12f);
+        setPresetValue (values, "con.env1.release", 0.9f);
+        setPresetValue (values, "con.env2.attack", 0.001f);
+        setPresetValue (values, "con.env2.decay", 0.4f);
+        setPresetValue (values, "con.env2.sustain", 0.0f);
+        setPresetValue (values, "con.env2.release", 0.8f);
+        return values;
+    }
+
+    if (containsAny ({ "violin", "viola", "cello", "fiddle", "haegum", "bowed" }))
+    {
+        setPresetValue (values, "con.master.volume", 0.58f);
+        setPresetValue (values, "con.master.reverbMix", 0.40f);
+        setPresetValue (values, "con.master.delayMix", 0.08f);
+        setPresetValue (values, "con.osc1.wave", 1.0f);
+        setPresetValue (values, "con.osc1.level", 0.50f);
+        setPresetValue (values, "con.osc2.wave", 2.0f);
+        setPresetValue (values, "con.osc2.ratio", 1.0f);
+        setPresetValue (values, "con.osc2.fine", 0.04f);
+        setPresetValue (values, "con.osc2.level", 0.35f);
+        setPresetValue (values, "con.osc3.wave", 1.0f);
+        setPresetValue (values, "con.osc3.ratio", 2.0f);
+        setPresetValue (values, "con.osc3.level", 0.20f);
+        setPresetValue (values, "con.noise.level", 0.015f);
+        setPresetValue (values, "con.flt1.cutoff", 1800.0f);
+        setPresetValue (values, "con.flt1.res", 0.20f);
+        setPresetValue (values, "con.flt2.cutoff", 2200.0f);
+        setPresetValue (values, "con.flt3.cutoff", 2600.0f);
+        setPresetValue (values, "con.bank1.freq", 440.0f);
+        setPresetValue (values, "con.bank1.bandwidth", 0.15f);
+        setPresetValue (values, "con.bank1.mix", 0.30f);
+        setPresetValue (values, "con.bank2.freq", 880.0f);
+        setPresetValue (values, "con.bank2.mix", 0.20f);
+        setPresetValue (values, "con.env1.attack", 0.25f);
+        setPresetValue (values, "con.env1.decay", 0.8f);
+        setPresetValue (values, "con.env1.sustain", 0.85f);
+        setPresetValue (values, "con.env1.release", 2.2f);
+        setPresetValue (values, "con.env2.attack", 0.20f);
+        setPresetValue (values, "con.env2.decay", 0.5f);
+        setPresetValue (values, "con.env2.sustain", 0.5f);
+        setPresetValue (values, "con.env2.release", 1.5f);
+        return values;
+    }
+
+    if (containsAny ({ "flute", "clarinet", "oboe", "bassoon", "sax", "saxophone",
+                       "trumpet", "trombone", "horn", "brass" }))
+    {
+        const auto isBrass = containsAny ({ "trumpet", "trombone", "horn", "brass" });
+        setPresetValue (values, "con.master.volume", 0.58f);
+        setPresetValue (values, "con.master.reverbMix", isBrass ? 0.26f : 0.34f);
+        setPresetValue (values, "con.noise.level", isBrass ? 0.006f : 0.12f);
+        setPresetValue (values, "con.noise.color", 0.35f);
+        setPresetValue (values, "con.osc1.wave", isBrass ? 2.0f : 0.0f);
+        setPresetValue (values, "con.osc1.level", 0.55f);
+        setPresetValue (values, "con.osc2.wave", 1.0f);
+        setPresetValue (values, "con.osc2.ratio", 2.0f);
+        setPresetValue (values, "con.osc2.level", 0.22f);
+        setPresetValue (values, "con.osc3.wave", 0.0f);
+        setPresetValue (values, "con.osc3.ratio", 3.0f);
+        setPresetValue (values, "con.osc3.level", 0.12f);
+        setPresetValue (values, "con.flt1.type", isBrass ? 0.0f : 2.0f);
+        setPresetValue (values, "con.flt1.cutoff", isBrass ? 2200.0f : 1800.0f);
+        setPresetValue (values, "con.flt1.res", isBrass ? 0.18f : 0.32f);
+        setPresetValue (values, "con.flt1.env", 0.35f);
+        setPresetValue (values, "con.env1.attack", isBrass ? 0.03f : 0.08f);
+        setPresetValue (values, "con.env1.decay", 0.4f);
+        setPresetValue (values, "con.env1.sustain", isBrass ? 0.80f : 0.85f);
+        setPresetValue (values, "con.env1.release", 0.8f);
+        return values;
+    }
+
+    if (containsAny ({ "guitar", "banjo", "mandolin", "oud", "lute", "zither",
+                       "dulcimer", "cimbalom", "sitar", "shamisen" }))
+    {
+        setPresetValue (values, "con.master.volume", 0.60f);
+        setPresetValue (values, "con.master.reverbMix", 0.25f);
+        setPresetValue (values, "con.master.delayMix", 0.08f);
+        setPresetValue (values, "con.osc1.wave", 1.0f);
+        setPresetValue (values, "con.osc1.level", 0.55f);
+        setPresetValue (values, "con.osc2.wave", 2.0f);
+        setPresetValue (values, "con.osc2.ratio", 2.0f);
+        setPresetValue (values, "con.osc2.level", 0.30f);
+        setPresetValue (values, "con.osc3.wave", 0.0f);
+        setPresetValue (values, "con.osc3.ratio", 0.5f);
+        setPresetValue (values, "con.osc3.level", 0.22f);
+        setPresetValue (values, "con.flt1.cutoff", 4800.0f);
+        setPresetValue (values, "con.flt1.res", 0.16f);
+        setPresetValue (values, "con.flt1.env", 0.3f);
+        setPresetValue (values, "con.bank1.freq", 392.0f);
+        setPresetValue (values, "con.bank1.mix", 0.30f);
+        setPresetValue (values, "con.env1.attack", 0.001f);
+        setPresetValue (values, "con.env1.decay", 0.65f);
+        setPresetValue (values, "con.env1.sustain", 0.0f);
+        setPresetValue (values, "con.env1.release", 0.9f);
+        setPresetValue (values, "con.env2.attack", 0.001f);
+        setPresetValue (values, "con.env2.decay", 0.25f);
+        setPresetValue (values, "con.env2.sustain", 0.0f);
+        setPresetValue (values, "con.env2.release", 0.7f);
+        return values;
+    }
+
+    if (containsAny ({ "bell", "glockenspiel", "gamelan", "chime", "carillon",
+                       "vibraphone", "marimba", "xylophone" }))
+    {
+        setPresetValue (values, "con.master.volume", 0.58f);
+        setPresetValue (values, "con.master.reverbMix", 0.38f);
+        setPresetValue (values, "con.osc1.wave", 0.0f);
+        setPresetValue (values, "con.osc1.level", 0.50f);
+        setPresetValue (values, "con.osc2.wave", 0.0f);
+        setPresetValue (values, "con.osc2.ratio", 2.0f);
+        setPresetValue (values, "con.osc2.level", 0.30f);
+        setPresetValue (values, "con.osc3.wave", 0.0f);
+        setPresetValue (values, "con.osc3.ratio", 3.0f);
+        setPresetValue (values, "con.osc3.level", 0.20f);
+        setPresetValue (values, "con.osc4.wave", 0.0f);
+        setPresetValue (values, "con.osc4.ratio", 4.0f);
+        setPresetValue (values, "con.osc4.level", 0.12f);
+        setPresetValue (values, "con.flt1.cutoff", 8000.0f);
+        setPresetValue (values, "con.bank1.freq", 880.0f);
+        setPresetValue (values, "con.bank1.bandwidth", 0.08f);
+        setPresetValue (values, "con.bank1.mix", 0.35f);
+        setPresetValue (values, "con.bank2.freq", 1760.0f);
+        setPresetValue (values, "con.bank2.mix", 0.25f);
+        setPresetValue (values, "con.env1.attack", 0.001f);
+        setPresetValue (values, "con.env1.decay", 2.0f);
+        setPresetValue (values, "con.env1.sustain", 0.0f);
+        setPresetValue (values, "con.env1.release", 1.2f);
+        setPresetValue (values, "con.env2.attack", 0.001f);
+        setPresetValue (values, "con.env2.decay", 0.8f);
+        setPresetValue (values, "con.env2.sustain", 0.0f);
+        setPresetValue (values, "con.env2.release", 0.8f);
+        return values;
+    }
+
+    if (containsAny ({ "drum", "percussion", "snare", "kick", "cymbal", "gong", "tabla" }))
+    {
+        setPresetValue (values, "con.master.volume", 0.60f);
+        setPresetValue (values, "con.master.reverbMix", 0.22f);
+        setPresetValue (values, "con.noise.level", 0.25f);
+        setPresetValue (values, "con.noise.color", 0.55f);
+        setPresetValue (values, "con.osc1.wave", 2.0f);
+        setPresetValue (values, "con.osc1.level", 0.35f);
+        setPresetValue (values, "con.osc2.wave", 3.0f);
+        setPresetValue (values, "con.osc2.ratio", 1.5f);
+        setPresetValue (values, "con.osc2.level", 0.20f);
+        setPresetValue (values, "con.flt1.cutoff", 3600.0f);
+        setPresetValue (values, "con.flt1.res", 0.35f);
+        setPresetValue (values, "con.env1.attack", 0.001f);
+        setPresetValue (values, "con.env1.decay", 0.22f);
+        setPresetValue (values, "con.env1.sustain", 0.0f);
+        setPresetValue (values, "con.env1.release", 0.35f);
+        return values;
+    }
+
+    if (containsAny ({ "choir", "vocal", "voice", "vowel", "formant" }))
+    {
+        setPresetValue (values, "con.master.volume", 0.58f);
+        setPresetValue (values, "con.master.reverbMix", 0.42f);
+        setPresetValue (values, "con.osc1.wave", 0.0f);
+        setPresetValue (values, "con.osc1.level", 0.48f);
+        setPresetValue (values, "con.osc2.wave", 0.0f);
+        setPresetValue (values, "con.osc2.ratio", 2.0f);
+        setPresetValue (values, "con.osc2.level", 0.22f);
+        setPresetValue (values, "con.bank1.freq", 500.0f);
+        setPresetValue (values, "con.bank1.bandwidth", 0.15f);
+        setPresetValue (values, "con.bank1.mix", 0.50f);
+        setPresetValue (values, "con.bank2.freq", 1500.0f);
+        setPresetValue (values, "con.bank2.mix", 0.40f);
+        setPresetValue (values, "con.flt1.cutoff", 2800.0f);
+        setPresetValue (values, "con.env1.attack", 0.30f);
+        setPresetValue (values, "con.env1.decay", 0.8f);
+        setPresetValue (values, "con.env1.sustain", 0.85f);
+        setPresetValue (values, "con.env1.release", 2.0f);
+        return values;
+    }
+
     if (name.containsIgnoreCase ("organ"))
     {
         // Additive organ: no saw, full sustain, octave/fifth layers.
@@ -2323,68 +2537,6 @@ std::vector<FactoryPreset> continuumCustomPresets()
               { "con.env2.attack", 0.001f }, { "con.env2.decay", 0.26f },
               { "con.env2.sustain", 0.0f }, { "con.env2.release", 0.9f },
               { "con.sg1.rate", 0.42f }, { "con.sg1.level", 0.04f }
-          } },
-        { "Kevin Penkin Style Eharp", "Strings",
-          Values {
-              { "con.master.volume", 0.64f }, { "con.master.glide", 0.008f },
-              { "con.master.yDepth", 0.64f }, { "con.master.zDepth", 0.9f },
-              { "con.master.reverbMix", 0.48f }, { "con.master.reverbSize", 0.92f },
-              { "con.master.delayMix", 0.24f }, { "con.master.delayTime", 0.36f },
-              { "con.master.delayFeedback", 0.38f },
-              { "con.osc1.wave", 0.0f }, { "con.osc1.level", 0.64f },
-              { "con.osc2.wave", 1.0f }, { "con.osc2.ratio", 1.0f },
-              { "con.osc2.fine", 0.06f }, { "con.osc2.level", 0.42f },
-              { "con.osc3.wave", 0.0f }, { "con.osc3.ratio", 0.5f },
-              { "con.osc3.level", 0.36f }, { "con.osc4.wave", 1.0f },
-              { "con.osc4.ratio", 2.0f }, { "con.osc4.level", 0.24f },
-              { "con.osc5.wave", 0.0f }, { "con.osc5.ratio", 3.0f },
-              { "con.osc5.level", 0.12f }, { "con.noise.level", 0.010f },
-              { "con.noise.color", 0.70f },
-              { "con.flt1.cutoff", 4800.0f }, { "con.flt1.res", 0.16f },
-              { "con.flt2.cutoff", 5600.0f }, { "con.flt3.cutoff", 6400.0f },
-              { "con.flt4.cutoff", 7200.0f }, { "con.flt5.cutoff", 8000.0f },
-              { "con.bank1.freq", 261.63f }, { "con.bank1.spread", 0.58f },
-              { "con.bank1.bandwidth", 0.18f }, { "con.bank1.mix", 0.48f },
-              { "con.bank1.level", 0.85f }, { "con.bank2.freq", 523.25f },
-              { "con.bank2.spread", 0.52f }, { "con.bank2.bandwidth", 0.14f },
-              { "con.bank2.mix", 0.36f }, { "con.bank2.level", 0.76f },
-              { "con.env1.attack", 0.006f }, { "con.env1.decay", 0.85f },
-              { "con.env1.sustain", 0.12f }, { "con.env1.release", 3.0f },
-              { "con.env2.attack", 0.002f }, { "con.env2.decay", 0.45f },
-              { "con.env2.sustain", 0.05f }, { "con.env2.release", 2.0f },
-              { "con.sg1.rate", 0.08f }, { "con.sg1.level", 0.06f },
-              { "con.sg2.rate", 0.13f }, { "con.sg2.level", 0.04f }
-          } },
-        { "Kevin Penkin Style E Koto", "Strings",
-          Values {
-              { "con.master.volume", 0.64f }, { "con.master.glide", 0.002f },
-              { "con.master.yDepth", 0.70f }, { "con.master.zDepth", 0.92f },
-              { "con.master.reverbMix", 0.48f }, { "con.master.reverbSize", 0.92f },
-              { "con.master.delayMix", 0.24f }, { "con.master.delayTime", 0.36f },
-              { "con.master.delayFeedback", 0.38f },
-              { "con.osc1.wave", 1.0f }, { "con.osc1.level", 0.56f },
-              { "con.osc2.wave", 1.0f }, { "con.osc2.ratio", 1.0f },
-              { "con.osc2.fine", 3.2f }, { "con.osc2.level", 0.32f },
-              { "con.osc3.wave", 1.0f }, { "con.osc3.ratio", 2.0f },
-              { "con.osc3.fine", -2.1f }, { "con.osc3.level", 0.20f },
-              { "con.osc4.wave", 0.0f }, { "con.osc4.ratio", 0.5f },
-              { "con.osc4.level", 0.40f }, { "con.osc5.wave", 1.0f },
-              { "con.osc5.ratio", 3.0f }, { "con.osc5.level", 0.12f },
-              { "con.noise.level", 0.030f }, { "con.noise.color", 0.55f },
-              { "con.flt1.cutoff", 4600.0f }, { "con.flt1.res", 0.22f },
-              { "con.flt1.env", 0.38f }, { "con.flt2.cutoff", 5400.0f },
-              { "con.flt2.env", 0.28f }, { "con.flt3.cutoff", 6200.0f },
-              { "con.flt4.cutoff", 7000.0f }, { "con.flt5.cutoff", 7800.0f },
-              { "con.bank1.freq", 196.0f }, { "con.bank1.spread", 0.60f },
-              { "con.bank1.bandwidth", 0.12f }, { "con.bank1.mix", 0.50f },
-              { "con.bank1.level", 0.90f }, { "con.bank2.freq", 392.0f },
-              { "con.bank2.spread", 0.55f }, { "con.bank2.bandwidth", 0.11f },
-              { "con.bank2.mix", 0.36f }, { "con.bank2.level", 0.80f },
-              { "con.env1.attack", 0.0010f }, { "con.env1.decay", 1.25f },
-              { "con.env1.sustain", 0.06f }, { "con.env1.release", 2.0f },
-              { "con.env2.attack", 0.001f }, { "con.env2.decay", 0.50f },
-              { "con.env2.sustain", 0.0f }, { "con.env2.release", 1.2f },
-              { "con.sg1.rate", 0.22f }, { "con.sg1.level", 0.01f }
           } },
         { "PT - Glass Harp", "Tuned Percussion",
           Values {

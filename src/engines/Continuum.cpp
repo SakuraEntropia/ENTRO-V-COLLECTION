@@ -182,6 +182,7 @@ void ContinuumEngine::buildDefinition()
         bankIndex_[(size_t) i][(size_t) BankBandwidth] = add ((prefix + "bandwidth").c_str(), "BANDWIDTH", group.c_str(), 0.0f, 1.0f, 0.35f);
         bankIndex_[(size_t) i][(size_t) BankMix] = add ((prefix + "mix").c_str(), "MIX", group.c_str(), 0.0f, 1.0f, 0.2f);
         bankIndex_[(size_t) i][(size_t) BankLevel] = add ((prefix + "level").c_str(), "LEVEL", group.c_str(), 0.0f, 1.0f, 0.7f);
+        bankIndex_[(size_t) i][(size_t) BankKeyTrack] = add ((prefix + "keytrack").c_str(), "KEY TRACK", group.c_str(), 0.0f, 1.0f, 0.5f);
     }
 
     for (int i = 0; i < kDelayCount; ++i)
@@ -1188,6 +1189,8 @@ void ContinuumEngine::render (float* left, float* right, int numSamples)
             {
                 auto& bank = b == 0 ? voice.bank1 : voice.bank2;
                 const auto freq = bvalue (b, BankFreq);
+                const auto keyTrack = bvalue (b, BankKeyTrack);
+                const auto keyScale = std::pow (2.0f, (float) (voice.note - 60) / 12.0f * keyTrack);
                 const auto spread = bvalue (b, BankSpread);
                 const auto bandwidth = bvalue (b, BankBandwidth);
                 const auto mix = bvalue (b, BankMix);
@@ -1198,7 +1201,7 @@ void ContinuumEngine::render (float* left, float* right, int numSamples)
                 for (int band = 0; band < 8; ++band)
                 {
                     const auto ratio = 0.5f + 0.5f * (float) band;
-                    const auto bandFreq = freq * std::pow (2.0f, spread * (ratio - 1.0f) * 3.0f);
+                    const auto bandFreq = freq * keyScale * std::pow (2.0f, spread * (ratio - 1.0f) * 3.0f);
                     auto& filter = bank[(size_t) band];
                     filter.setCutoffHz (clampValue (bandFreq, 20.0f, 20000.0f));
                     filter.setResonance01 (clampValue (0.9f - bandwidth * 0.6f, 0.0f, 0.95f));

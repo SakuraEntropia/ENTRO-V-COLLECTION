@@ -42,7 +42,7 @@ Examples used in the CONTINUUM V bank, with original approximations:
 
 The soundlist contains names and category numbers, not the EaganMatrix matrix
 values, formulas, or parameter data. The plugin now exposes all 610 names as
-factory presets, using category-based original sound design; `Kevin Penkin
-Style Eharp` is an additional custom preset, not a Haken factory entry. The plugin therefore uses the names and
-categories as the reference structure and supplies original sound design; it
-does not claim to reproduce the factory presets sample-for-sample.
+factory presets, using category-based original sound design; instrument-named
+entries use dedicated physical-model parameter sets. The plugin therefore uses
+the names and categories as the reference structure and supplies original sound
+design; it does not claim to reproduce the factory presets sample-for-sample.

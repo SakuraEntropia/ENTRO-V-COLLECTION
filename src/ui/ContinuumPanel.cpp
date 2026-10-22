@@ -794,9 +794,9 @@ ContinuumPanel::ContinuumPanel (EditorHost& host)
         const auto x = 2228 + i * 284;
         const auto stem = "con.bank" + juce::String (i + 1) + ".";
         addModule ("BIQUAD BANK " + juce::String (i + 1), { x, 822, 276, 208 });
-        const char* ids[] = { "freq", "spread", "bandwidth", "mix", "level" };
-        const char* names[] = { "FREQUENCY", "SPREAD", "BANDWIDTH", "MIX", "LEVEL" };
-        for (int n = 0; n < 5; ++n) addNumber (stem + ids[n], names[n], { x + 12 + n % 2 * 132, 853 + n / 2 * 54, 120, 42 });
+        const char* ids[] = { "freq", "spread", "bandwidth", "mix", "level", "keytrack" };
+        const char* names[] = { "FREQUENCY", "SPREAD", "BANDWIDTH", "MIX", "LEVEL", "KEY TRACK" };
+        for (int n = 0; n < 6; ++n) addNumber (stem + ids[n], names[n], { x + 12 + n % 2 * 132, 853 + n / 2 * 54, 120, 42 });
         const auto d = "con.delay" + juce::String (i + 1) + ".";
         addModule (i == 0 ? "SUMMED DELAY" : "MICRO DELAY", { x, 1038, 276, 150 });
         addNumber (d + "time", "TIME", { x + 12, 1070, 120, 42 });

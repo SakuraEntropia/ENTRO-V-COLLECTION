@@ -46,11 +46,11 @@ The factory bank is original sound design, grouped by the same kinds of categori
 | `SPL` | Split | 0 | 0 | 1 | 0 |
 | `UT` | Utility | 0 | 0 | 0 | 41 |
 | `FX` | FX | 1 | 1 | 1 | 0 |
-| | **Total** | **15** | **17** | **15** | **615** |
+| | **Total** | **15** | **17** | **15** | **613** |
 
 ### CONTINUUM V
 
-615 presets use the complete names and categories from the supplied Haken Slim Continuum soundlist (firmware 10.09): 594 system entries plus 16 USR entries, plus five modern additions (`BA - Reese Surface`, `BA - Sub Surface`, `Kevin Penkin Style Eharp`, `Kevin Penkin Style E Koto`, `PT - Glass Harp`). The PDF contains names and category numbers only; the parameter designs are original approximations, not the factory EaganMatrix data. The public two-letter system categories are:
+613 presets use the complete names and categories from the supplied Haken Slim Continuum soundlist (firmware 10.09): 594 system entries plus 16 USR entries, plus three modern additions (`BA - Reese Surface`, `BA - Sub Surface`, `PT - Glass Harp`). The PDF contains names and category numbers only; the parameter designs are original approximations, not the factory EaganMatrix data. The public two-letter system categories are:
 Strings `ST`, Winds `WI`, Vocal `VO`, Keyboard `KY`, Classic `CL`, Other `OT`,
 Percussion `PE`, Tuned Percussion `PT`, Processor `PR`, Drone `DO`, Midi `MD`,
 Utility `UT`, plus a small modern Bass group. The matrix cells are part of each
@@ -63,9 +63,9 @@ Every category has a code used both in the preset name and in the list column, e
 ### Continuum harp / plucked additions
 
 - `ST - Harp`: short plucked attack, sine fundamental with triangle upper partials, two biquad banks at 523 Hz / 1046 Hz, high-cut filters and a medium room. Envelope 1 closes to zero sustain so each note decays like a string.
-- `Kevin Penkin Style Eharp`: the requested project preset. Exact preset name; ethereal electric harp with a soft attack, long release, two detuned upper partials, 1.76 kHz bank air, filtered noise, long hall reverb and dotted delay. It is an original approximation of that cinematic e-harp colour, not a transcription of any existing cue.
 - `PT - Glass Harp`: brighter tuned-percussion harp with 880 Hz / 2640 Hz banks and a shorter decay.
-- `ST - Koto` / `Kevin Penkin Style E Koto`: guzheng-like filtered pluck with paired detuned triangle strings (no saw), a 0.5× sub-octave, 196/392 Hz wooden cavity banks, filter envelope and a long string ring. `Kevin Penkin Style E Koto` uses the same hall/delay space as `Kevin Penkin Style Eharp`, but a sharper pluck and a more organic, less plastic body.
+- `ST - Koto`: guzheng-like filtered pluck with paired detuned triangle strings, a 0.5× sub-octave, 196/392 Hz wooden cavity banks, filter envelope and a long string ring.
+- Instrument-named Haken entries (Piano, Violin/Cello, Flute/Clarinet, Guitar/Banjo, Bell/Marimba, Drum, Choir) now use dedicated physical-model parameter sets instead of the generic category template. The two convolution stages, biquad banks and key tracking are used to build the body/resonance.
 
 ### Organ correction
 

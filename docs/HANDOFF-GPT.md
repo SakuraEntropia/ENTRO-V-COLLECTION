@@ -75,13 +75,11 @@ Four independent plugins share a C++20/JUCE codebase:
 | MATRIARCH V | Matriarch | 63 | 15 |
 | POLYBRUTE V | PolyBrute | 117 | 17 |
 | ONE V | Moog One-inspired | 408 | 15 |
-| CONTINUUM V | Continuum/EIGEN MATRIX | 126 | 615 |
+| CONTINUUM V | Continuum/EIGEN MATRIX | 128 | 613 |
 
 Continuum uses the restored Haken 10.09 name/category library: 594 system + 16
 USR entries, plus custom presets including:
 
-- `Kevin Penkin Style Eharp`
-- `Kevin Penkin Style E Koto`
 - modern `BA - Reese Surface`, `BA - Sub Surface`, `PT - Glass Harp`
 
 The Haken PDF contains names and categories only, not EaganMatrix parameter

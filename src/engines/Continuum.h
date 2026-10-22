@@ -95,7 +95,7 @@ private:
 
     enum OscParam { OscRatio, OscFine, OscPhase, OscShape, OscLevel, OscWave, OscParamCount };
     enum FilterParam { FltType, FltCutoff, FltResonance, FltEnv, FilterParamCount };
-    enum BankParam { BankFreq, BankSpread, BankBandwidth, BankMix, BankLevel, BankParamCount };
+    enum BankParam { BankFreq, BankSpread, BankBandwidth, BankMix, BankLevel, BankKeyTrack, BankParamCount };
     enum DelayParam { DelayTime, DelayFeedback, DelayMix, DelayParamCount };
     enum SgParam { SgRate, SgShape, SgLevel, SgParamCount };
     enum EnvParam { EnvAttack, EnvDecay, EnvSustain, EnvRelease, EnvParamCount };
