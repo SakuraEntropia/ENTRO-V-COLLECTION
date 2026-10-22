@@ -296,6 +296,29 @@ void testTuning (triad::InstrumentKind kind, const char* name)
     for (size_t i = 0; i < values.size(); ++i)
         values[i] = definition.params[i].def;
 
+    if (kind == triad::InstrumentKind::Continuum)
+    {
+        // The default Continuum patch is deliberately layered with sub and
+        // fixed banks.  Isolate the fundamental oscillator here so this test
+        // measures MIDI-note tracking rather than the colour of the patch.
+        auto set = [&] (const char* id, float value)
+        {
+            const auto index = definition.indexOf (id);
+            if (index >= 0)
+                values[(size_t) index] = value;
+        };
+
+        for (int osc = 2; osc <= 5; ++osc)
+            set (("con.osc" + std::to_string (osc) + ".level").c_str(), 0.0f);
+
+        set ("con.bank1.mix", 0.0f);
+        set ("con.bank2.mix", 0.0f);
+        for (int f = 1; f <= 5; ++f)
+            set (("con.flt" + std::to_string (f) + ".cutoff").c_str(), 20000.0f);
+        set ("con.master.reverbMix", 0.0f);
+        set ("con.master.delayMix", 0.0f);
+    }
+
     engine->prepare (48000.0, 512);
     engine->reset();
     engine->setParameters (values.data(), (int) values.size());
@@ -515,6 +538,7 @@ int main()
     testTuning (triad::InstrumentKind::Matriarch, "Matriarch");
     testTuning (triad::InstrumentKind::PolyBrute, "PolyBrute");
     testTuning (triad::InstrumentKind::MoogOne, "Moog One");
+    testTuning (triad::InstrumentKind::Continuum, "Continuum");
     testContinuumUserFormula();
     testContinuumPitchExpression();
     testMatriarchPatching();

@@ -146,13 +146,14 @@ void ContinuumEngine::buildDefinition()
         const auto prefix = std::string ("con.osc") + std::to_string (i + 1) + ".";
         const auto group = "OSC " + std::to_string (i + 1);
         const float defaults[] = { 1.0f, 0.0f, 0.0f, 0.5f, 0.6f };
+        const float levelDefaults[] = { 0.65f, 0.35f, 0.12f, 0.2f, 0.15f };
         const float ratios[] = { 1.0f, 2.0f, 0.5f, 1.5f, 3.0f };
 
         oscIndex_[(size_t) i][(size_t) OscRatio] = add ((prefix + "ratio").c_str(), "RATIO", group.c_str(), 0.25f, 8.0f, ratios[i], ParamCurve::Log);
         oscIndex_[(size_t) i][(size_t) OscFine] = add ((prefix + "fine").c_str(), "FINE", group.c_str(), -100.0f, 100.0f, defaults[1], ParamCurve::Linear, {}, "ct");
         oscIndex_[(size_t) i][(size_t) OscPhase] = add ((prefix + "phase").c_str(), "PHASE", group.c_str(), 0.0f, 1.0f, defaults[2]);
         oscIndex_[(size_t) i][(size_t) OscShape] = add ((prefix + "shape").c_str(), "SHAPE", group.c_str(), 0.0f, 1.0f, defaults[3]);
-        oscIndex_[(size_t) i][(size_t) OscLevel] = add ((prefix + "level").c_str(), "LEVEL", group.c_str(), 0.0f, 1.0f, defaults[4]);
+        oscIndex_[(size_t) i][(size_t) OscLevel] = add ((prefix + "level").c_str(), "LEVEL", group.c_str(), 0.0f, 1.0f, levelDefaults[i]);
         oscIndex_[(size_t) i][(size_t) OscWave] = add ((prefix + "wave").c_str(), "WAVE", group.c_str(), 0.0f, 4.0f, (i == 0 ? 2.0f : 1.0f),
                                                         ParamCurve::Discrete,
                                                         choices ({ "Sine", "Triangle", "Saw", "Square", "Pulse" }));

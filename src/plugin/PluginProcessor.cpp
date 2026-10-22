@@ -650,7 +650,21 @@ void TriadAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
             position = offset;
         }
 
-        engine_->processMidi (scheduled_[(size_t) i].event);
+        const auto& scheduledEvent = scheduled_[(size_t) i].event;
+        engine_->processMidi (scheduledEvent);
+
+        // The surface uses note 60 as a fixed carrier.  Apply its pitch
+        // expression immediately after the NoteOn so even a very short tap
+        // renders at the touched pitch, not at the carrier's base pitch.
+        if (isContinuum() && scheduledEvent.note == 60
+            && scheduledEvent.type == MidiEventType::NoteOn)
+        {
+            const auto base = (size_t) 60 * 3;
+            engine_->setNoteExpression (60,
+                                        expression_[base + 0].load(),
+                                        expression_[base + 1].load(),
+                                        expression_[base + 2].load());
+        }
     }
 
     if (position < numSamples)
