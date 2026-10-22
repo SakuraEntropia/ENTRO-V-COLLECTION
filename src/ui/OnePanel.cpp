@@ -142,7 +142,7 @@ void OnePanel::rebuildForPart()
         if (lfo < 4) knob (stem + amounts[lfo - 1], names[lfo - 1], x + 198, 394, 38);
         addChoice (stem + "wave", "", { x + 10, 448, 84, 24 });
         addLed (stem + "sync", "SYNC", { x + 100, 448, 58, 22 });
-        addLed (stem + "retrigger", "RETRIG", { x + 164, 448, 64, 22 });
+        addLed (stem + "retrig", "RETRIG", { x + 164, 448, 64, 22 });
     }
 
     addModule ("TIMBRE EFFECTS", { 1240, 496, 976, 148 });
