@@ -191,3 +191,12 @@ if (TRIAD_BUILD_TESTS)
     target_compile_features(triad_preset_tests PRIVATE cxx_std_20)
     add_test(NAME triad_factory_presets COMMAND triad_preset_tests)
 endif()
+
+if (TRIAD_BUILD_TESTS)
+    # Reuse the UI library's JUCE implementation; this target needs only headers.
+    add_executable(triad_panel_tests tests/PanelTests.cpp)
+    target_include_directories(triad_panel_tests PRIVATE "${TRIAD_JUCE_PATH}/modules")
+    target_compile_definitions(triad_panel_tests PRIVATE JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1)
+    target_link_libraries(triad_panel_tests PRIVATE triad_ui)
+    add_test(NAME triad_panel_bindings COMMAND triad_panel_tests)
+endif()

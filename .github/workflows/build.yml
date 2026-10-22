@@ -27,7 +27,7 @@ jobs:
           PolyBrute_VST3 PolyBrute_AU PolyBrute_Standalone
           MoogOne_VST3 MoogOne_AU MoogOne_Standalone
           Continuum_VST3 Continuum_AU Continuum_Standalone
-          triad_tests triad_preset_tests
+          triad_tests triad_preset_tests triad_panel_tests
 
       - name: Engine tests
         run: ctest --test-dir "${{ runner.temp }}/build" --output-on-failure
@@ -63,7 +63,7 @@ jobs:
           PolyBrute_VST3 PolyBrute_Standalone
           MoogOne_VST3 MoogOne_Standalone
           Continuum_VST3 Continuum_Standalone
-          triad_tests triad_preset_tests
+          triad_tests triad_preset_tests triad_panel_tests
 
       - name: Engine tests
         run: ctest --test-dir "${{ runner.temp }}\build" -C Release --output-on-failure
