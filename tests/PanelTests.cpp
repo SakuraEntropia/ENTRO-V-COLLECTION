@@ -62,6 +62,11 @@ public:
     void captureMorphB() override { ++captures; }
     void swapMorphB() override { ++swaps; }
     void setMorphPad (float x, float y, float z) override { morph = { x, y, z }; }
+    float uiPitchBend() const override { return pitch; }
+    float uiModWheel() const override { return modulation; }
+    void setUiPitchBend (float v) override { pitch = v; }
+    void setUiModWheel (float v) override { modulation = v; }
+    float pitch = 0, modulation = 0;
     std::array<float, 3> morph {};
     int captures = 0, swaps = 0;
 
@@ -102,10 +107,43 @@ void verifyPanel (PanelHost& host, PanelBase& panel)
 {
     std::set<std::string> bound, jacks;
     std::vector<juce::Component*> interactive;
+    int oleds = 0;
     for (auto* c : panel.getChildren())
     {
         require (panel.getLocalBounds().contains (c->getBounds()), "Outside panel: " + c->getName());
         const auto id = c->getName();
+        if (auto* oled = dynamic_cast<OneWaveDisplay*> (c))
+        {
+            const auto stem = "one.p" + juce::String (host.selectedPart()) + ".vco" + juce::String (++oleds) + ".";
+            auto* angle = host.apvts().getParameter (stem + "waveAngle");
+            auto* shape = host.apvts().getParameter (stem + "shape");
+            auto* pw = host.apvts().getParameter (stem + "pw");
+            const auto a = angle->getValue(), s = shape->getValue(), w = pw->getValue();
+            shape->setValueNotifyingHost (0); angle->setValueNotifyingHost (0);
+            const auto saw = oled->waveform();
+            angle->setValueNotifyingHost (0.5f); const auto triangle = oled->waveform();
+            require (saw != triangle, "OLED follows oscillator angle / selected part");
+            shape->setValueNotifyingHost (1); pw->setValueNotifyingHost (0.25f);
+            const auto narrow = oled->waveform(); pw->setValueNotifyingHost (0.75f);
+            require (narrow != oled->waveform() && narrow != triangle, "OLED follows pulse shape/width");
+            angle->setValueNotifyingHost (a); shape->setValueNotifyingHost (s); pw->setValueNotifyingHost (w);
+        }
+        for (auto* child : c->getChildren())
+            if (auto* wheel = dynamic_cast<juce::Slider*> (child))
+            {
+                if (wheel->getName() == "Pitch wheel")
+                {
+                    wheel->setValue (0.5f, juce::sendNotificationSync);
+                    require (host.pitch == 0.5f, "Upper panel pitch wheel");
+                    wheel->setValue (0, juce::sendNotificationSync);
+                }
+                if (wheel->getName() == "Mod wheel")
+                {
+                    wheel->setValue (0.75f, juce::sendNotificationSync);
+                    require (host.modulation == 0.75f, "Upper panel modulation wheel");
+                    wheel->setValue (0, juce::sendNotificationSync);
+                }
+            }
         if (auto* jack = dynamic_cast<Jack*> (c))
         {
             require (jack->patchIndex() >= 0, "Unknown jack: " + id);
@@ -165,6 +203,19 @@ void verifyPanel (PanelHost& host, PanelBase& panel)
         }
     }
     // Custom controls: mode strip, performance pad and source assignment grid.
+    require (host.definition().id != "moogone" || oleds == 3, "Three oscillator OLEDs per part");
+    if (host.definition().id == "polybrute")
+    {
+        KeyboardPanel keyboard (host); keyboard.setSize (1680, 210);
+        auto* pad = keyboard.findChildWithID ("morph-performance");
+        require (pad != nullptr && pad->getRight() < 230, "MorphPad moved to keyboard-left recess");
+        pad->mouseDown (eventAt (*pad, pad->getWidth() * .4f, pad->getHeight() * .4f));
+        require (host.morph[0] > .1f && host.morph[0] < .9f && host.morph[2] == .7f, "Relocated pad X/Y/Z");
+        juce::MouseWheelDetails wheel; wheel.deltaY = .1f;
+        pad->mouseWheelMove (eventAt (*pad, 20, 20), wheel);
+        require (host.morph[2] > .7f, "Relocated pad pressure fallback");
+        pad->mouseUp (eventAt (*pad, 20, 20));
+    }
     if (host.definition().id == "continuum") bound.insert ("con.fx.mode");
     if (host.definition().id == "moogone") bound.insert ("one.master.selectedPart");
     if (host.definition().id == "matriarch")
@@ -247,6 +298,17 @@ int main (int argc, char** argv)
                     {
                         juce::PNGImageFormat png;
                         png.writeImageToStream (panel->createComponentSnapshot (panel->getLocalBounds()), *stream);
+                    }
+                    if (kind == 0 || kind == 1)
+                    {
+                        KeyboardPanel keyboard (host); keyboard.setLookAndFeel (&look);
+                        keyboard.setSize (1680, kind == 1 ? 210 : 176);
+                        if (auto stream = folder.getChildFile (host.definition().id + "-keyboard.png").createOutputStream())
+                        {
+                            juce::PNGImageFormat png;
+                            png.writeImageToStream (keyboard.createComponentSnapshot (keyboard.getLocalBounds()), *stream);
+                        }
+                        keyboard.setLookAndFeel (nullptr);
                     }
                 }
             }

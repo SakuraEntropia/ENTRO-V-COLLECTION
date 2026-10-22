@@ -319,7 +319,7 @@ TriadEditor::TriadEditor (EditorHost& host)
     if (id == "polybrute")
     {
         defaultWidth = 1680;
-        defaultHeight = 640;
+        defaultHeight = 720;
     }
     else if (id == "moogone" || id == "one")
     {
@@ -416,7 +416,8 @@ void TriadEditor::resized()
     }
     else
     {
-        keyboard_.setBounds (area.removeFromBottom (host_.definition().id == "matriarch" ? 176 : 132));
+        const auto id = host_.definition().id;
+        keyboard_.setBounds (area.removeFromBottom (id == "polybrute" ? 210 : (id == "matriarch" ? 176 : 132)));
     }
 
     auto panelArea = area.reduced (0, 4);

@@ -37,8 +37,8 @@ MatriarchPanel::MatriarchPanel (EditorHost& editorHost)
 
     bay ({ "mat.patch.clock.in", "mat.patch.clock.out", "mat.patch.clock.step1",
            "mat.patch.clock.step2", "mat.patch.clock.resetIn", "mat.patch.clock.resetOut" }, arp, 3);
-    addChoice ("mat.arp.rate", "RATE / DIV", { 46, 122, 106, 36 });
-    addChoice ("mat.arp.mode", "DIRECTION", { 46, 188, 106, 36 });
+    knob ("mat.arp.rate", "RATE / DIV", 99, 150);
+    knob ("mat.arp.mode", "DIRECTION", 99, 218, 34);
     addSwitch ("mat.arp.octaves", "OCT / BANK", { 46, 255, 106, 38 });
     addLed ("mat.arp.enabled", "PLAY", { 40, 357, 58, 28 });
     addLed ("mat.arp.hold", "HOLD", { 104, 357, 58, 28 });
@@ -92,7 +92,7 @@ MatriarchPanel::MatriarchPanel (EditorHost& editorHost)
     knob ("mat.flt.cutoff", "CUTOFF", 1079, 158, 72);
     knob ("mat.flt.res1", "RESONANCE 1", 1014, 225);
     knob ("mat.flt.res2", "RESONANCE 2", 1144, 225);
-    addChoice ("mat.flt.mode", "FILTER MODE", { 1019, 262, 120, 34 });
+    addSwitch ("mat.flt.mode", "FILTER MODE", { 1019, 262, 120, 34 });
     knob ("mat.flt.spacing", "SPACING", 1014, 324);
     knob ("mat.flt.envAmt", "ENVELOPE AMT", 1144, 324);
     knob ("mat.flt.kbTrack", "KB TRACKING", 1079, 380, 40);

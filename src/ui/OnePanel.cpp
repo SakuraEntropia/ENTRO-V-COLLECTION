@@ -32,6 +32,10 @@ void OnePanel::rebuildForPart()
             addLed (stem + "sync", "SYNC", { x + 160, 61, 90, 24 });
         knob (stem + "tune", "FREQUENCY", x + 72, 145, 60);
         knob (stem + "waveAngle", "WAVE ANGLE", x + 210, 145, 54);
+        auto& display = waveformDisplays_[(size_t) i];
+        display = std::make_unique<OneWaveDisplay> (apvts(), stem);
+        display->setBounds (x + 111, 121, 64, 46);
+        addAndMakeVisible (*display);
         knob (stem + "shape", "SHAPE", x + 48, 251);
         knob (stem + "pw", "PULSE WIDTH", x + 141, 251);
         knob (stem + "level", "LEVEL", x + 234, 251);

@@ -269,6 +269,8 @@ HardwareSwitch& PanelBase::addSwitch (const juce::String& paramId, const juce::S
     auto component = std::make_unique<HardwareSwitch> (
         *parameter, vertical ? HardwareSwitch::Orientation::Vertical : HardwareSwitch::Orientation::Horizontal);
     component->setName (paramId);
+    component->getProperties().set ("hardwareToggle", finish_ == Finish::Matriarch);
+    component->getProperties().set ("darkInk", usesDarkInk (area.getCentre()));
     component->setTooltip (spec != nullptr ? juce::String (spec->name) + "  [" + paramId + "]" : paramId);
 
     const auto labelHeight = 11;
@@ -703,9 +705,9 @@ void PanelBase::paint (juce::Graphics& g)
     else if (finish_ == Finish::PolyBrute)
     {
         // Arturia-style near-black multi-layer panel.
-        juce::ColourGradient background (juce::Colour (0xff101114), 0.0f, 0.0f,
-                                         juce::Colour (0xff050506), 0.0f, bounds.getBottom(), false);
-        background.addColour (0.48, juce::Colour (0xff0b0c0e));
+        juce::ColourGradient background (juce::Colour (0xff29353c), 0.0f, 0.0f,
+                                         juce::Colour (0xff172126), 0.0f, bounds.getBottom(), false);
+        background.addColour (0.48, juce::Colour (0xff222c32));
         g.setGradientFill (background);
         g.fillRect (bounds);
 
@@ -747,6 +749,9 @@ void PanelBase::paint (juce::Graphics& g)
         g.fillRect (892.0f, 16.0f, 2.0f, bounds.getHeight() - 76.0f);
         g.fillRect (1232.0f, 16.0f, 2.0f, bounds.getHeight() - 76.0f);
     }
+
+    if (finish_ == Finish::PolyBrute)
+        drawWood (g, { 206.0f, bounds.getBottom() - 16.0f, bounds.getWidth() - 220.0f, 16.0f }, false, 710);
 
     // Top bevel highlight and bottom shadow.
     g.setColour (juce::Colours::white.withAlpha (0.08f));
@@ -874,7 +879,7 @@ void PanelBase::paint (juce::Graphics& g)
     // ---- Branding ---------------------------------------------------------
     if (brandMain_.isNotEmpty())
     {
-        const auto brandArea = getLocalBounds().removeFromBottom (finish_ == Finish::MoogOne ? 64 : 48).withTrimmedLeft (16);
+        const auto brandArea = getLocalBounds().removeFromBottom ((finish_ == Finish::MoogOne || finish_ == Finish::PolyBrute) ? 64 : 48).withTrimmedLeft (16);
 
         if (finish_ == Finish::Matriarch)
         {

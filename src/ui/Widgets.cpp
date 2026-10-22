@@ -1,5 +1,6 @@
 #include "ui/Widgets.h"
 #include "ui/LookAndFeel.h"
+#include "core/Dsp.h"
 
 #include <cmath>
 
@@ -55,6 +56,25 @@ void HardwareSwitch::setPositionFromValue (float value)
 void HardwareSwitch::paint (juce::Graphics& g)
 {
     auto bounds = getLocalBounds().toFloat().reduced (1.0f);
+    if ((bool) getProperties()["hardwareToggle"])
+    {
+        const auto pivot = juce::Point<float> (bounds.getRight() - 13.0f, bounds.getCentreY() + 2.0f);
+        const auto socket = juce::Rectangle<float> (14.0f, 14.0f).withCentre (pivot);
+        g.setColour (juce::Colours::black.withAlpha (0.6f)); g.fillEllipse (socket.expanded (1.0f));
+        juce::ColourGradient metal (juce::Colour (0xffd9dedc), socket.getX(), socket.getY(),
+                                   juce::Colour (0xff656b6b), socket.getRight(), socket.getBottom(), false);
+        g.setGradientFill (metal); g.fillEllipse (socket);
+        g.setColour (juce::Colour (0xff101415)); g.fillEllipse (socket.reduced (3.0f));
+        const auto direction = (float) current_ / juce::jmax (1, positions_ - 1) * 2.0f - 1.0f;
+        const auto end = pivot.translated (direction * 4.0f, -7.0f);
+        g.setColour (juce::Colour (0xff888e90)); g.drawLine ({ pivot, end }, 5.0f);
+        g.setColour (juce::Colour (0xfff0f1e9)); g.drawLine ({ pivot, end }, 2.0f);
+        g.setFont (juce::Font (juce::FontOptions (9.0f)));
+        g.setColour ((bool) getProperties()["darkInk"] ? juce::Colour (0xff252a2b) : juce::Colour (0xffe6e6dd));
+        g.drawFittedText (labels_[juce::jlimit (0, labels_.size() - 1, current_)],
+                         bounds.withTrimmedRight (26).toNearestInt(), juce::Justification::centred, 2);
+        return;
+    }
 
     juce::ColourGradient plate (juce::Colour (0xff3a3a3f), bounds.getX(), bounds.getY(),
                                  juce::Colour (0xff121214), bounds.getX(), bounds.getBottom(), false);
@@ -443,6 +463,75 @@ void LcdDisplay::paint (juce::Graphics& g)
 
     g.setColour (juce::Colour (0xff3a7f85).withAlpha (0.8f));
     g.drawRoundedRectangle (bounds.reduced (0.75f), 3.0f, 1.0f);
+}
+
+OneWaveDisplay::OneWaveDisplay (juce::AudioProcessorValueTreeState& state, const juce::String& prefix)
+{
+    parameters_ = { state.getRawParameterValue (prefix + "waveAngle"),
+                    state.getRawParameterValue (prefix + "shape"),
+                    state.getRawParameterValue (prefix + "pw") };
+    setName ("Oscillator OLED");
+    setInterceptsMouseClicks (false, false);
+    startTimerHz (15);
+}
+
+std::array<float, 256> OneWaveDisplay::waveform() const
+{
+    const auto read = [this] (int i, float fallback)
+    { return parameters_[(size_t) i] != nullptr ? parameters_[(size_t) i]->load() : fallback; };
+    const auto angle = juce::jlimit (0.0f, 1.0f, read (0, 0.5f));
+    const auto shape = juce::jlimit (0.0f, 1.0f, read (1, 0.0f));
+    const auto width = juce::jlimit (0.02f, 0.98f, read (2, 0.5f));
+    Oscillator oscillator;
+    oscillator.prepare (48000.0);
+    oscillator.setFrequency (440.0);
+    std::array<float, 256> result {};
+    for (size_t i = 0; i < result.size(); ++i)
+    {
+        oscillator.setPhase ((double) i / (result.size() - 1));
+        const auto saw = oscillator.sample (Oscillator::Wave::Saw);
+        const auto triangle = oscillator.sample (Oscillator::Wave::Triangle);
+        const auto analog = angle < 0.5f ? lerpf (saw, triangle, angle * 2.0f)
+                                        : lerpf (triangle, -saw, (angle - 0.5f) * 2.0f);
+        result[i] = shape <= 0.0005f ? analog
+            : lerpf (analog, oscillator.sample (Oscillator::Wave::Pulse, width), shape);
+    }
+    return result;
+}
+
+void OneWaveDisplay::timerCallback()
+{
+    bool changed = false;
+    for (size_t i = 0; i < parameters_.size(); ++i)
+        if (parameters_[i] != nullptr && previous_[i] != parameters_[i]->load())
+        {
+            previous_[i] = parameters_[i]->load();
+            changed = true;
+        }
+    if (changed) repaint();
+}
+
+void OneWaveDisplay::paint (juce::Graphics& g)
+{
+    const auto bounds = getLocalBounds().toFloat();
+    g.setColour (juce::Colour (0xff050608)); g.fillRoundedRectangle (bounds, 2.0f);
+    g.setColour (juce::Colour (0xff6b6860)); g.drawRoundedRectangle (bounds.reduced (0.5f), 2.0f, 1.0f);
+    auto glass = bounds.reduced (4.0f);
+    g.setColour (juce::Colour (0xff101d23)); g.fillRect (glass);
+    g.setColour (juce::Colour (0xff2b3e43));
+    g.drawHorizontalLine ((int) glass.getCentreY(), glass.getX(), glass.getRight());
+    const auto values = waveform();
+    juce::Path trace;
+    for (size_t i = 0; i < values.size(); ++i)
+    {
+        const auto x = glass.getX() + i * glass.getWidth() / (values.size() - 1);
+        const auto y = glass.getCentreY() - values[i] * (glass.getHeight() * 0.39f);
+        if (i == 0) trace.startNewSubPath (x, y); else trace.lineTo (x, y);
+    }
+    g.setColour (juce::Colour (0xffc2e1e8).withAlpha (0.13f));
+    g.strokePath (trace, juce::PathStrokeType (3.5f));
+    g.setColour (juce::Colour (0xffc2e1e8));
+    g.strokePath (trace, juce::PathStrokeType (1.0f));
 }
 
 } // namespace triad::ui

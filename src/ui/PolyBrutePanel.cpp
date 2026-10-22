@@ -41,45 +41,50 @@ public:
         auto bounds = getLocalBounds().toFloat();
         auto pad = padArea();
 
-        g.setColour (juce::Colour (0xff07090b));
-        g.fillRoundedRectangle (pad, 4.0f);
-        g.setColour (juce::Colour (0xff2fb6a8).withAlpha (0.18f));
-        g.drawRoundedRectangle (pad.reduced (0.5f), 4.0f, 1.0f);
-
-        for (int i = 1; i < 4; ++i)
+        // Sculpted black recess and a tapered wooden touch block, as on the
+        // left cheek of the keyboard. No arbitrary XY grid painted on the wood.
+        g.setColour (juce::Colour (0xff050709));
+        g.fillRoundedRectangle (bounds.reduced (1.0f), 13.0f);
+        g.setColour (juce::Colour (0xff566067));
+        g.drawRoundedRectangle (bounds.reduced (2.0f), 12.0f, 1.2f);
+        juce::Path timber;
+        timber.startNewSubPath (pad.getX() + 9.0f, pad.getY() + 3.0f);
+        timber.quadraticTo (pad.getCentreX(), pad.getY() - 2.0f, pad.getRight() - 12.0f, pad.getY() + 7.0f);
+        timber.lineTo (pad.getRight() - 4.0f, pad.getBottom() - 12.0f);
+        timber.quadraticTo (pad.getCentreX(), pad.getBottom() + 1.0f, pad.getX() + 9.0f, pad.getBottom() - 5.0f);
+        timber.closeSubPath();
+        juce::ColourGradient wood (juce::Colour (0xffa97242), pad.getX(), pad.getY(),
+                                  juce::Colour (0xff4c2b1b), pad.getRight(), pad.getBottom(), false);
+        wood.addColour (0.42, juce::Colour (0xff895130));
+        g.setGradientFill (wood); g.fillPath (timber);
+        g.saveState(); g.reduceClipRegion (timber);
+        for (int i = 0; i < 32; ++i)
         {
-            const auto x = pad.getX() + pad.getWidth() * (float) i / 4.0f;
-            const auto y = pad.getY() + pad.getHeight() * (float) i / 4.0f;
-            g.setColour (juce::Colour (0xff5fd6d0).withAlpha (0.11f));
-            g.drawVerticalLine ((int) x, pad.getY(), pad.getBottom());
-            g.drawHorizontalLine ((int) y, pad.getX(), pad.getRight());
+            const auto x = pad.getX() + i * pad.getWidth() / 30.0f;
+            juce::Path grain;
+            grain.startNewSubPath (x, pad.getY());
+            grain.cubicTo (x - 5.0f, pad.getY() + pad.getHeight() * 0.3f,
+                           x + 8.0f, pad.getY() + pad.getHeight() * 0.7f, x + 2.0f, pad.getBottom());
+            g.setColour (juce::Colour (0xff24140d).withAlpha (i % 3 == 0 ? 0.24f : 0.12f));
+            g.strokePath (grain, juce::PathStrokeType (0.6f));
         }
-
+        g.restoreState();
+        g.setColour (juce::Colour (0xffd2a47b).withAlpha (0.48f));
+        g.strokePath (timber, juce::PathStrokeType (1.5f));
         const auto point = juce::Point<float> (pad.getX() + x_ * pad.getWidth(),
-                                                pad.getY() + (1.0f - y_) * pad.getHeight());
-        const auto radius = 5.0f + pressureValue_ * 10.0f;
-        g.setColour (juce::Colour (0xff5fd6d0).withAlpha (0.14f));
-        g.fillEllipse (point.x - radius, point.y - radius, radius * 2.0f, radius * 2.0f);
-        g.setColour (juce::Colour (0xffdffbf6));
-        g.fillEllipse (point.x - 4.0f, point.y - 4.0f, 8.0f, 8.0f);
-        g.setColour (juce::Colour (0xff2fb6a8));
-        g.drawLine (pad.getX(), point.y, pad.getRight(), point.y, 0.7f);
-        g.drawLine (point.x, pad.getY(), point.x, pad.getBottom(), 0.7f);
-
-        g.setColour (juce::Colour (0xff7fd8d0));
-        g.setFont (juce::Font (juce::FontOptions (7.5f)));
-        g.drawText ("X MORPH", (int) pad.getX() + 5, (int) pad.getBottom() - 13, 60, 10,
-                    juce::Justification::centredLeft);
-        g.drawText ("Y SPREAD", (int) pad.getRight() - 64, (int) pad.getY() + 3, 60, 10,
-                    juce::Justification::centredRight);
-        g.drawText ("Z", (int) pad.getRight() + 12, (int) pad.getY() + 2, 20, 10,
-                    juce::Justification::centredRight);
+                                               pad.getY() + (1.0f - y_) * pad.getHeight());
+        const auto radius = 3.0f + pressureValue_ * 8.0f;
+        g.setColour (juce::Colour (0xffefd3ac).withAlpha (dragging_ ? 0.7f : 0.22f));
+        g.drawEllipse (point.x - radius, point.y - radius, radius * 2, radius * 2, 1.0f);
+        g.setColour (juce::Colour (0xffd5d9d5));
+        g.setFont (juce::Font (juce::FontOptions (9.0f)));
+        g.drawText ("Z", getWidth() - 24, 5, 20, 12, juce::Justification::centred);
     }
 
     void resized() override
     {
         auto area = getLocalBounds().reduced (4);
-        pressure_.setBounds (area.removeFromRight (34).reduced (3, 0));
+        pressure_.setBounds (area.removeFromRight (22).withTrimmedTop (18).reduced (2, 2));
     }
 
     void mouseDown (const juce::MouseEvent& event) override
@@ -127,7 +132,7 @@ public:
 private:
     juce::Rectangle<float> padArea() const
     {
-        return getLocalBounds().toFloat().reduced (4.0f).withTrimmedRight (40.0f);
+        return getLocalBounds().toFloat().reduced (9.0f).withTrimmedRight (25.0f);
     }
 
     void updateFromEvent (const juce::MouseEvent& event)
@@ -169,6 +174,53 @@ private:
     bool pressureWasValid_ = false;
 };
 
+std::unique_ptr<juce::Component> createPolyBruteMorphPad (EditorHost& host)
+{
+    return std::make_unique<MorphPad> (host);
+}
+
+class PolyPerformanceWheels final : public juce::Component, private juce::Timer
+{
+public:
+    explicit PolyPerformanceWheels (EditorHost& host) : host_ (host)
+    {
+        for (auto* slider : { &pitch_, &mod_ })
+        {
+            slider->setSliderStyle (juce::Slider::LinearVertical);
+            slider->setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
+            slider->getProperties().set ("wheel", true);
+            slider->setMouseDragSensitivity (180);
+            addAndMakeVisible (*slider);
+        }
+        pitch_.setName ("Pitch wheel"); mod_.setName ("Mod wheel");
+        pitch_.setRange (-1, 1); mod_.setRange (0, 1);
+        pitch_.setDoubleClickReturnValue (true, 0);
+        pitch_.onValueChange = [this] { host_.setUiPitchBend ((float) pitch_.getValue()); };
+        mod_.onValueChange = [this] { host_.setUiModWheel ((float) mod_.getValue()); };
+        startTimerHz (12);
+    }
+    ~PolyPerformanceWheels() override { stopTimer(); }
+    void resized() override
+    {
+        pitch_.setBounds (14, 12, 30, getHeight() - 38);
+        mod_.setBounds (getWidth() - 44, 12, 30, getHeight() - 38);
+    }
+    void paint (juce::Graphics& g) override
+    {
+        g.setColour (juce::Colour (0xffd9d9ce)); g.setFont (juce::Font (juce::FontOptions (10.0f)));
+        g.drawText ("PITCH", 2, getHeight() - 19, 54, 14, juce::Justification::centred);
+        g.drawText ("MOD", getWidth() - 56, getHeight() - 19, 54, 14, juce::Justification::centred);
+    }
+private:
+    void timerCallback() override
+    {
+        if (! pitch_.isMouseButtonDown()) pitch_.setValue (host_.uiPitchBend(), juce::dontSendNotification);
+        if (! mod_.isMouseButtonDown()) mod_.setValue (host_.uiModWheel(), juce::dontSendNotification);
+    }
+    EditorHost& host_;
+    juce::Slider pitch_, mod_;
+};
+
 PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
     : PanelBase (editorHost, "POLYBRUTE V", 2360, 600, polyAccent())
 {
@@ -193,16 +245,10 @@ PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
     { addKnob (id, label, { x, y }, d); };
     addButton ("CAPTURE B", { 38, 52, 148, 26 }, [this] { host().captureMorphB(); });
     addButton ("SWAP A/B", { 38, 86, 148, 26 }, [this] { host().swapMorphB(); });
-    knob ("poly.voice.morph", "MORPH A / B", 112, 165, 60);
-    knob ("poly.voice.spread", "SPREAD", 72, 248);
-    knob ("poly.voice.analog", "ANALOG", 152, 248);
-    addCaption ("MORPH PERFORMANCE", { 32, 298, 160, 18 }, juce::Justification::centred, 11.0f,
-                juce::Colour (0xffe6e1d6), true);
-    morphPad_ = std::make_unique<MorphPad> (host());
-    morphPad_->setBounds (32, 322, 160, 158);
-    addAndMakeVisible (*morphPad_);
-    addCaption ("X MORPH   Y SPREAD\nZ PRESSURE / WHEEL", { 32, 488, 160, 32 },
-                juce::Justification::centred, 10.0f);
+    wheels_ = std::make_unique<PolyPerformanceWheels> (host());
+    wheels_->setBounds (46, 151, 132, 220);
+    addAndMakeVisible (*wheels_);
+    knob ("poly.voice.morph", "MORPH A / B", 112, 450, 60);
     addChoice ("poly.voice.mode", "VOICE MODE", { 218, 52, 116, 36 });
     addChoice ("poly.voice.unison", "UNISON", { 218, 113, 116, 36 });
     knob ("poly.voice.glide", "GLIDE", 276, 201, 48);

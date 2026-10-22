@@ -53,6 +53,7 @@ private:
     juce::TextButton tap_ { "TAP" };
     TapTempo tapTempo_;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> glideAttachment_;
+    std::unique_ptr<juce::Component> morphPad_;
     int octave_ = 0;
     int lastPart_ = 1;
     int lowestNote_ = 36;

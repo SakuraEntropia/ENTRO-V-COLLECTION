@@ -15,8 +15,6 @@ public:
     explicit MatriarchPanel (EditorHost& host);
 };
 
-class MorphPad;
-
 class PolyBrutePanel final : public PanelBase
 {
 public:
@@ -25,7 +23,7 @@ public:
     void paint (juce::Graphics&) override;
 
 private:
-    std::unique_ptr<MorphPad> morphPad_;
+    std::unique_ptr<juce::Component> wheels_;
 };
 
 class OnePanel final : public PanelBase
@@ -33,6 +31,8 @@ class OnePanel final : public PanelBase
 public:
     explicit OnePanel (EditorHost& host);
     void rebuildForPart();
+private:
+    std::array<std::unique_ptr<OneWaveDisplay>, 3> waveformDisplays_;
 };
 
 std::unique_ptr<PanelBase> createInstrumentPanel (EditorHost& host);

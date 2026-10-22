@@ -4,6 +4,9 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 
 #include <functional>
+#include <array>
+
+namespace triad { class EditorHost; }
 
 namespace triad::ui
 {
@@ -125,5 +128,21 @@ public:
 private:
     juce::String header_, body_, footer_;
 };
+
+/** Static oscillator composite, as on the instrument OLED; follows automation. */
+class OneWaveDisplay final : public juce::Component, private juce::Timer
+{
+public:
+    OneWaveDisplay (juce::AudioProcessorValueTreeState&, const juce::String& prefix);
+    ~OneWaveDisplay() override { stopTimer(); }
+    std::array<float, 256> waveform() const;
+    void paint (juce::Graphics&) override;
+private:
+    void timerCallback() override;
+    std::array<std::atomic<float>*, 3> parameters_ {};
+    std::array<float, 3> previous_ {};
+};
+
+std::unique_ptr<juce::Component> createPolyBruteMorphPad (EditorHost&);
 
 } // namespace triad::ui

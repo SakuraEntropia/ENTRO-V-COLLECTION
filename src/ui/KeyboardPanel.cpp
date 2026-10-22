@@ -202,6 +202,15 @@ KeyboardPanel::KeyboardPanel (EditorHost& host)
         addAndMakeVisible (tap_);
     }
 
+    if (instrument == "polybrute")
+    {
+        pitchWheel_.setVisible (false); modWheel_.setVisible (false);
+        pitchLabel_.setVisible (false); modLabel_.setVisible (false);
+        morphPad_ = createPolyBruteMorphPad (host_);
+        morphPad_->setName ("3D Morph performance");
+        morphPad_->setComponentID ("morph-performance");
+        addAndMakeVisible (*morphPad_);
+    }
     startTimerHz (12);
 }
 
@@ -216,7 +225,7 @@ void KeyboardPanel::paint (juce::Graphics& g)
     const auto instrument = juce::String (host_.definition().id);
     const auto wood = instrument != "matriarch";
 
-    juce::ColourGradient background (juce::Colour (0xff1e1e21), 0.0f, 0.0f,
+    juce::ColourGradient background (instrument == "polybrute" ? juce::Colour (0xff29353c) : juce::Colour (0xff1e1e21), 0.0f, 0.0f,
                                      juce::Colour (0xff08080a), 0.0f, bounds.getBottom(), false);
     g.setGradientFill (background);
     g.fillRect (bounds);
@@ -267,7 +276,10 @@ void KeyboardPanel::resized()
     auto area = getLocalBounds().reduced (12, 8);
 
     const auto matriarch = play_ != nullptr;
-    auto left = area.removeFromLeft (matriarch ? 216 : 118);
+    auto left = area.removeFromLeft (morphPad_ != nullptr ? juce::roundToInt (getWidth() * 0.12f)
+                                                        : (matriarch ? 216 : 118));
+    if (morphPad_ != nullptr)
+        morphPad_->setBounds (left.reduced (7, 8).withTrimmedBottom (12));
     if (matriarch)
     {
         glide_.setBounds (left.getX() + 6, left.getY() + 2, 36, 36);
