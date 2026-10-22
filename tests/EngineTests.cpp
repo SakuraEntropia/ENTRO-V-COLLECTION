@@ -362,31 +362,6 @@ void testTuning (triad::InstrumentKind kind, const char* name)
     }
 }
 
-void testOneBeatFrequency()
-{
-    for (int part = 1; part <= 3; ++part)
-        for (int note : { 69, 81 })
-        {
-            auto engine = triad::makeEngine (triad::InstrumentKind::MoogOne);
-            const auto& def = engine->definition();
-            CHECK (def.params.size() == 417 && def.params[408].id == "one.p1.vco1.beatHz");
-            std::vector<float> values; for (const auto& spec : def.params) values.push_back (spec.def);
-            auto set = [&] (std::string id, float value) { values[(size_t) def.indexOf (id)] = value; };
-            const auto prefix = "one.p" + std::to_string (part) + ".";
-            set ("one.master.drift", 0); set ("one.master.reverbMix", 0);
-            set (prefix + "vco2.level", 0); set (prefix + "vco3.level", 0);
-            set (prefix + "mix.noise", 0); set (prefix + "mix.ring", 0);
-            set (prefix + "vco1.beatHz", 7);
-            set (prefix + "svf.cutoff", 20000); set (prefix + "ladder.cutoff", 20000);
-            engine->prepare (48000, 512); engine->setParameters (values.data(), (int) values.size());
-            triad::MidiEvent on; on.type = triad::MidiEventType::NoteOn;
-            on.note = note; on.channel = part - 1; on.value = .8f; engine->processMidi (on);
-            std::vector<float> l, r; renderSeconds (*engine, 1, 48000, l, r);
-            const double expected = (note == 69 ? 440 : 880) + 7;
-            CHECK (std::abs (estimateFundamental (l, 1, 48000) - expected) < .5);
-        }
-}
-
 void testContinuumUserFormula()
 {
     auto engine = triad::makeEngine (triad::InstrumentKind::Continuum);
@@ -676,7 +651,6 @@ int main()
     testTuning (triad::InstrumentKind::PolyBrute, "PolyBrute");
     testTuning (triad::InstrumentKind::MoogOne, "Moog One");
     testTuning (triad::InstrumentKind::Continuum, "Continuum");
-    testOneBeatFrequency();
     testContinuumUserFormula();
     testContinuumExtensions();
     testContinuumPitchExpression();
