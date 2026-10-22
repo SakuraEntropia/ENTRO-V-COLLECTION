@@ -644,14 +644,14 @@ private:
 };
 
 ContinuumPanel::ContinuumPanel (EditorHost& host)
-    : PanelBase (host, "CONTINUUM V", 2000, 1400, continuumAccent())
+    : PanelBase (host, "CONTINUUM V", 2800, 1100, continuumAccent())
 {
     setBranding ("CONTINUUM V", "EIGEN MATRIX  /  CONTINUOUS SURFACE");
 
     const auto accent = continuumAccent();
 
     // Master and expression strip.
-    addModule ("MASTER / EXPRESSION", { 8, 8, 1984, 56 });
+    addModule ("MASTER / EXPRESSION", { 8, 8, 2784, 56 });
     const char* masterIds[] = { "con.master.volume", "con.master.glide",
                                 "con.master.yDepth", "con.master.zDepth",
                                 "con.master.bendRange", "con.master.reverbMix",
@@ -663,19 +663,19 @@ ContinuumPanel::ContinuumPanel (EditorHost& host)
                                    "CVC 1", "CVC 2", "CVC 3", "CVC 4",
                                    "PITCH SNAP" };
     for (int i = 0; i < 13; ++i)
-        addKnob (masterIds[i], masterLabels[i], { 12 + i * 151, 14, 146, 42 });
+        addKnob (masterIds[i], masterLabels[i], { 12 + i * 213, 14, 202, 42 });
 
     matrix_ = std::make_unique<ContinuumMatrix> (host);
-    matrix_->setBounds (8, 72, 720, 760);
+    matrix_->setBounds (8, 72, 1500, 560);
     addAndMakeVisible (*matrix_);
 
     for (int i = 0; i < 5; ++i)
     {
-        const auto x = 736 + i * 248;
+        const auto x = 1516 + i * 252;
         const auto prefix = "con.osc" + juce::String (i + 1) + ".";
         const auto group = "OSC " + juce::String (i + 1);
-        addModule (group, { x, 72, 244, 258 });
-        auto inner = juce::Rectangle<int> (x + 4, 72 + 26, 236, 228);
+        addModule (group, { x, 72, 244, 210 });
+        auto inner = juce::Rectangle<int> (x + 4, 72 + 26, 236, 180);
         const auto cellW = inner.getWidth() / 2;
         const auto cellH = inner.getHeight() / 3;
 
@@ -689,10 +689,10 @@ ContinuumPanel::ContinuumPanel (EditorHost& host)
 
     for (int i = 0; i < 5; ++i)
     {
-        const auto x = 736 + i * 248;
+        const auto x = 1516 + i * 252;
         const auto prefix = "con.flt" + juce::String (i + 1) + ".";
-        addModule ("FILTER " + juce::String (i + 1), { x, 338, 244, 190 });
-        auto inner = juce::Rectangle<int> (x + 4, 338 + 26, 236, 158);
+        addModule ("FILTER " + juce::String (i + 1), { x, 290, 244, 170 });
+        auto inner = juce::Rectangle<int> (x + 4, 290 + 26, 236, 138);
         const auto cellW = inner.getWidth() / 2;
         const auto cellH = inner.getHeight() / 2;
 
@@ -704,10 +704,10 @@ ContinuumPanel::ContinuumPanel (EditorHost& host)
 
     for (int i = 0; i < 2; ++i)
     {
-        const auto x = 736 + i * 310;
+        const auto x = 1516 + i * 310;
         const auto prefix = "con.bank" + juce::String (i + 1) + ".";
-        addModule ("BIQUAD BANK " + juce::String (i + 1), { x, 536, 300, 170 });
-        auto inner = juce::Rectangle<int> (x + 4, 562, 292, 140);
+        addModule ("BIQUAD BANK " + juce::String (i + 1), { x, 468, 300, 170 });
+        auto inner = juce::Rectangle<int> (x + 4, 494, 292, 140);
         const auto cellW = inner.getWidth() / 2;
         const auto cellH = inner.getHeight() / 3;
         addKnob (prefix + "freq", "FREQ", { inner.getX(), inner.getY(), cellW, cellH });
@@ -719,10 +719,10 @@ ContinuumPanel::ContinuumPanel (EditorHost& host)
 
     for (int i = 0; i < 2; ++i)
     {
-        const auto x = 1366 + i * 310;
+        const auto x = 2136 + i * 310;
         const auto prefix = "con.delay" + juce::String (i + 1) + ".";
-        addModule (i == 0 ? "SUMMED DELAY" : "MICRO DELAY", { x, 536, 300, 170 });
-        auto inner = juce::Rectangle<int> (x + 4, 562, 292, 140);
+        addModule (i == 0 ? "SUMMED DELAY" : "MICRO DELAY", { x, 468, 300, 170 });
+        auto inner = juce::Rectangle<int> (x + 4, 494, 292, 140);
         const auto cellW = inner.getWidth() / 2;
         const auto cellH = inner.getHeight() / 3;
         addKnob (prefix + "time", "TIME", { inner.getX(), inner.getY(), cellW, cellH });
@@ -730,15 +730,15 @@ ContinuumPanel::ContinuumPanel (EditorHost& host)
         addKnob (prefix + "mix", "MIX", { inner.getX(), inner.getY() + cellH, cellW, cellH });
     }
 
-    addModule ("SHAPE GENERATORS", { 736, 714, 1220, 160 });
+    addModule ("SHAPE GENERATORS", { 1516, 646, 1276, 200 });
     for (int i = 0; i < 5; ++i)
     {
-        const auto x = 744 + i * 242;
+        const auto x = 1524 + i * 250;
         const auto prefix = "con.sg" + juce::String (i + 1) + ".";
-        addCaption ("SG " + juce::String (i + 1), { x, 740, 70, 14 }, juce::Justification::centredLeft, 9.0f, accent, true);
-        addKnob (prefix + "rate", "RATE", { x, 756, 72, 92 });
-        addChoice (prefix + "shape", "SHAPE", { x + 76, 776, 86, 42 });
-        addKnob (prefix + "level", "LEVEL", { x + 168, 756, 66, 92 });
+        addCaption ("SG " + juce::String (i + 1), { x, 672, 70, 14 }, juce::Justification::centredLeft, 9.0f, accent, true);
+        addKnob (prefix + "rate", "RATE", { x, 688, 72, 80 });
+        addChoice (prefix + "shape", "SHAPE", { x + 76, 708, 86, 40 });
+        addKnob (prefix + "level", "LEVEL", { x + 168, 688, 66, 80 });
     }
 
     // -----------------------------------------------------------------------
@@ -747,13 +747,13 @@ ContinuumPanel::ContinuumPanel (EditorHost& host)
     // -----------------------------------------------------------------------
     for (int env = 0; env < 2; ++env)
     {
-        const auto x = 8 + env * 492;
+        const auto x = 8 + env * 376;
         const auto stem = "con.env" + juce::String (env + 1) + ".";
-        addModule ("ENVELOPE " + juce::String (env + 1), { x, 882, 484, 196 });
+        addModule ("ENVELOPE " + juce::String (env + 1), { x, 646, 368, 200 });
 
         const auto innerX = x + 8;
-        const auto innerY = 910;
-        const auto cellW = 112;
+        const auto innerY = 674;
+        const auto cellW = 86;
         const char* ids[] = { "attack", "decay", "sustain", "release" };
         const char* labels[] = { "ATTACK", "DECAY", "SUSTAIN", "RELEASE" };
 
@@ -763,29 +763,29 @@ ContinuumPanel::ContinuumPanel (EditorHost& host)
     }
 
     {
-        addModule ("NOISE / SPACE", { 992, 882, 992, 196 });
-        const auto x = 1000;
-        auto y = 910;
-        addKnob ("con.noise.level", "NOISE", { x, y, 150, 142 });
-        addKnob ("con.noise.color", "COLOR", { x + 158, y, 150, 142 });
-        addKnob ("con.master.reverbSize", "REVERB SIZE", { x + 324, y, 190, 142 });
-        addKnob ("con.master.delayTime", "DELAY TIME", { x + 522, y, 190, 142 });
-        addKnob ("con.master.delayFeedback", "DELAY FB", { x + 720, y, 190, 142 });
+        addModule ("NOISE / SPACE", { 760, 646, 740, 200 });
+        const auto x = 768;
+        auto y = 674;
+        addKnob ("con.noise.level", "NOISE", { x, y, 140, 142 });
+        addKnob ("con.noise.color", "COLOR", { x + 145, y, 140, 142 });
+        addKnob ("con.master.reverbSize", "REVERB SIZE", { x + 290, y, 140, 142 });
+        addKnob ("con.master.delayTime", "DELAY TIME", { x + 435, y, 140, 142 });
+        addKnob ("con.master.delayFeedback", "DELAY FB", { x + 580, y, 140, 142 });
     }
 
     // Six inverted trapezoids, one per Recirculator mode.
     {
-        addModule ("RECIRCULATOR MODE", { 8, 1088, 1984, 72 });
+        addModule ("RECIRCULATOR MODE", { 8, 856, 2784, 72 });
         fxModes_ = std::make_unique<RecirculatorModeStrip> (host);
-        fxModes_->setBounds (16, 1112, 1968, 42);
+        fxModes_->setBounds (16, 880, 2768, 42);
         addAndMakeVisible (*fxModes_);
     }
 
     // Auxiliary effects modelled on the EaganMatrix Recirculator / VoiceDelay
     // family: chorus, phaser and a modulated echo around the FDN reverb.
     {
-        addModule ("AUX FX  /  RECIRCULATOR", { 8, 1168, 1984, 140 });
-        addKnob ("con.fx.reverb.damping", "REVERB DAMP", { 18, 1194, 152, 94 });
+        addModule ("AUX FX  /  RECIRCULATOR", { 8, 936, 2784, 94 });
+        addKnob ("con.fx.reverb.damping", "REVERB DAMP", { 18, 960, 152, 66 });
         const char* ids[] = { "con.fx.chorus.rate", "con.fx.chorus.depth", "con.fx.chorus.mix",
                               "con.fx.phaser.rate", "con.fx.phaser.depth", "con.fx.phaser.feedback",
                               "con.fx.phaser.mix", "con.fx.delay.mod", "con.fx.delay.rate" };
@@ -793,10 +793,10 @@ ContinuumPanel::ContinuumPanel (EditorHost& host)
                                  "PHASE RATE", "PHASE DEPTH", "PHASE FB",
                                  "PHASE MIX", "DELAY MOD", "DELAY RATE" };
         for (int i = 0; i < 9; ++i)
-            addKnob (ids[i], labels[i], { 190 + i * 145, 1194, 136, 94 });
+            addKnob (ids[i], labels[i], { 190 + i * 230, 960, 210, 66 });
 
-        addKnob ("con.fx.conv1.mix", "CONV 1", { 1500, 1194, 150, 94 });
-        addKnob ("con.fx.conv2.mix", "CONV 2", { 1660, 1194, 150, 94 });
+        addKnob ("con.fx.conv1.mix", "CONV 1", { 2260, 960, 210, 66 });
+        addKnob ("con.fx.conv2.mix", "CONV 2", { 2480, 960, 210, 66 });
     }
 
 }
