@@ -597,10 +597,11 @@ public:
             const auto x = area.getX() + width * (float) i;
             const auto gap = 3.0f;
             juce::Path trapezoid;
-            trapezoid.startNewSubPath (x + gap + 10.0f, area.getY());
-            trapezoid.lineTo (x + width - gap - 10.0f, area.getY());
-            trapezoid.lineTo (x + width - gap, area.getBottom());
-            trapezoid.lineTo (x + gap, area.getBottom());
+            // Inverted trapezoid: wide top, narrow bottom.
+            trapezoid.startNewSubPath (x + gap, area.getY());
+            trapezoid.lineTo (x + width - gap, area.getY());
+            trapezoid.lineTo (x + width - gap - 10.0f, area.getBottom());
+            trapezoid.lineTo (x + gap + 10.0f, area.getBottom());
             trapezoid.closeSubPath();
 
             g.setColour (i == selected ? juce::Colour (0xff2fb6a8).withAlpha (0.78f)

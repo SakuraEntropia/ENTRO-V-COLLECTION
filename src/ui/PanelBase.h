@@ -91,7 +91,7 @@ protected:
 
     std::vector<ModuleFrame> modules_;
 
-    enum class Finish { Matriarch, PolyBrute, MoogOne };
+    enum class Finish { Matriarch, PolyBrute, MoogOne, Continuum };
     Finish finish_ = Finish::Matriarch;
 
 private:

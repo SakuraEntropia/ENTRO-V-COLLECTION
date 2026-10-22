@@ -17,7 +17,9 @@ PanelBase::PanelBase (EditorHost& host, juce::String title, int designWidth, int
 {
     const auto id = juce::String (host_.definition().id);
     finish_ = id == "polybrute" ? Finish::PolyBrute
-              : (id == "moogone" || id == "one" ? Finish::MoogOne : Finish::Matriarch);
+              : (id == "moogone" || id == "one" ? Finish::MoogOne
+                                               : (id == "continuum" ? Finish::Continuum
+                                                                     : Finish::Matriarch));
 
     setSize (designWidth_, designHeight_);
     setOpaque (true);
@@ -117,7 +119,8 @@ juce::Slider& PanelBase::addKnob (const juce::String& paramId, const juce::Strin
     sliders_.push_back (std::move (slider));
 
     addLabel (labelText, { area.getX(), area.getBottom() - labelHeight, area.getWidth(), labelHeight },
-              10.2f, juce::Colour (0xffd3cfc6), false);
+              10.2f, finish_ == Finish::Continuum ? juce::Colour (0xff33403b)
+                                                   : juce::Colour (0xffd3cfc6), false);
 
     return ref;
 }
@@ -158,7 +161,8 @@ juce::Slider& PanelBase::addFader (const juce::String& paramId, const juce::Stri
     sliders_.push_back (std::move (slider));
 
     addLabel (labelText, { area.getX(), area.getBottom() - labelHeight, area.getWidth(), labelHeight },
-              10.2f, juce::Colour (0xffe9e5dc), false);
+              10.2f, finish_ == Finish::Continuum ? juce::Colour (0xff33403b)
+                                                   : juce::Colour (0xffe9e5dc), false);
 
     return ref;
 }
@@ -197,7 +201,8 @@ juce::ComboBox& PanelBase::addChoice (const juce::String& paramId, const juce::S
 
     if (labelText.isNotEmpty())
         addLabel (labelText, { area.getX(), area.getBottom() - labelHeight, area.getWidth(), labelHeight },
-                  10.2f, juce::Colour (0xffe9e5dc), false);
+                  10.2f, finish_ == Finish::Continuum ? juce::Colour (0xff33403b)
+                                                       : juce::Colour (0xffe9e5dc), false);
 
     return ref;
 }
@@ -228,7 +233,8 @@ HardwareSwitch& PanelBase::addSwitch (const juce::String& paramId, const juce::S
 
     if (labelText.isNotEmpty())
         addLabel (labelText, { area.getX(), area.getBottom() - labelHeight, area.getWidth(), labelHeight },
-                  10.2f, juce::Colour (0xffe9e5dc), false);
+                  10.2f, finish_ == Finish::Continuum ? juce::Colour (0xff33403b)
+                                                       : juce::Colour (0xffe9e5dc), false);
 
     return ref;
 }
@@ -603,7 +609,23 @@ void PanelBase::paint (juce::Graphics& g)
     const auto bounds = getLocalBounds().toFloat();
 
     // ---- Panel base -------------------------------------------------------
-    if (finish_ == Finish::Matriarch)
+    if (finish_ == Finish::Continuum)
+    {
+        juce::ColourGradient background (juce::Colour (0xffd9dbd5), 0.0f, 0.0f,
+                                         juce::Colour (0xffbfc5be), 0.0f, bounds.getBottom(), false);
+        g.setGradientFill (background);
+        g.fillRect (bounds);
+
+        for (float y = 0.0f; y < bounds.getHeight(); y += 3.0f)
+        {
+            g.setColour (juce::Colours::black.withAlpha (0.018f));
+            g.drawHorizontalLine ((int) y, 0.0f, bounds.getWidth());
+        }
+
+        g.setColour (juce::Colour (0xff7c8984));
+        g.drawRect (bounds.reduced (2.0f), 1.0f);
+    }
+    else if (finish_ == Finish::Matriarch)
     {
         g.setColour (juce::Colour (0xff0a0a0b));
         g.fillRect (bounds);
@@ -706,6 +728,13 @@ void PanelBase::paint (juce::Graphics& g)
             titleColour = juce::Colour (0xffeae5da);
             subtitleColour = juce::Colour (0xffb5b0a6);
         }
+        else if (finish_ == Finish::Continuum)
+        {
+            fill = juce::Colour (0xffe4e6e0);
+            border = juce::Colour (0xff7d8b86);
+            titleColour = juce::Colour (0xff25302d);
+            subtitleColour = juce::Colour (0xff4f5b56);
+        }
 
         g.setColour (juce::Colours::black.withAlpha (0.52f));
         g.fillRoundedRectangle (area.translated (0.0f, 2.0f), 2.5f);
@@ -773,7 +802,9 @@ void PanelBase::paint (juce::Graphics& g)
 
         g.setColour (finish_ == Finish::PolyBrute
                          ? juce::Colours::white.withAlpha (0.16f)
-                         : juce::Colours::white.withAlpha (0.09f));
+                         : (finish_ == Finish::Continuum
+                                ? juce::Colours::black.withAlpha (0.14f)
+                                : juce::Colours::white.withAlpha (0.09f)));
         g.drawHorizontalLine (module.bounds.getY() + 23, area.getX() + 5.0f, area.getRight() - 5.0f);
     }
 
@@ -816,6 +847,23 @@ void PanelBase::paint (juce::Graphics& g)
             g.setColour (juce::Colour (0xff3f93e8));
             g.fillRect (juce::Rectangle<float> ((float) brandArea.getX(), (float) brandArea.getY() + 2.0f,
                                                 3.0f, 30.0f));
+        }
+        else if (finish_ == Finish::Continuum)
+        {
+            auto font = juce::Font (juce::FontOptions (27.0f, juce::Font::bold))
+                            .withExtraKerningFactor (0.10f);
+            g.setFont (font);
+            g.setColour (juce::Colour (0xff1f2b28));
+            g.drawText (brandMain_, brandArea, juce::Justification::centredLeft);
+
+            g.setColour (juce::Colour (0xff4f5b56));
+            g.setFont (juce::Font (juce::FontOptions (8.0f)).withExtraKerningFactor (0.34f));
+            g.drawText (brandSub_.toUpperCase(),
+                        brandArea.withTrimmedTop (26), juce::Justification::centredLeft);
+
+            g.setColour (juce::Colour (0xffb63a2b));
+            g.fillRect (juce::Rectangle<float> ((float) brandArea.getX(),
+                                                (float) brandArea.getY() + 2.0f, 3.0f, 30.0f));
         }
         else
         {
