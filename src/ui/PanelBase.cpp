@@ -874,7 +874,7 @@ void PanelBase::paint (juce::Graphics& g)
     // ---- Branding ---------------------------------------------------------
     if (brandMain_.isNotEmpty())
     {
-        const auto brandArea = getLocalBounds().removeFromBottom (48).withTrimmedLeft (16);
+        const auto brandArea = getLocalBounds().removeFromBottom (finish_ == Finish::MoogOne ? 64 : 48).withTrimmedLeft (16);
 
         if (finish_ == Finish::Matriarch)
         {
@@ -902,12 +902,12 @@ void PanelBase::paint (juce::Graphics& g)
                             .withExtraKerningFactor (0.18f);
             g.setFont (font);
             g.setColour (juce::Colour (0xffe8e5de));
-            g.drawText (brandMain_, brandArea, juce::Justification::centredLeft);
+            g.drawText (brandMain_, brandArea.withHeight (30), juce::Justification::centredLeft);
 
             g.setColour (juce::Colour (0xff8f8c85));
             g.setFont (juce::Font (juce::FontOptions (8.0f)).withExtraKerningFactor (0.4f));
             g.drawText (brandSub_.toUpperCase(),
-                        brandArea.withTrimmedTop (26), juce::Justification::centredLeft);
+                        brandArea.withTrimmedTop (32).withHeight (12), juce::Justification::centredLeft);
 
             g.setColour (juce::Colour (0xff3f93e8));
             g.fillRect (juce::Rectangle<float> ((float) brandArea.getX(), (float) brandArea.getY() + 2.0f,
@@ -919,12 +919,12 @@ void PanelBase::paint (juce::Graphics& g)
                             .withExtraKerningFactor (0.10f);
             g.setFont (font);
             g.setColour (juce::Colour (0xff1f2b28));
-            g.drawText (brandMain_, brandArea, juce::Justification::centredLeft);
+            g.drawText (brandMain_, brandArea.withHeight (30), juce::Justification::centredLeft);
 
             g.setColour (juce::Colour (0xff4f5b56));
             g.setFont (juce::Font (juce::FontOptions (8.0f)).withExtraKerningFactor (0.34f));
             g.drawText (brandSub_.toUpperCase(),
-                        brandArea.withTrimmedTop (26), juce::Justification::centredLeft);
+                        brandArea.withTrimmedTop (32).withHeight (12), juce::Justification::centredLeft);
 
             g.setColour (juce::Colour (0xffb63a2b));
             g.fillRect (juce::Rectangle<float> ((float) brandArea.getX(),
@@ -936,11 +936,11 @@ void PanelBase::paint (juce::Graphics& g)
                             .withExtraKerningFactor (0.08f);
             g.setFont (font);
             g.setColour (juce::Colour (0xffe9e4d8));
-            g.drawText (brandMain_, brandArea, juce::Justification::centredLeft);
+            g.drawText (brandMain_, brandArea.withHeight (30), juce::Justification::centredLeft);
 
             g.setColour (juce::Colour (0xff9a958a));
             g.setFont (juce::Font (juce::FontOptions (7.5f)).withExtraKerningFactor (0.35f));
-            g.drawText (brandSub_.toUpperCase(), brandArea.withTrimmedTop (26),
+            g.drawText (brandSub_.toUpperCase(), brandArea.withTrimmedTop (32).withHeight (12),
                         juce::Justification::centredLeft);
 
             g.setColour (juce::Colour (0xffd9a441).withAlpha (0.85f));
