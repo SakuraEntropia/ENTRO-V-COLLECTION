@@ -573,8 +573,77 @@ std::unique_ptr<juce::Component> createContinuumMonitor (ContinuumSurface& surfa
     return std::make_unique<ContinuumMonitor> (surface);
 }
 
+class RecirculatorModeStrip final : public juce::Component, private juce::Timer
+{
+public:
+    explicit RecirculatorModeStrip (EditorHost& host) : host_ (host)
+    {
+        setInterceptsMouseClicks (true, false);
+        startTimerHz (12);
+    }
+
+    ~RecirculatorModeStrip() override { stopTimer(); }
+
+    void paint (juce::Graphics& g) override
+    {
+        static const char* names[6] = { "SHORT", "LONG", "MOD", "ANALOG", "SWEPT", "DIGITAL" };
+        static const char* sub[6] = { "REVERB", "REVERB", "DELAY", "ECHO", "ECHO", "ECHO LPF" };
+        const auto selected = currentMode();
+        auto area = getLocalBounds().toFloat().reduced (2.0f, 2.0f);
+        const auto width = area.getWidth() / 6.0f;
+
+        for (int i = 0; i < 6; ++i)
+        {
+            const auto x = area.getX() + width * (float) i;
+            const auto gap = 3.0f;
+            juce::Path trapezoid;
+            trapezoid.startNewSubPath (x + gap + 10.0f, area.getY());
+            trapezoid.lineTo (x + width - gap - 10.0f, area.getY());
+            trapezoid.lineTo (x + width - gap, area.getBottom());
+            trapezoid.lineTo (x + gap, area.getBottom());
+            trapezoid.closeSubPath();
+
+            g.setColour (i == selected ? juce::Colour (0xff2fb6a8).withAlpha (0.78f)
+                                       : juce::Colour (0xff0b1b1d));
+            g.fillPath (trapezoid);
+            g.setColour (i == selected ? juce::Colour (0xffdffbf6)
+                                       : juce::Colour (0xff5fd6d0).withAlpha (0.45f));
+            g.strokePath (trapezoid, juce::PathStrokeType (1.0f));
+
+            g.setColour (i == selected ? juce::Colour (0xff071012) : juce::Colour (0xff9fe7df));
+            g.setFont (juce::Font (juce::FontOptions (7.5f, juce::Font::bold)));
+            g.drawText (names[i], (int) (x + 4), (int) area.getY() + 20,
+                        (int) width - 8, 12, juce::Justification::centred);
+            g.setFont (juce::Font (juce::FontOptions (6.5f)));
+            g.drawText (sub[i], (int) (x + 4), (int) area.getY() + 34,
+                        (int) width - 8, 12, juce::Justification::centred);
+        }
+    }
+
+    void mouseDown (const juce::MouseEvent& event) override
+    {
+        const auto width = getWidth() / 6.0f;
+        const auto index = juce::jlimit (0, 5, (int) (event.position.x / width));
+
+        if (auto* parameter = host_.apvts().getParameter ("con.fx.mode"))
+            parameter->setValueNotifyingHost (parameter->convertTo0to1 ((float) index));
+    }
+
+private:
+    int currentMode() const
+    {
+        if (auto* value = host_.apvts().getRawParameterValue ("con.fx.mode"))
+            return juce::jlimit (0, 5, (int) std::lround (value->load()));
+
+        return 0;
+    }
+
+    void timerCallback() override { repaint(); }
+    EditorHost& host_;
+};
+
 ContinuumPanel::ContinuumPanel (EditorHost& host)
-    : PanelBase (host, "CONTINUUM V", 2000, 1300, continuumAccent())
+    : PanelBase (host, "CONTINUUM V", 2000, 1400, continuumAccent())
 {
     setBranding ("CONTINUUM V", "EIGEN MATRIX  /  CONTINUOUS SURFACE");
 
@@ -651,7 +720,7 @@ ContinuumPanel::ContinuumPanel (EditorHost& host)
     {
         const auto x = 1366 + i * 310;
         const auto prefix = "con.delay" + juce::String (i + 1) + ".";
-        addModule ("DELAY " + juce::String (i + 1), { x, 536, 300, 170 });
+        addModule (i == 0 ? "SUMMED DELAY" : "MICRO DELAY", { x, 536, 300, 170 });
         auto inner = juce::Rectangle<int> (x + 4, 562, 292, 140);
         const auto cellW = inner.getWidth() / 2;
         const auto cellH = inner.getHeight() / 3;
@@ -703,12 +772,19 @@ ContinuumPanel::ContinuumPanel (EditorHost& host)
         addKnob ("con.master.delayFeedback", "DELAY FB", { x + 720, y, 190, 142 });
     }
 
+    // Six inverted trapezoids, one per Recirculator mode.
+    {
+        addModule ("RECIRCULATOR MODE", { 8, 1088, 1984, 72 });
+        fxModes_ = std::make_unique<RecirculatorModeStrip> (host);
+        fxModes_->setBounds (16, 1112, 1968, 42);
+        addAndMakeVisible (*fxModes_);
+    }
+
     // Auxiliary effects modelled on the EaganMatrix Recirculator / VoiceDelay
     // family: chorus, phaser and a modulated echo around the FDN reverb.
     {
-        addModule ("AUX FX  /  RECIRCULATOR", { 8, 1088, 1984, 140 });
-        addChoice ("con.fx.mode", "REC MODE", { 18, 1114, 162, 58 });
-        addKnob ("con.fx.reverb.damping", "REVERB DAMP", { 188, 1114, 152, 94 });
+        addModule ("AUX FX  /  RECIRCULATOR", { 8, 1168, 1984, 140 });
+        addKnob ("con.fx.reverb.damping", "REVERB DAMP", { 18, 1194, 152, 94 });
         const char* ids[] = { "con.fx.chorus.rate", "con.fx.chorus.depth", "con.fx.chorus.mix",
                               "con.fx.phaser.rate", "con.fx.phaser.depth", "con.fx.phaser.feedback",
                               "con.fx.phaser.mix", "con.fx.delay.mod", "con.fx.delay.rate" };
@@ -716,7 +792,10 @@ ContinuumPanel::ContinuumPanel (EditorHost& host)
                                  "PHASE RATE", "PHASE DEPTH", "PHASE FB",
                                  "PHASE MIX", "DELAY MOD", "DELAY RATE" };
         for (int i = 0; i < 9; ++i)
-            addKnob (ids[i], labels[i], { 350 + i * 180, 1114, 168, 94 });
+            addKnob (ids[i], labels[i], { 190 + i * 145, 1194, 136, 94 });
+
+        addKnob ("con.fx.conv1.mix", "CONV 1", { 1500, 1194, 150, 94 });
+        addKnob ("con.fx.conv2.mix", "CONV 2", { 1660, 1194, 150, 94 });
     }
 
 }

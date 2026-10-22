@@ -17,7 +17,7 @@ Legend:
 | MATRIARCH V | 63 | 79 | 15 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
 | POLYBRUTE V | 117 | 0 | 17 | same |
 | ONE V | 408 (3 × 133 + 9 master) | 0 | 15 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
-| CONTINUUM V | 118 | 0 (16×16 matrix) | 615 | MPE per-note pitch bend / CC74 / pressure; internal 3D surface |
+| CONTINUUM V | 120 | 0 (16×16 matrix) | 615 | MPE per-note pitch bend / CC74 / pressure; internal 3D surface |
 
 All parameters have stable string IDs, natural-unit ranges and group metadata. All are saved in the APVTS tree and exposed to host automation.
 
@@ -137,8 +137,8 @@ Reference: [Haken Continuum / EaganMatrix public documentation](https://www.hake
 | Biquad banks | Implemented, M1 | two 8-band banks; 48-band bank reserved for M2 |
 | Delays | Implemented | two delay modules + master delay |
 | Shape generators | Implemented | five generators, eight shapes including S&H |
-| FDN / reverb | Implemented, approximate | four-line FDN reverb plus chorus, phaser, modulated echo and a six-mode Recirculator selector (Short/Long reverb, ModDelay, Analog Echo, Swept Echo, Digital Echo LPF); not EaganMatrix convolution |
-| Panel control coverage | Implemented | All 118 engine parameters have panel controls, including Envelope 1/2, noise colour/level, reverb size and delay time/feedback added in the 2026-10 pass |
+| FDN / reverb | Implemented, approximate | four-line FDN reverb plus chorus, phaser, modulated echo, separate summed/micro delay banks, two generated-IR convolution stages and a six-mode Recirculator selector; not the original EaganMatrix IR library |
+| Panel control coverage | Implemented | All 120 engine parameters have panel controls, including Envelope 1/2, noise colour/level, reverb size and delay time/feedback added in the 2026-10 pass |
 | Formula language | Implemented | 12 built-in formulas plus an editable user formula VM (`s/x/y/z`, arithmetic, sin/cos/tan/abs/sqrt/exp/log); compiled to a fixed RPN buffer for the audio thread |
 | CVC output | Implemented (MIDI proxy) | Four CVC controls emit MIDI CC 20–23 on channel 1; this is the software equivalent for hosts, not a DC-coupled hardware CV jack |
 | CVC | Not implemented | no hardware CVC output |

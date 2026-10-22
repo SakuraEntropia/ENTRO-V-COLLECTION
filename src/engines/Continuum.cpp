@@ -119,6 +119,8 @@ void ContinuumEngine::buildDefinition()
                                           choices ({ "Short Reverb", "Long Reverb", "ModDelay",
                                                      "Analog Echo", "Swept Echo", "Digital Echo LPF" }));
     scalarIndex_[(size_t) PFxReverbDamping] = add ("con.fx.reverb.damping", "REVERB DAMP", "FX", 0.0f, 1.0f, 0.35f);
+    scalarIndex_[(size_t) PFxConv1Mix] = add ("con.fx.conv1.mix", "CONV 1 MIX", "FX", 0.0f, 1.0f, 0.0f);
+    scalarIndex_[(size_t) PFxConv2Mix] = add ("con.fx.conv2.mix", "CONV 2 MIX", "FX", 0.0f, 1.0f, 0.0f);
 
     scalarIndex_[(size_t) PFxChorusRate] = add ("con.fx.chorus.rate", "CHORUS RATE", "FX", 0.05f, 8.0f, 0.35f, ParamCurve::Log, {}, "Hz");
     scalarIndex_[(size_t) PFxChorusDepth] = add ("con.fx.chorus.depth", "CHORUS DEPTH", "FX", 0.0f, 1.0f, 0.3f);
@@ -219,6 +221,10 @@ void ContinuumEngine::prepare (double sampleRate, int maxBlockSize)
     maxBlock_ = maxBlockSize;
     noise_.prepare (sampleRate, 0x6d2b79f5u);
     delay_.prepare (sampleRate, 1.6f);
+    delayBank1_.prepare (sampleRate, 1.6f);
+    delayBank2_.prepare (sampleRate, 1.6f);
+    convPre_.prepare (sampleRate, 17);
+    convPost_.prepare (sampleRate, 29);
     chorus_.prepare (sampleRate);
     phaser_.prepare (sampleRate);
     reverb_.prepare (sampleRate);
@@ -278,6 +284,10 @@ void ContinuumEngine::reset()
 
     noise_.reset();
     delay_.reset();
+    delayBank1_.reset();
+    delayBank2_.reset();
+    convPre_.reset();
+    convPost_.reset();
     chorus_.reset();
     phaser_.reset();
     reverb_.reset();
@@ -959,6 +969,15 @@ void ContinuumEngine::render (float* left, float* right, int numSamples)
         if (fxMode == 3 || fxMode == 5) { delay_.setDampingHz (fxMode == 5 ? 2600.0f : 4200.0f); }
     }
 
+    delayBank1_.setDelaySeconds (dvalue (0, DelayTime), dvalue (0, DelayTime) * 1.17f);
+    delayBank1_.setFeedback (dvalue (0, DelayFeedback));
+    delayBank1_.setMix (dvalue (0, DelayMix));
+    delayBank2_.setDelaySeconds (dvalue (1, DelayTime), dvalue (1, DelayTime) * 1.23f);
+    delayBank2_.setFeedback (dvalue (1, DelayFeedback));
+    delayBank2_.setMix (dvalue (1, DelayMix));
+    convPre_.setMix (param (PFxConv1Mix));
+    convPost_.setMix (param (PFxConv2Mix));
+
     delay_.setDelaySeconds (param (PMasterDelayTime), param (PMasterDelayTime) * 1.18f);
     delay_.setFeedback (param (PMasterDelayFeedback));
     delay_.setMix (delayMix);
@@ -1191,10 +1210,14 @@ void ContinuumEngine::render (float* left, float* right, int numSamples)
             mixRight += signal * (1.0f + pan) * 0.7f;
         }
 
-        auto stereo = delay_.process (mixLeft, mixRight);
+        auto stereo = convPre_.process (mixLeft, mixRight);
+        stereo = delay_.process (stereo.left, stereo.right);
+        stereo = delayBank1_.process (stereo.left, stereo.right);
+        stereo = delayBank2_.process (stereo.left, stereo.right);
         stereo = chorus_.process (stereo.left, stereo.right);
         stereo = phaser_.process (stereo.left, stereo.right);
         stereo = reverb_.process (stereo.left, stereo.right);
+        stereo = convPost_.process (stereo.left, stereo.right);
 
         const auto gain = volumeSmoother_.next();
         const auto outLeft = dcLeft_.process (softClip (stereo.left * gain));

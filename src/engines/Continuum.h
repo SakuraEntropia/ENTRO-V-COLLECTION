@@ -83,7 +83,7 @@ private:
         PMasterDelayMix, PMasterDelayTime, PMasterDelayFeedback,
         PCvc1, PCvc2, PCvc3, PCvc4,
         PSurfaceQuantize,
-        PFxMode, PFxReverbDamping,
+        PFxMode, PFxReverbDamping, PFxConv1Mix, PFxConv2Mix,
         PFxChorusRate, PFxChorusDepth, PFxChorusMix,
         PFxPhaserRate, PFxPhaserDepth, PFxPhaserFeedback, PFxPhaserMix,
         PFxDelayModDepth, PFxDelayModRate,
@@ -188,6 +188,10 @@ private:
 
     NoiseSource noise_;
     StereoDelay delay_;
+    StereoDelay delayBank1_;
+    StereoDelay delayBank2_;
+    ConvolutionEffect convPre_;
+    ConvolutionEffect convPost_;
     ChorusEffect chorus_;
     PhaserEffect phaser_;
     ReverbEffect reverb_;

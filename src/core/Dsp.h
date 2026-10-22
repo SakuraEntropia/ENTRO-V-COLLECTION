@@ -370,6 +370,23 @@ private:
     float stateRight_[6] {};
 };
 
+class ConvolutionEffect
+{
+public:
+    void prepare (double sampleRate, int seed);
+    void reset();
+    void setMix (float mix01);
+    StereoSample process (float inputLeft, float inputRight) noexcept;
+
+private:
+    double sampleRate_ = 48000.0;
+    std::array<std::vector<float>, 2> impulse_;
+    std::array<std::vector<float>, 2> buffer_;
+    int writeIndex_ = 0;
+    int size_ = 1;
+    float mix_ = 0.0f;
+};
+
 class ReverbEffect
 {
 public:

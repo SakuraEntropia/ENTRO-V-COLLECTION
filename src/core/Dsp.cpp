@@ -896,7 +896,86 @@ StereoSample PhaserEffect::process (float inputLeft, float inputRight) noexcept
 }
 
 // ---------------------------------------------------------------------------
-// Reverb (small four-line FDN)
+// Convolution
+// ---------------------------------------------------------------------------
+
+void ConvolutionEffect::prepare (double sampleRate, int seed)
+{
+    sampleRate_ = std::max (8000.0, sampleRate);
+    const auto taps = 384;
+    const auto noiseSeed = (uint32_t) (seed * 2654435761u + 0x9e3779b9u);
+
+    size_ = 512;
+    writeIndex_ = 0;
+
+    for (int channel = 0; channel < 2; ++channel)
+    {
+        impulse_[(size_t) channel].assign ((size_t) taps, 0.0f);
+        buffer_[(size_t) channel].assign ((size_t) size_, 0.0f);
+        uint32_t state = noiseSeed + (uint32_t) (channel * 7919);
+
+        for (int i = 0; i < taps; ++i)
+        {
+            state = state * 1664525u + 1013904223u;
+            const auto noise = (float) ((int32_t) state) / 2147483648.0f;
+            impulse_[(size_t) channel][(size_t) i] =
+                noise * std::exp (-(float) i / (float) taps * 3.2f);
+        }
+
+        impulse_[(size_t) channel][0] += 0.7f;
+
+        float energy = 0.0f;
+        for (auto v : impulse_[(size_t) channel])
+            energy += v * v;
+
+        const auto norm = 1.0f / std::sqrt (std::max (1.0e-9f, energy));
+        for (auto& v : impulse_[(size_t) channel])
+            v *= norm;
+    }
+}
+
+void ConvolutionEffect::reset()
+{
+    for (auto& b : buffer_)
+        std::fill (b.begin(), b.end(), 0.0f);
+    writeIndex_ = 0;
+}
+
+void ConvolutionEffect::setMix (float mix01)
+{
+    mix_ = std::max (0.0f, std::min (1.0f, mix01));
+}
+
+StereoSample ConvolutionEffect::process (float inputLeft, float inputRight) noexcept
+{
+    buffer_[0][(size_t) writeIndex_] = inputLeft;
+    buffer_[1][(size_t) writeIndex_] = inputRight;
+
+    float wetLeft = 0.0f;
+    float wetRight = 0.0f;
+    const auto taps = (int) impulse_[0].size();
+
+    for (int k = 0; k < taps; ++k)
+    {
+        auto index = writeIndex_ - k;
+        if (index < 0)
+            index += size_;
+
+        wetLeft += buffer_[0][(size_t) index] * impulse_[0][(size_t) k];
+        wetRight += buffer_[1][(size_t) index] * impulse_[1][(size_t) k];
+    }
+
+    writeIndex_ = (writeIndex_ + 1) % size_;
+
+    StereoSample out;
+    out.left = inputLeft * (1.0f - mix_) + wetLeft * mix_;
+    out.right = inputRight * (1.0f - mix_) + wetRight * mix_;
+    return out;
+}
+
+// ---------------------------------------------------------------------------
+// Reverb
+// ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 
 void ReverbEffect::prepare (double sampleRate)
