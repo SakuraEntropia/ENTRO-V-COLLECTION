@@ -162,7 +162,7 @@ void ContinuumSurface::paint (juce::Graphics& g)
     {
         g.setColour (juce::Colour (0xffd8f0ec).withAlpha (0.65f));
         g.setFont (juce::Font (juce::FontOptions (13.0f)));
-        g.drawText ("TOUCH THE SURFACE  ·  DRAG FOR PITCH AND TIMBRE  ·  WHEEL FOR PRESSURE",
+        g.drawText ("TOUCH THE SURFACE  /  DRAG FOR PITCH AND TIMBRE  /  WHEEL FOR PRESSURE",
                     bounds.toNearestInt().reduced (12), juce::Justification::centred);
         return;
     }
@@ -302,11 +302,11 @@ ContinuumMatrix::ContinuumMatrix (EditorHost& host) : host_ (host)
 {
     setOpaque (true);
 
-    formulaEditor_.setText ("sin(pi*x)*y", false);
-    formulaEditor_.setFont (juce::Font (juce::FontOptions (10.0f)));
+    formulaEditor_.setFont (juce::Font (juce::FontOptions (14.0f)));
     formulaEditor_.setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xfff0f2eb));
     formulaEditor_.setColour (juce::TextEditor::textColourId, juce::Colour (0xff30355d));
     formulaEditor_.setColour (juce::TextEditor::outlineColourId, juce::Colour (0xff2fb6a8).withAlpha (0.45f));
+    formulaEditor_.setText ("sin(pi*x)*y", false);
     formulaEditor_.setTooltip ("User formula: s, x, y, z; sin/cos/tan/abs/sqrt/exp/log; + - * / ^");
     addAndMakeVisible (formulaEditor_);
 
@@ -379,7 +379,7 @@ void ContinuumMatrix::paint (juce::Graphics& g)
 
     g.setColour (juce::Colour (0xff56685e));
     g.setFont (juce::Font (juce::FontOptions (12.0f)).withExtraKerningFactor (0.14f));
-    g.drawText ("SOURCES / DESTINATIONS   ·   CLICK = FORMULA   ·   DRAG = AMOUNT",
+    g.drawText ("SOURCES / DESTINATIONS   /   CLICK = FORMULA   /   DRAG = AMOUNT",
                 14, 27, 600, 12, juce::Justification::centredLeft);
 
     auto& engine = host_.engine();
@@ -545,7 +545,7 @@ public:
 
         g.setColour (juce::Colour (0xff8ff3ea));
         g.setFont (juce::Font (juce::FontOptions (8.0f)));
-        g.drawText ("X  PITCH   ·   Y  TIMBRE   ·   Z  PRESSURE",
+        g.drawText ("X  PITCH   /   Y  TIMBRE   /   Z  PRESSURE",
                     field.getX() + 5, field.getBottom() - 13, 420, 10,
                     juce::Justification::centredLeft);
 
@@ -660,7 +660,7 @@ public:
 
     void paint (juce::Graphics& g) override
     {
-        static const char* labels[] = { "LPF / R1", "OFFSET / R2", "PINGPONG / R5", "FEEDBACK / R3", "FULL / R6", "TIME / R4" };
+        static const char* labels[] = { "LPF", "OFFSET", "PINGPONG", "FEEDBACK", "FULL", "TIME" };
         const auto width = (float) getWidth() / 6.0f;
         for (int i = 0; i < 6; ++i)
         {
@@ -682,7 +682,8 @@ public:
             g.drawLine (c.getX(), y, c.getRight(), y, 1.5f);
             g.setFont (juce::Font (juce::FontOptions (13.0f)));
             g.setColour (juce::Colour (0xff3b3a6b));
-            g.drawText (parameter != nullptr ? parameter->getCurrentValueAsText() : "", (int) (i * width), 0,
+            g.drawText (parameter != nullptr ? (parameter->getAllValueStrings().isEmpty()
+                ? juce::String (parameter->convertFrom0to1 (value), 3) : parameter->getCurrentValueAsText()) : "", (int) (i * width), 0,
                         (int) width, 20, juce::Justification::centred);
             g.setColour (juce::Colour (0xff34443b));
             g.setFont (juce::Font (juce::FontOptions (11.5f)));
@@ -744,7 +745,7 @@ ContinuumPanel::ContinuumPanel (EditorHost& host)
         "PHASER RATE", "PHASER DEPTH", "PHASER FB", "PHASER MIX" };
     for (int i = 0; i < 8; ++i) addNumber (fxIds[i], fxNames[i], { 24 + i % 4 * 166, 170 + i / 4 * 62, 146, 42 });
 
-    addModule ("DELAY / LPF — R1–R6", { 700, 84, 736, 208 });
+    addModule ("DELAY / LPF - R1-R6", { 700, 84, 736, 208 });
     delayFaders_ = std::make_unique<DelayLpfFaders> (host);
     delayFaders_->setBounds (712, 110, 712, 174); addAndMakeVisible (*delayFaders_);
 
