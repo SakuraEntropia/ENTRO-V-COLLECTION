@@ -114,6 +114,12 @@ void ContinuumEngine::buildDefinition()
     scalarIndex_[(size_t) PSurfaceQuantize] = add ("con.surface.quantize", "PITCH SNAP",
                                                   "Surface", 0.0f, 1.0f, 0.0f);
 
+    scalarIndex_[(size_t) PFxMode] = add ("con.fx.mode", "REC MODE", "FX", 0.0f, 5.0f, 0.0f,
+                                          ParamCurve::Discrete,
+                                          choices ({ "Short Reverb", "Long Reverb", "ModDelay",
+                                                     "Analog Echo", "Swept Echo", "Digital Echo LPF" }));
+    scalarIndex_[(size_t) PFxReverbDamping] = add ("con.fx.reverb.damping", "REVERB DAMP", "FX", 0.0f, 1.0f, 0.35f);
+
     scalarIndex_[(size_t) PFxChorusRate] = add ("con.fx.chorus.rate", "CHORUS RATE", "FX", 0.05f, 8.0f, 0.35f, ParamCurve::Log, {}, "Hz");
     scalarIndex_[(size_t) PFxChorusDepth] = add ("con.fx.chorus.depth", "CHORUS DEPTH", "FX", 0.0f, 1.0f, 0.3f);
     scalarIndex_[(size_t) PFxChorusMix] = add ("con.fx.chorus.mix", "CHORUS MIX", "FX", 0.0f, 1.0f, 0.0f);
@@ -934,20 +940,39 @@ void ContinuumEngine::render (float* left, float* right, int numSamples)
     const auto noiseColor = param (PNoiseColor);
     const auto masterGain = volumeSmoother_.current();
 
+    const auto fxMode = clampValue ((int) std::lround (param (PFxMode)), 0, 5);
+    auto delayMix = param (PMasterDelayMix);
+    auto reverbMix = param (PMasterReverbMix);
+    auto chorusMix = param (PFxChorusMix);
+    auto phaserMix = param (PFxPhaserMix);
+
+    if (fxMode <= 1)
+    {
+        delayMix *= 0.15f;
+        reverbMix = std::max (reverbMix, fxMode == 0 ? 0.35f : 0.55f);
+    }
+    else
+    {
+        delayMix = std::max (delayMix, 0.35f);
+        reverbMix *= 0.45f;
+        if (fxMode == 2) { chorusMix = std::max (chorusMix, 0.25f); }
+        if (fxMode == 3 || fxMode == 5) { delay_.setDampingHz (fxMode == 5 ? 2600.0f : 4200.0f); }
+    }
+
     delay_.setDelaySeconds (param (PMasterDelayTime), param (PMasterDelayTime) * 1.18f);
     delay_.setFeedback (param (PMasterDelayFeedback));
-    delay_.setMix (param (PMasterDelayMix));
+    delay_.setMix (delayMix);
     delay_.setModulation (param (PFxDelayModDepth), param (PFxDelayModRate));
     chorus_.setRateHz (param (PFxChorusRate));
     chorus_.setDepth (param (PFxChorusDepth));
-    chorus_.setMix (param (PFxChorusMix));
+    chorus_.setMix (chorusMix);
     phaser_.setRateHz (param (PFxPhaserRate));
     phaser_.setDepth (param (PFxPhaserDepth));
     phaser_.setFeedback (param (PFxPhaserFeedback));
-    phaser_.setMix (param (PFxPhaserMix));
+    phaser_.setMix (phaserMix);
     reverb_.setSize (param (PMasterReverbSize));
-    reverb_.setDamping (0.35f);
-    reverb_.setMix (param (PMasterReverbMix));
+    reverb_.setDamping (param (PFxReverbDamping));
+    reverb_.setMix (reverbMix);
 
     for (int env = 0; env < kEnvCount; ++env)
         for (auto& voice : voices_)

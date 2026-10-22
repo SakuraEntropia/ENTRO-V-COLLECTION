@@ -86,7 +86,7 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ContinuumMatrix)
 };
 
-class ContinuumMonitor;
+std::unique_ptr<juce::Component> createContinuumMonitor (ContinuumSurface&);
 
 class ContinuumPanel final : public PanelBase
 {
@@ -95,9 +95,7 @@ public:
     ~ContinuumPanel() override;
 
 private:
-    std::unique_ptr<ContinuumSurface> surface_;
     std::unique_ptr<ContinuumMatrix> matrix_;
-    std::unique_ptr<ContinuumMonitor> monitor_;
 };
 
 } // namespace triad::ui

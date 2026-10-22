@@ -304,6 +304,15 @@ TriadEditor::TriadEditor (EditorHost& host)
 
     const auto id = juce::String (host.definition().id);
 
+    if (id == "continuum")
+    {
+        keyboard_.setVisible (false);
+        continuumSurface_ = std::make_unique<ContinuumSurface> (host);
+        addAndMakeVisible (*continuumSurface_);
+        continuumMonitor_ = createContinuumMonitor (*continuumSurface_);
+        addAndMakeVisible (*continuumMonitor_);
+    }
+
     int defaultWidth = 1600;
     int defaultHeight = 640;
 
@@ -339,7 +348,7 @@ TriadEditor::TriadEditor (EditorHost& host)
     setSize (juce::jmax (1000, defaultWidth), juce::jmax (560, defaultHeight));
     getConstrainer()->setMinimumOnscreenAmounts (300, 300, 300, 300);
 
-    startTimerHz (8);
+    startTimerHz (id == "continuum" ? 30 : 8);
 
     if (auto* snapshotPath = std::getenv ("TRIAD_SNAPSHOT"))
     {
@@ -387,7 +396,18 @@ void TriadEditor::resized()
     auto area = getLocalBounds();
     header_->setBounds (area.removeFromTop (52));
 
-    keyboard_.setBounds (area.removeFromBottom (132));
+    if (continuumSurface_ != nullptr)
+    {
+        if (continuumMonitor_ != nullptr)
+            continuumMonitor_->setBounds (area.removeFromTop (76));
+
+        continuumSurface_->setBounds (area.removeFromBottom (176));
+        keyboard_.setBounds ({});
+    }
+    else
+    {
+        keyboard_.setBounds (area.removeFromBottom (132));
+    }
 
     auto panelArea = area.reduced (0, 4);
     viewport_.setBounds (panelArea);
@@ -482,6 +502,37 @@ bool TriadEditor::keyPressed (const juce::KeyPress& key)
     return false;
 }
 
+void TriadEditor::updatePhysicalKeyboard()
+{
+    if (continuumSurface_ == nullptr)
+        return;
+
+    if (auto* focused = juce::Component::getCurrentlyFocusedComponent())
+        if (dynamic_cast<juce::TextEditor*> (focused) != nullptr)
+            return;
+
+    static constexpr int keyCodes[13] = { 'a', 'w', 's', 'e', 'd', 'f', 't',
+                                           'g', 'y', 'h', 'u', 'j', 'k' };
+    static constexpr int noteOffsets[13] = { 0, 1, 2, 3, 4, 5, 6,
+                                              7, 8, 9, 10, 11, 12 };
+
+    for (int i = 0; i < 13; ++i)
+    {
+        const auto down = juce::KeyPress::isKeyCurrentlyDown (keyCodes[i]);
+
+        if (down == physicalKeys_[(size_t) i])
+            continue;
+
+        physicalKeys_[(size_t) i] = down;
+        const auto note = 48 + noteOffsets[i];
+
+        if (down)
+            host_.keyboardState().noteOn (1, note, 0.8f);
+        else
+            host_.keyboardState().noteOff (1, note, 0.0f);
+    }
+}
+
 void TriadEditor::setZoom (float zoom)
 {
     if (zoom <= 0.0f)
@@ -494,6 +545,8 @@ void TriadEditor::setZoom (float zoom)
 
 void TriadEditor::timerCallback()
 {
+    updatePhysicalKeyboard();
+
     if (header_ != nullptr)
         header_->refresh();
 

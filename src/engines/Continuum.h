@@ -83,6 +83,7 @@ private:
         PMasterDelayMix, PMasterDelayTime, PMasterDelayFeedback,
         PCvc1, PCvc2, PCvc3, PCvc4,
         PSurfaceQuantize,
+        PFxMode, PFxReverbDamping,
         PFxChorusRate, PFxChorusDepth, PFxChorusMix,
         PFxPhaserRate, PFxPhaserDepth, PFxPhaserFeedback, PFxPhaserMix,
         PFxDelayModDepth, PFxDelayModRate,

@@ -8,6 +8,8 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
+#include <array>
+
 namespace triad::ui
 {
 
@@ -25,6 +27,7 @@ private:
 
     void timerCallback() override;
     bool keyPressed (const juce::KeyPress&) override;
+    void updatePhysicalKeyboard();
 
 public:
     void setZoom (float zoom);
@@ -48,6 +51,9 @@ private:
     juce::Viewport viewport_;
     juce::Component canvas_;
     KeyboardPanel keyboard_;
+    std::unique_ptr<ContinuumSurface> continuumSurface_;
+    std::unique_ptr<juce::Component> continuumMonitor_;
+    std::array<bool, 13> physicalKeys_ {};
     bool layoutDumped_ = false;
     float zoom_ = 0.0f;           // 0 = fit
     float currentFitScale_ = 1.0f;
