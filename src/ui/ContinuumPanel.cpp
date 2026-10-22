@@ -26,6 +26,7 @@ juce::String formulaAbbreviation (int formula)
         case 9:  return "-1";
         case 10: return "SFT";
         case 11: return "GATE";
+        case 12: return "USER";
         default: return {};
     }
 }
@@ -303,8 +304,8 @@ ContinuumMatrix::ContinuumMatrix (EditorHost& host) : host_ (host)
 
     formulaEditor_.setText ("sin(pi*x)*y", false);
     formulaEditor_.setFont (juce::Font (juce::FontOptions (10.0f)));
-    formulaEditor_.setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xff071012));
-    formulaEditor_.setColour (juce::TextEditor::textColourId, juce::Colour (0xffbdfaf3));
+    formulaEditor_.setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xfff0f2eb));
+    formulaEditor_.setColour (juce::TextEditor::textColourId, juce::Colour (0xff30355d));
     formulaEditor_.setColour (juce::TextEditor::outlineColourId, juce::Colour (0xff2fb6a8).withAlpha (0.45f));
     formulaEditor_.setTooltip ("User formula: s, x, y, z; sin/cos/tan/abs/sqrt/exp/log; + - * / ^");
     addAndMakeVisible (formulaEditor_);
@@ -367,17 +368,17 @@ juce::Point<int> ContinuumMatrix::cellAt (juce::Point<float> position) const
 
 void ContinuumMatrix::paint (juce::Graphics& g)
 {
-    g.fillAll (juce::Colour (0xff0d1112));
+    g.fillAll (juce::Colour (0xffd9dfd6));
 
     g.setColour (juce::Colour (0xff2fb6a8).withAlpha (0.28f));
     g.drawRect (getLocalBounds(), 1);
 
-    g.setColour (juce::Colour (0xffe7f5f1));
+    g.setColour (juce::Colour (0xff303d37));
     g.setFont (juce::Font (juce::FontOptions (14.0f, juce::Font::bold)).withExtraKerningFactor (0.18f));
     g.drawText ("EIGEN MATRIX", 14, 8, 300, 18, juce::Justification::centredLeft);
 
-    g.setColour (juce::Colour (0xff83a6a2));
-    g.setFont (juce::Font (juce::FontOptions (8.0f)).withExtraKerningFactor (0.14f));
+    g.setColour (juce::Colour (0xff56685e));
+    g.setFont (juce::Font (juce::FontOptions (12.0f)).withExtraKerningFactor (0.14f));
     g.drawText ("SOURCES / DESTINATIONS   ·   CLICK = FORMULA   ·   DRAG = AMOUNT",
                 14, 27, 600, 12, juce::Justification::centredLeft);
 
@@ -391,8 +392,8 @@ void ContinuumMatrix::paint (juce::Graphics& g)
     for (int d = 0; d < ContinuumEngine::kDestinations; ++d)
     {
         const auto name = juce::String (engine.matrixDestinationName (d).c_str());
-        g.setColour (juce::Colour (0xff8fb6b1).withAlpha (0.85f));
-        g.setFont (juce::Font (juce::FontOptions (7.0f)));
+        g.setColour (juce::Colour (0xff35483d).withAlpha (0.85f));
+        g.setFont (juce::Font (juce::FontOptions (12.0f)));
         g.drawFittedText (name, (int) (area.getX() + left + (float) d * cellW) + 1,
                           (int) area.getY() + 40, (int) cellW - 2, 54,
                           juce::Justification::centred, 2);
@@ -401,8 +402,8 @@ void ContinuumMatrix::paint (juce::Graphics& g)
     for (int s = 0; s < ContinuumEngine::kSources; ++s)
     {
         const auto name = juce::String (engine.matrixSourceName (s).c_str());
-        g.setColour (juce::Colour (0xff8fb6b1).withAlpha (0.9f));
-        g.setFont (juce::Font (juce::FontOptions (8.0f)));
+        g.setColour (juce::Colour (0xff35483d).withAlpha (0.9f));
+        g.setFont (juce::Font (juce::FontOptions (12.0f)));
         g.drawText (name, (int) area.getX() + 2,
                     (int) (area.getY() + top + (float) s * cellH),
                     (int) left - 8, (int) cellH, juce::Justification::centredRight);
@@ -416,23 +417,23 @@ void ContinuumMatrix::paint (juce::Graphics& g)
             const auto formula = engine.matrixCellFormula (s, d);
             const auto amount = engine.matrixCellAmount (s, d);
 
-            g.setColour (juce::Colour (0xff141c1d));
+            g.setColour (juce::Colour (0xffe9ede5));
             g.fillRect (bounds);
 
             if (formula != 0)
             {
                 g.setColour (juce::Colour (0xff2fb6a8).withAlpha (0.12f + amount * 0.38f));
                 g.fillRect (bounds);
-                g.setColour (juce::Colour (0xff9fe7df).withAlpha (0.8f));
+                g.setColour (juce::Colour (0xffa7514c).withAlpha (0.8f));
                 g.fillRect (bounds.getX(), bounds.getBottom() - 3.0f,
                             bounds.getWidth() * amount, 2.0f);
 
-                g.setColour (juce::Colour (0xffe9f7f3));
-                g.setFont (juce::Font (juce::FontOptions (7.0f)));
-                g.drawText (formulaAbbreviation (formula), bounds, juce::Justification::centred);
+                g.setColour (juce::Colour (0xff383962));
+                g.setFont (juce::Font (juce::FontOptions (12.0f)));
+                g.drawText (formulaAbbreviation (formula) + "  " + juce::String (amount, 2), bounds, juce::Justification::centred);
             }
 
-            g.setColour (juce::Colour (0xff2c3a3b));
+            g.setColour (juce::Colour (0xffa7b5aa));
             g.drawRect (bounds, 0.5f);
         }
     }
@@ -613,10 +614,10 @@ public:
 
             g.setColour (i == selected ? juce::Colour (0xff071012) : juce::Colour (0xff9fe7df));
             g.setFont (juce::Font (juce::FontOptions (7.5f, juce::Font::bold)));
-            g.drawText (names[i], (int) (x + 4), (int) area.getY() + 20,
+            g.drawText (names[i], (int) (x + 4), (int) area.getY() + 4,
                         (int) width - 8, 12, juce::Justification::centred);
             g.setFont (juce::Font (juce::FontOptions (6.5f)));
-            g.drawText (sub[i], (int) (x + 4), (int) area.getY() + 34,
+            g.drawText (sub[i], (int) (x + 4), (int) area.getY() + 19,
                         (int) width - 8, 12, juce::Justification::centred);
         }
     }
@@ -648,259 +649,169 @@ class DelayLpfFaders final : public juce::Component, private juce::Timer
 public:
     explicit DelayLpfFaders (EditorHost& host) : host_ (host)
     {
-        setInterceptsMouseClicks (true, false);
+        setName ("Delay-LPF R1-R6");
         startTimerHz (20);
     }
-
-    ~DelayLpfFaders() override { stopTimer(); }
+    ~DelayLpfFaders() override
+    {
+        stopTimer();
+        if (dragParameter_ != nullptr) dragParameter_->endChangeGesture();
+    }
 
     void paint (juce::Graphics& g) override
     {
-        static const char* ids[6] = { "con.fx.delay.lpf", "con.fx.delay.offset",
-                                      "con.fx.delay.pingpong", "con.fx.delay.fb",
-                                      "con.fx.delay.full", "con.fx.delay.time" };
-        static const char* labels[6] = { "LPF", "OFFSET", "PINGPONG", "FEEDBACK", "FULL", "TIME" };
-        auto area = getLocalBounds().toFloat().reduced (4.0f);
-        const auto width = area.getWidth() / 6.0f;
-
+        static const char* labels[] = { "LPF / R1", "OFFSET / R2", "PINGPONG / R5", "FEEDBACK / R3", "FULL / R6", "TIME / R4" };
+        const auto width = (float) getWidth() / 6.0f;
         for (int i = 0; i < 6; ++i)
         {
-            const auto x = area.getX() + width * (float) i;
-            auto column = juce::Rectangle<float> (x + 8.0f, area.getY() + 4.0f,
-                                                   width - 16.0f, area.getHeight() - 22.0f);
-
+            const auto c = column (i);
             juce::Path trapezoid;
-            // Inverted Haken-style vertical fader: wide top, narrow bottom.
-            trapezoid.startNewSubPath (column.getX(), column.getY());
-            trapezoid.lineTo (column.getRight(), column.getY());
-            trapezoid.lineTo (column.getRight() - 14.0f, column.getBottom());
-            trapezoid.lineTo (column.getX() + 14.0f, column.getBottom());
+            trapezoid.startNewSubPath (c.getX(), c.getY());
+            trapezoid.lineTo (c.getRight(), c.getY());
+            trapezoid.lineTo (c.getRight() - c.getWidth() * 0.28f, c.getBottom());
+            trapezoid.lineTo (c.getX() + c.getWidth() * 0.28f, c.getBottom());
             trapezoid.closeSubPath();
-
-            g.setColour (juce::Colour (0xffe7e8e2));
-            g.fillPath (trapezoid);
-            g.setColour (juce::Colour (0xff7d8b86));
-            g.strokePath (trapezoid, juce::PathStrokeType (1.0f));
-
-            const auto value = normalizedValue (ids[i]);
-            const auto y = column.getBottom() - value * column.getHeight();
-            g.setColour (juce::Colour (0xff2fb6a8));
-            g.drawLine (column.getX() + 5.0f, y, column.getRight() - 5.0f, y, 2.0f);
-            g.fillEllipse (column.getCentreX() - 4.0f, y - 4.0f, 8.0f, 8.0f);
-
-            g.setColour (juce::Colour (0xff33403b));
-            g.setFont (juce::Font (juce::FontOptions (8.0f, juce::Font::bold)));
-            g.drawText (labels[i], (int) x, (int) area.getBottom() - 18,
-                        (int) width, 14, juce::Justification::centred);
+            g.setColour (juce::Colour (0xffeceee7)); g.fillPath (trapezoid);
+            g.setColour (juce::Colour (0xff89988c)); g.strokePath (trapezoid, juce::PathStrokeType (1.0f));
+            auto* parameter = host_.apvts().getParameter (ids[i]);
+            const auto value = parameter != nullptr ? parameter->getValue() : 0.0f;
+            const auto y = c.getBottom() - value * c.getHeight();
+            g.setColour (juce::Colour (0xff484477).withAlpha (0.48f));
+            g.fillRect (c.getCentreX() - 2.0f, c.getY() + 4.0f, 4.0f, c.getHeight() - 8.0f);
+            g.setColour (juce::Colour (0xffa24744));
+            g.drawLine (c.getX(), y, c.getRight(), y, 1.5f);
+            g.setFont (juce::Font (juce::FontOptions (13.0f)));
+            g.setColour (juce::Colour (0xff3b3a6b));
+            g.drawText (parameter != nullptr ? parameter->getCurrentValueAsText() : "", (int) (i * width), 0,
+                        (int) width, 20, juce::Justification::centred);
+            g.setColour (juce::Colour (0xff34443b));
+            g.setFont (juce::Font (juce::FontOptions (11.5f)));
+            g.drawText (labels[i], (int) (i * width), getHeight() - 22, (int) width, 18, juce::Justification::centred);
         }
     }
-
     void mouseDown (const juce::MouseEvent& event) override
     {
-        updateFromEvent (event);
+        const auto i = juce::jlimit (0, 5, (int) (event.position.x * 6.0f / getWidth()));
+        dragParameter_ = host_.apvts().getParameter (ids[i]);
+        dragIndex_ = i;
+        if (dragParameter_ != nullptr) dragParameter_->beginChangeGesture();
+        update (event.position.y);
     }
-
-    void mouseDrag (const juce::MouseEvent& event) override
+    void mouseDrag (const juce::MouseEvent& event) override { update (event.position.y); }
+    void mouseUp (const juce::MouseEvent&) override
     {
-        updateFromEvent (event);
+        if (dragParameter_ != nullptr) dragParameter_->endChangeGesture();
+        dragParameter_ = nullptr;
     }
-
 private:
-    static constexpr const char* ids[6] = { "con.fx.delay.lpf", "con.fx.delay.offset",
-                                             "con.fx.delay.pingpong", "con.fx.delay.fb",
-                                             "con.fx.delay.full", "con.fx.delay.time" };
-
-    float normalizedValue (const char* id) const
+    static constexpr const char* ids[] = { "con.fx.delay.lpf", "con.fx.delay.offset", "con.fx.delay.pingpong",
+                                           "con.fx.delay.fb", "con.fx.delay.full", "con.fx.delay.time" };
+    juce::Rectangle<float> column (int i) const
     {
-        auto* parameter = host_.apvts().getParameter (id);
-        auto* raw = host_.apvts().getRawParameterValue (id);
-        if (parameter == nullptr || raw == nullptr)
-            return 0.0f;
-        return juce::jlimit (0.0f, 1.0f, parameter->convertTo0to1 (raw->load()));
+        const auto width = (float) getWidth() / 6.0f;
+        return { i * width + 28.0f, 25.0f, width - 56.0f, (float) getHeight() - 54.0f };
     }
-
-    void updateFromEvent (const juce::MouseEvent& event)
+    void update (float y)
     {
-        auto area = getLocalBounds().toFloat().reduced (4.0f);
-        const auto width = area.getWidth() / 6.0f;
-        const auto index = juce::jlimit (0, 5, (int) (event.position.x / width));
-        const auto top = area.getY() + 4.0f;
-        const auto bottom = area.getBottom() - 22.0f;
-        const auto normalized = juce::jlimit (0.0f, 1.0f,
-                                              (bottom - event.position.y) / juce::jmax (1.0f, bottom - top));
-
-        if (auto* parameter = host_.apvts().getParameter (ids[index]))
-            parameter->setValueNotifyingHost (normalized);
+        const auto c = column (dragIndex_);
+        if (dragParameter_ != nullptr)
+            dragParameter_->setValueNotifyingHost (juce::jlimit (0.0f, 1.0f, (c.getBottom() - y) / c.getHeight()));
     }
-
     void timerCallback() override { repaint(); }
     EditorHost& host_;
+    juce::RangedAudioParameter* dragParameter_ = nullptr;
+    int dragIndex_ = 0;
 };
 
 ContinuumPanel::ContinuumPanel (EditorHost& host)
-    : PanelBase (host, "CONTINUUM V", 2800, 1260, continuumAccent())
+    : PanelBase (host, "CONTINUUM V", 2800, 1340, continuumAccent())
 {
     setBranding ("CONTINUUM V", "EIGEN MATRIX  /  CONTINUOUS SURFACE");
+    addModule ("CONTROL PANEL 1 / MASTER & EXPRESSION", { 8, 8, 2784, 68 });
+    const char* masterIds[] = { "con.master.volume", "con.master.glide", "con.master.yDepth", "con.master.zDepth",
+        "con.master.bendRange", "con.master.reverbMix", "con.master.delayMix", "con.master.noise",
+        "con.cvc.1", "con.cvc.2", "con.cvc.3", "con.cvc.4", "con.surface.quantize" };
+    const char* masterNames[] = { "VOLUME", "GLIDE", "Y DEPTH", "Z DEPTH", "MPE BEND", "REVERB", "DELAY", "NOISE",
+        "CVC 1 / CC20", "CVC 2 / CC21", "CVC 3 / CC22", "CVC 4 / CC23", "PITCH SNAP" };
+    for (int i = 0; i < 13; ++i) addNumber (masterIds[i], masterNames[i], { 22 + i * 213, 32, 190, 40 });
 
-    const auto accent = continuumAccent();
+    addModule ("CONTROL PANEL 2 / RECIRCULATOR", { 8, 84, 684, 208 });
+    fxModes_ = std::make_unique<RecirculatorModeStrip> (host);
+    fxModes_->setBounds (20, 111, 660, 40); addAndMakeVisible (*fxModes_);
+    const char* fxIds[] = { "con.fx.reverb.damping", "con.fx.chorus.rate", "con.fx.chorus.depth", "con.fx.chorus.mix",
+        "con.fx.phaser.rate", "con.fx.phaser.depth", "con.fx.phaser.feedback", "con.fx.phaser.mix" };
+    const char* fxNames[] = { "REVERB DAMP", "CHORUS RATE", "CHORUS DEPTH", "CHORUS MIX",
+        "PHASER RATE", "PHASER DEPTH", "PHASER FB", "PHASER MIX" };
+    for (int i = 0; i < 8; ++i) addNumber (fxIds[i], fxNames[i], { 24 + i % 4 * 166, 170 + i / 4 * 62, 146, 42 });
 
-    // Master and expression strip.
-    addModule ("MASTER / EXPRESSION", { 8, 8, 2784, 56 });
-    const char* masterIds[] = { "con.master.volume", "con.master.glide",
-                                "con.master.yDepth", "con.master.zDepth",
-                                "con.master.bendRange", "con.master.reverbMix",
-                                "con.master.delayMix", "con.master.noise",
-                                "con.cvc.1", "con.cvc.2", "con.cvc.3", "con.cvc.4",
-                                "con.surface.quantize" };
-    const char* masterLabels[] = { "VOLUME", "GLIDE", "Y DEPTH", "Z DEPTH",
-                                   "MPE BEND", "REVERB", "DELAY", "NOISE",
-                                   "CVC 1", "CVC 2", "CVC 3", "CVC 4",
-                                   "PITCH SNAP" };
-    for (int i = 0; i < 13; ++i)
-        addKnob (masterIds[i], masterLabels[i], { 12 + i * 213, 14, 202, 42 });
+    addModule ("DELAY / LPF — R1–R6", { 700, 84, 736, 208 });
+    delayFaders_ = std::make_unique<DelayLpfFaders> (host);
+    delayFaders_->setBounds (712, 110, 712, 174); addAndMakeVisible (*delayFaders_);
+
+    addModule ("MODULATED ECHO / CONVOLUTION", { 1444, 84, 536, 208 });
+    addNumber ("con.fx.delay.mod", "MODULATION", { 1462, 128, 234, 48 });
+    addNumber ("con.fx.delay.rate", "RATE", { 1714, 128, 248, 48 });
+    addNumber ("con.fx.conv1.mix", "PRE CONV / MIX", { 1462, 212, 234, 48 });
+    addNumber ("con.fx.conv2.mix", "POST CONV / MIX", { 1714, 212, 248, 48 });
+
+    addModule ("NOISE / SPACE", { 1988, 84, 804, 208 });
+    const char* spaceIds[] = { "con.noise.level", "con.noise.color", "con.master.reverbSize", "con.master.delayTime", "con.master.delayFeedback" };
+    const char* spaceNames[] = { "NOISE LEVEL", "NOISE COLOR", "REVERB SIZE", "DELAY TIME", "DELAY FEEDBACK" };
+    for (int i = 0; i < 5; ++i) addNumber (spaceIds[i], spaceNames[i], { 2008 + i % 3 * 258, 128 + i / 3 * 84, 232, 48 });
 
     matrix_ = std::make_unique<ContinuumMatrix> (host);
-    matrix_->setBounds (8, 72, 1500, 560);
-    addAndMakeVisible (*matrix_);
+    matrix_->setBounds (8, 302, 2784, 510); addAndMakeVisible (*matrix_);
 
+    // Numeric model blocks below the matrix, as in the editor's parameter tables.
     for (int i = 0; i < 5; ++i)
     {
-        const auto x = 1516 + i * 252;
-        const auto prefix = "con.osc" + juce::String (i + 1) + ".";
-        const auto group = "OSC " + juce::String (i + 1);
-        addModule (group, { x, 72, 244, 210 });
-        auto inner = juce::Rectangle<int> (x + 4, 72 + 26, 236, 180);
-        const auto cellW = inner.getWidth() / 2;
-        const auto cellH = inner.getHeight() / 3;
-
-        addKnob (prefix + "ratio", "RATIO", { inner.getX(), inner.getY(), cellW, cellH });
-        addKnob (prefix + "fine", "FINE", { inner.getX() + cellW, inner.getY(), cellW, cellH });
-        addKnob (prefix + "phase", "PHASE", { inner.getX(), inner.getY() + cellH, cellW, cellH });
-        addKnob (prefix + "shape", "SHAPE", { inner.getX() + cellW, inner.getY() + cellH, cellW, cellH });
-        addKnob (prefix + "level", "LEVEL", { inner.getX(), inner.getY() + cellH * 2, cellW, cellH });
-        addChoice (prefix + "wave", "WAVE", { inner.getX() + cellW, inner.getY() + cellH * 2, cellW, cellH });
+        const auto x = 8 + i * 444;
+        const auto osc = "con.osc" + juce::String (i + 1) + ".";
+        const auto flt = "con.flt" + juce::String (i + 1) + ".";
+        const auto sg = "con.sg" + juce::String (i + 1) + ".";
+        addModule ("OSC " + juce::String (i + 1) + " / FILTER " + juce::String (i + 1), { x, 822, 436, 366 });
+        const char* ids[] = { "ratio", "fine", "phase", "shape", "level" };
+        const char* names[] = { "RATIO", "FINE", "PHASE", "SHAPE", "LEVEL" };
+        for (int n = 0; n < 5; ++n)
+            addNumber (osc + ids[n], names[n], { x + 12 + n % 3 * 140, 853 + n / 3 * 54, 126, 42 });
+        auto& wave = addChoice (osc + "wave", "WAVE", { x + 292, 907, 126, 42 });
+        wave.setColour (juce::ComboBox::textColourId, juce::Colour (0xff34355f));
+        auto& type = addChoice (flt + "type", "FILTER TYPE", { x + 12, 974, 126, 42 });
+        type.setColour (juce::ComboBox::textColourId, juce::Colour (0xff34355f));
+        addNumber (flt + "cutoff", "CUTOFF", { x + 152, 974, 126, 42 });
+        addNumber (flt + "res", "RESONANCE", { x + 292, 974, 126, 42 });
+        addNumber (flt + "env", "ENV 2", { x + 12, 1028, 126, 42 });
+        addCaption ("SHAPE GENERATOR " + juce::String (i + 1), { x + 14, 1090, 404, 16 },
+                    juce::Justification::centredLeft, 11.0f, juce::Colour (0xff455448));
+        addNumber (sg + "rate", "RATE", { x + 12, 1124, 126, 42 });
+        auto& shape = addChoice (sg + "shape", "SHAPE", { x + 152, 1124, 126, 42 });
+        shape.setColour (juce::ComboBox::textColourId, juce::Colour (0xff34355f));
+        addNumber (sg + "level", "LEVEL", { x + 292, 1124, 126, 42 });
     }
-
-    for (int i = 0; i < 5; ++i)
-    {
-        const auto x = 1516 + i * 252;
-        const auto prefix = "con.flt" + juce::String (i + 1) + ".";
-        addModule ("FILTER " + juce::String (i + 1), { x, 290, 244, 170 });
-        auto inner = juce::Rectangle<int> (x + 4, 290 + 26, 236, 138);
-        const auto cellW = inner.getWidth() / 2;
-        const auto cellH = inner.getHeight() / 2;
-
-        addChoice (prefix + "type", "TYPE", { inner.getX(), inner.getY(), cellW, cellH });
-        addKnob (prefix + "cutoff", "CUTOFF", { inner.getX() + cellW, inner.getY(), cellW, cellH });
-        addKnob (prefix + "res", "RES", { inner.getX(), inner.getY() + cellH, cellW, cellH });
-        addKnob (prefix + "env", "ENV 2", { inner.getX() + cellW, inner.getY() + cellH, cellW, cellH });
-    }
-
     for (int i = 0; i < 2; ++i)
     {
-        const auto x = 1516 + i * 310;
-        const auto prefix = "con.bank" + juce::String (i + 1) + ".";
-        addModule ("BIQUAD BANK " + juce::String (i + 1), { x, 468, 300, 170 });
-        auto inner = juce::Rectangle<int> (x + 4, 494, 292, 140);
-        const auto cellW = inner.getWidth() / 2;
-        const auto cellH = inner.getHeight() / 3;
-        addKnob (prefix + "freq", "FREQ", { inner.getX(), inner.getY(), cellW, cellH });
-        addKnob (prefix + "spread", "SPREAD", { inner.getX() + cellW, inner.getY(), cellW, cellH });
-        addKnob (prefix + "bandwidth", "BANDWIDTH", { inner.getX(), inner.getY() + cellH, cellW, cellH });
-        addKnob (prefix + "mix", "MIX", { inner.getX() + cellW, inner.getY() + cellH, cellW, cellH });
-        addKnob (prefix + "level", "LEVEL", { inner.getX(), inner.getY() + cellH * 2, cellW, cellH });
+        const auto x = 2228 + i * 284;
+        const auto stem = "con.bank" + juce::String (i + 1) + ".";
+        addModule ("BIQUAD BANK " + juce::String (i + 1), { x, 822, 276, 208 });
+        const char* ids[] = { "freq", "spread", "bandwidth", "mix", "level" };
+        const char* names[] = { "FREQUENCY", "SPREAD", "BANDWIDTH", "MIX", "LEVEL" };
+        for (int n = 0; n < 5; ++n) addNumber (stem + ids[n], names[n], { x + 12 + n % 2 * 132, 853 + n / 2 * 54, 120, 42 });
+        const auto d = "con.delay" + juce::String (i + 1) + ".";
+        addModule (i == 0 ? "SUMMED DELAY" : "MICRO DELAY", { x, 1038, 276, 150 });
+        addNumber (d + "time", "TIME", { x + 12, 1070, 120, 42 });
+        addNumber (d + "feedback", "FEEDBACK", { x + 144, 1070, 120, 42 });
+        addNumber (d + "mix", "MIX", { x + 12, 1124, 120, 42 });
     }
-
-    for (int i = 0; i < 2; ++i)
-    {
-        const auto x = 2136 + i * 310;
-        const auto prefix = "con.delay" + juce::String (i + 1) + ".";
-        addModule (i == 0 ? "SUMMED DELAY" : "MICRO DELAY", { x, 468, 300, 170 });
-        auto inner = juce::Rectangle<int> (x + 4, 494, 292, 140);
-        const auto cellW = inner.getWidth() / 2;
-        const auto cellH = inner.getHeight() / 3;
-        addKnob (prefix + "time", "TIME", { inner.getX(), inner.getY(), cellW, cellH });
-        addKnob (prefix + "feedback", "FEEDBACK", { inner.getX() + cellW, inner.getY(), cellW, cellH });
-        addKnob (prefix + "mix", "MIX", { inner.getX(), inner.getY() + cellH, cellW, cellH });
-    }
-
-    addModule ("SHAPE GENERATORS", { 1516, 646, 1276, 200 });
-    for (int i = 0; i < 5; ++i)
-    {
-        const auto x = 1524 + i * 250;
-        const auto prefix = "con.sg" + juce::String (i + 1) + ".";
-        addCaption ("SG " + juce::String (i + 1), { x, 672, 70, 14 }, juce::Justification::centredLeft, 9.0f, accent, true);
-        addKnob (prefix + "rate", "RATE", { x, 688, 72, 80 });
-        addChoice (prefix + "shape", "SHAPE", { x + 76, 708, 86, 40 });
-        addKnob (prefix + "level", "LEVEL", { x + 168, 688, 66, 80 });
-    }
-
-    // -----------------------------------------------------------------------
-    // Envelopes, noise and the master space controls. These parameters were
-    // previously editable only through automation/state, not from the panel.
-    // -----------------------------------------------------------------------
     for (int env = 0; env < 2; ++env)
     {
-        const auto x = 8 + env * 376;
-        const auto stem = "con.env" + juce::String (env + 1) + ".";
-        addModule ("ENVELOPE " + juce::String (env + 1), { x, 646, 368, 200 });
-
-        const auto innerX = x + 8;
-        const auto innerY = 674;
-        const auto cellW = 86;
+        const auto x = 8 + env * 1396;
+        addModule ("ENVELOPE " + juce::String (env + 1), { x, 1198, 1388, 76 });
         const char* ids[] = { "attack", "decay", "sustain", "release" };
-        const char* labels[] = { "ATTACK", "DECAY", "SUSTAIN", "RELEASE" };
-
-        for (int i = 0; i < 4; ++i)
-            addKnob (stem + ids[i], labels[i],
-                     { innerX + i * cellW, innerY, cellW, 142 });
-    }
-
-    {
-        addModule ("NOISE / SPACE", { 760, 646, 740, 200 });
-        const auto x = 768;
-        auto y = 674;
-        addKnob ("con.noise.level", "NOISE", { x, y, 140, 142 });
-        addKnob ("con.noise.color", "COLOR", { x + 145, y, 140, 142 });
-        addKnob ("con.master.reverbSize", "REVERB SIZE", { x + 290, y, 140, 142 });
-        addKnob ("con.master.delayTime", "DELAY TIME", { x + 435, y, 140, 142 });
-        addKnob ("con.master.delayFeedback", "DELAY FB", { x + 580, y, 140, 142 });
-    }
-
-    // Six inverted trapezoids, one per Recirculator mode.
-    {
-        addModule ("RECIRCULATOR MODE", { 8, 856, 2784, 72 });
-        fxModes_ = std::make_unique<RecirculatorModeStrip> (host);
-        fxModes_->setBounds (16, 880, 2768, 42);
-        addAndMakeVisible (*fxModes_);
-    }
-
-    // Auxiliary effects modelled on the EaganMatrix Recirculator / VoiceDelay
-    // family: chorus, phaser and a modulated echo around the FDN reverb.
-    {
-        addModule ("AUX FX  /  RECIRCULATOR", { 8, 936, 2784, 94 });
-        addKnob ("con.fx.reverb.damping", "REVERB DAMP", { 18, 960, 152, 66 });
-        const char* ids[] = { "con.fx.chorus.rate", "con.fx.chorus.depth", "con.fx.chorus.mix",
-                              "con.fx.phaser.rate", "con.fx.phaser.depth", "con.fx.phaser.feedback",
-                              "con.fx.phaser.mix", "con.fx.delay.mod", "con.fx.delay.rate" };
-        const char* labels[] = { "CHOR RATE", "CHOR DEPTH", "CHOR MIX",
-                                 "PHASE RATE", "PHASE DEPTH", "PHASE FB",
-                                 "PHASE MIX", "DELAY MOD", "DELAY RATE" };
-        for (int i = 0; i < 9; ++i)
-            addKnob (ids[i], labels[i], { 190 + i * 230, 960, 210, 66 });
-
-        addKnob ("con.fx.conv1.mix", "CONV 1", { 2260, 960, 210, 66 });
-        addKnob ("con.fx.conv2.mix", "CONV 2", { 2480, 960, 210, 66 });
-    }
-
-    {
-        addModule ("DELAY / LPF  ·  R1-R6", { 8, 1040, 2784, 140 });
-        delayFaders_ = std::make_unique<DelayLpfFaders> (host);
-        delayFaders_->setBounds (16, 1064, 2768, 108);
-        addAndMakeVisible (*delayFaders_);
+        const char* names[] = { "ATTACK", "DECAY", "SUSTAIN", "RELEASE" };
+        for (int n = 0; n < 4; ++n)
+            addNumber ("con.env" + juce::String (env + 1) + "." + ids[n], names[n],
+                       { x + 16 + n * 342, 1226, 320, 42 });
     }
 }
-
 ContinuumPanel::~ContinuumPanel() = default;
-
 } // namespace triad::ui
