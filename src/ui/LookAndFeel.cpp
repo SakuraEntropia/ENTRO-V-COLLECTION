@@ -64,7 +64,7 @@ void TriadLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, int wi
                                          : juce::Colour (0xffcf3f23));
 
     // Engraved tick ring.
-    g.setColour (juce::Colour (0xffd9d5cb).withAlpha (style == HardwareStyle::PolyBrute ? 0.68f
+    g.setColour ((slider.getProperties()["darkInk"] ? juce::Colour (0xff27302f) : juce::Colour (0xffd9d5cb)).withAlpha (style == HardwareStyle::PolyBrute ? 0.68f
                                                                               : (style == HardwareStyle::Matriarch ? 0.55f : 0.32f)));
     for (int i = 0; i <= 10; ++i)
     {
@@ -155,6 +155,18 @@ void TriadLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, int wi
         const auto p2 = juce::Point<float> (centre.x + std::sin (a) * knobRadius * 1.0f,
                                             centre.y - std::cos (a) * knobRadius * 1.0f);
         g.drawLine ({ p1, p2 }, 0.7f);
+    }
+
+    if (style == HardwareStyle::Matriarch)
+    {
+        const auto cap = body.reduced (knobRadius * 0.25f);
+        juce::ColourGradient aluminium (juce::Colour (0xfff0efdf), cap.getX(), cap.getY(),
+                                       juce::Colour (0xff686e70), cap.getRight(), cap.getBottom(), false);
+        aluminium.addColour (0.42, juce::Colour (0xffc2c8c7));
+        aluminium.addColour (0.56, juce::Colour (0xfff3f4e8));
+        g.setGradientFill (aluminium);
+        g.fillEllipse (cap);
+        pointer = juce::Colour (0xff222627);
     }
 
     // Soft specular highlight makes the knob read as a machined part.
@@ -255,6 +267,25 @@ void TriadLookAndFeel::drawLinearSlider (juce::Graphics& g, int x, int y, int wi
                         grip.getWidth() - 4.0f, 2.0f);
             g.setColour (juce::Colour (0xff8e8a81));
             g.drawRoundedRectangle (grip, 2.5f, 1.0f);
+        }
+        else if (style_ == HardwareStyle::Matriarch)
+        {
+            g.setColour (juce::Colour (0xff0c0d0e));
+            g.fillRect (track);
+            for (int i = 0; i <= 32; ++i)
+            {
+                const auto yy = track.getY() + i * track.getHeight() / 32.0f;
+                g.setColour (juce::Colour (0xffd9ddd4).withAlpha (i % 4 == 0 ? 0.8f : 0.45f));
+                g.drawHorizontalLine ((int) yy, bounds.getCentreX() - 15.0f, bounds.getCentreX() + 15.0f);
+            }
+            const auto grip = juce::Rectangle<float> (bounds.getWidth() - 4.0f, 17.0f)
+                                  .withCentre ({ bounds.getCentreX(), sliderPos });
+            g.setColour (juce::Colours::black.withAlpha (0.6f)); g.fillRect (grip.translated (1.0f, 3.0f));
+            juce::ColourGradient cap (juce::Colour (0xff696b6c), grip.getX(), grip.getY(),
+                                     juce::Colour (0xff08090a), grip.getX(), grip.getBottom(), false);
+            g.setGradientFill (cap); g.fillRoundedRectangle (grip, 2.0f);
+            g.setColour (juce::Colour (0xffebece2));
+            g.drawHorizontalLine ((int) sliderPos, grip.getX() + 2.0f, grip.getRight() - 2.0f);
         }
         else
         {

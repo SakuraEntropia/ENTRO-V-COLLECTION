@@ -135,6 +135,12 @@ MatriarchPanel::MatriarchPanel (EditorHost& editorHost)
     knob ("mat.output.velocity", "VELOCITY", 1788, 346, 36);
     knob ("mat.output.aftertouch", "PRESSURE", 1844, 346, 36);
     knob ("mat.global.fine", "FINE TUNE", 1817, 391, 28);
+    // The five keyboard outputs already exist in the engine patch map; expose
+    // them on the lower rail so all 79 patch points can actually be connected.
+    addCaption ("KEYBOARD OUT", { 1190, 437, 120, 20 }, juce::Justification::centred, 10.0f);
+    const char* keyboardOutputs[] = { "pitch", "gate", "velocity", "aftertouch", "mod" };
+    for (int i = 0; i < 5; ++i)
+        addJack ("mat.patch.kb." + juce::String (keyboardOutputs[i]), { 1340 + i * 75, 445 }, 18);
     onPatchChanged = [this] { refreshPatchCables(); };
 }
 } // namespace triad::ui

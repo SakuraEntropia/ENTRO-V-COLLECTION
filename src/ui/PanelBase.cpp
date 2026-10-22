@@ -54,9 +54,21 @@ void PanelBase::addModule (const juce::String& moduleTitle, const juce::String& 
     modules_.push_back ({ moduleTitle, subtitle, area, tone });
 }
 
+bool PanelBase::usesDarkInk (juce::Point<int> point) const
+{
+    if (finish_ != Finish::Matriarch) return false;
+    if (point.y >= getHeight() - 50) return true;
+    for (const auto& module : modules_)
+        if (module.bounds.contains (point))
+            return module.title == "ARP / SEQ" || module.title == "OSCILLATORS"
+                   || module.title == "FILTERS" || module.title == "STEREO DELAY";
+    return false;
+}
+
 void PanelBase::addLabel (const juce::String& text, juce::Rectangle<int> area, float fontSize,
                           juce::Colour colour, bool bold)
 {
+    if (usesDarkInk (area.getCentre())) colour = juce::Colour (0xff252a2b);
     auto label = std::make_unique<juce::Label>();
     label->setText (text, juce::dontSendNotification);
     label->setJustificationType (juce::Justification::centred);
@@ -73,6 +85,7 @@ juce::Label& PanelBase::addCaption (const juce::String& text, juce::Rectangle<in
                                     juce::Justification justification, float fontSize,
                                     juce::Colour colour, bool bold)
 {
+    if (usesDarkInk (area.getCentre())) colour = juce::Colour (0xff252a2b);
     auto label = std::make_unique<juce::Label>();
     label->setText (text, juce::dontSendNotification);
     label->setJustificationType (justification);
@@ -96,6 +109,7 @@ juce::Slider& PanelBase::addKnob (const juce::String& paramId, const juce::Strin
     auto slider = std::make_unique<juce::Slider>();
     slider->setName (paramId);
     slider->getProperties().set ("panelControl", true);
+    slider->getProperties().set ("darkInk", usesDarkInk (area.getCentre()));
     slider->setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
     slider->setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
     slider->setScrollWheelEnabled (true);
@@ -130,9 +144,10 @@ juce::Slider& PanelBase::addKnob (const juce::String& paramId, const juce::Strin
 juce::Slider& PanelBase::addKnob (const juce::String& paramId, const juce::String& labelText,
                                   juce::Point<int> centre, int diameter)
 {
+    const auto labelWidth = juce::jmax (diameter, 60);
     return addKnob (paramId, labelText,
-                    { centre.x - diameter / 2, centre.y - diameter / 2,
-                      diameter, diameter + 12 });
+                    { centre.x - labelWidth / 2, centre.y - diameter / 2,
+                      labelWidth, diameter + 12 });
 }
 
 juce::Slider& PanelBase::addFader (const juce::String& paramId, const juce::String& labelText,
@@ -182,6 +197,18 @@ juce::Slider& PanelBase::addNumber (const juce::String& paramId, const juce::Str
     slider.setColour (juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
     slider.setNumDecimalPlacesToDisplay (3);
     slider.getProperties().set ("numericField", true);
+    // Numeric editors use natural units. The host formatter abbreviates kHz/ms,
+    // while its parser reads raw numbers; using it here would change the value
+    // when the user edits a displayed frequency or envelope time.
+    const auto* spec = definition().find (paramId.toStdString());
+    const auto unit = spec != nullptr ? juce::String (spec->unit) : juce::String();
+    slider.textFromValueFunction = [unit] (double value)
+    {
+        return juce::String (value, std::abs (value) >= 100.0 ? 1 : 3)
+               + (unit.isEmpty() ? juce::String() : " " + unit);
+    };
+    slider.valueFromTextFunction = [] (const juce::String& text) { return text.getDoubleValue(); };
+    slider.updateText();
     return slider;
 }
 
@@ -717,8 +744,8 @@ void PanelBase::paint (juce::Graphics& g)
         juce::ColourGradient trim (juce::Colour (0xffb9b6ad), 0.0f, 0.0f,
                                     juce::Colour (0xff3c3b38), 0.0f, bounds.getBottom(), false);
         g.setGradientFill (trim);
-        g.fillRect (772.0f, 8.0f, 2.0f, bounds.getHeight() - 16.0f);
-        g.fillRect (1082.0f, 8.0f, 2.0f, bounds.getHeight() - 16.0f);
+        g.fillRect (892.0f, 16.0f, 2.0f, bounds.getHeight() - 76.0f);
+        g.fillRect (1232.0f, 16.0f, 2.0f, bounds.getHeight() - 76.0f);
     }
 
     // Top bevel highlight and bottom shadow.
@@ -737,7 +764,17 @@ void PanelBase::paint (juce::Graphics& g)
         juce::Colour titleColour = juce::Colour (0xfff2efe5);
         juce::Colour subtitleColour = juce::Colour (0xffb8b4aa);
 
-        if (finish_ == Finish::PolyBrute)
+        if (finish_ == Finish::Matriarch)
+        {
+            fill = juce::Colour (0xff383a3c);
+            border = juce::Colour (0xffe4e3d7);
+            if (module.title == "ARP / SEQ") fill = juce::Colour (0xffe9dc68);
+            if (module.title == "OSCILLATORS") fill = juce::Colour (0xff9ecbd6);
+            if (module.title == "FILTERS") fill = juce::Colour (0xffa3cd82);
+            if (module.title == "STEREO DELAY") fill = juce::Colour (0xffbda5d3);
+            if (usesDarkInk (module.bounds.getCentre())) titleColour = juce::Colour (0xff252a2b);
+        }
+        else if (finish_ == Finish::PolyBrute)
         {
             fill = juce::Colour (0xff0b0c0e);
             border = juce::Colour (0xffe2ded5).withAlpha (0.58f);
@@ -841,15 +878,17 @@ void PanelBase::paint (juce::Graphics& g)
 
         if (finish_ == Finish::Matriarch)
         {
+            g.setColour (juce::Colour (0xff9ecbd6));
+            g.fillRect (24, getHeight() - 50, getWidth() - 48, 36);
             auto font = juce::Font (juce::FontOptions (29.0f, juce::Font::bold))
                             .withExtraKerningFactor (0.05f);
             g.setFont (font);
-            g.setColour (juce::Colour (0xfff0ece2));
+            g.setColour (juce::Colour (0xff283336));
 
             juce::Rectangle<int> textArea (brandArea.getX(), brandArea.getY() + 2, 250, 34);
             g.drawText (brandMain_, textArea, juce::Justification::centredLeft);
 
-            g.setColour (juce::Colour (0xffd9d5cb).withAlpha (0.55f));
+            g.setColour (juce::Colour (0xff283336));
             g.setFont (juce::Font (juce::FontOptions (7.5f)).withExtraKerningFactor (0.28f));
             g.drawText (brandSub_.toUpperCase(),
                         brandArea.withTrimmedLeft (280).withHeight (48),

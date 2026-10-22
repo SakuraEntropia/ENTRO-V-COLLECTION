@@ -98,6 +98,7 @@ protected:
 
 private:
     juce::RangedAudioParameter* parameterFor (const juce::String& paramId) const;
+    bool usesDarkInk (juce::Point<int>) const;
     void addLabel (const juce::String& text, juce::Rectangle<int> area, float fontSize,
                    juce::Colour colour, bool bold);
 
