@@ -465,11 +465,12 @@ void TriadAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     }
 
     TransportInfo transport;
+    transport.bpm = uiTempoBpm_.load();
     if (auto* playHead = getPlayHead())
     {
         if (const auto position = playHead->getPosition())
         {
-            transport.bpm = position->getBpm().orFallback (120.0);
+            transport.bpm = position->getBpm().orFallback (transport.bpm);
             transport.ppqPosition = position->getPpqPosition().orFallback (0.0);
             transport.isPlaying = position->getIsPlaying();
         }

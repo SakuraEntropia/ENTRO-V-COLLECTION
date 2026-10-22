@@ -7,6 +7,17 @@
 namespace triad
 {
 
+/** Four-interval tap average; a pause starts a fresh sequence of taps. */
+class TapTempo
+{
+public:
+    double tap (double milliseconds);
+private:
+    std::array<double, 4> intervals_ {};
+    double lastTap_ = -1.0;
+    int count_ = 0, next_ = 0;
+};
+
 /** Block-driven arpeggiator and step sequencer.
     The audio callback advances it sample by sample and emits note events with
     sample offsets. Pattern edits are lock-free atomics written from the UI. */

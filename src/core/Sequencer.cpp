@@ -6,6 +6,25 @@
 namespace triad
 {
 
+double TapTempo::tap (double milliseconds)
+{
+    if (! std::isfinite (milliseconds)) return 0.0;
+    const auto interval = milliseconds - lastTap_;
+    const auto first = lastTap_ < 0.0;
+    lastTap_ = milliseconds;
+    if (first || interval < 200.0 || interval > 3000.0)
+    {
+        count_ = next_ = 0;
+        return 0.0;
+    }
+    intervals_[(size_t) next_] = interval;
+    next_ = (next_ + 1) % (int) intervals_.size();
+    count_ = std::min (count_ + 1, (int) intervals_.size());
+    double total = 0.0;
+    for (int i = 0; i < count_; ++i) total += intervals_[(size_t) i];
+    return 60000.0 * count_ / total;
+}
+
 PatternSequencer::PatternSequencer()
 {
     for (int i = 0; i < maxSteps; ++i)

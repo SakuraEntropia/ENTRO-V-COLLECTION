@@ -168,6 +168,40 @@ KeyboardPanel::KeyboardPanel (EditorHost& host)
     partBox_.setVisible (showParts);
     partLabel_.setVisible (showParts);
 
+    if (instrument == "matriarch")
+    {
+        glide_.setName ("mat.performance.glide");
+        glide_.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+        glide_.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
+        glide_.setDoubleClickReturnValue (true, 0.0);
+        glide_.setTooltip ("Glide time, 0-2 seconds; double-click for no glide");
+        addAndMakeVisible (glide_);
+        glideAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
+            host_.apvts(), "mat.performance.glide", glide_);
+        glideLabel_.setText ("GLIDE", juce::dontSendNotification);
+        glideLabel_.setJustificationType (juce::Justification::centred);
+        glideLabel_.setFont (juce::Font (juce::FontOptions (9.0f)));
+        addAndMakeVisible (glideLabel_);
+        play_ = std::make_unique<LedButton> (*host_.apvts().getParameter ("mat.arp.enabled"), "PLAY");
+        hold_ = std::make_unique<LedButton> (*host_.apvts().getParameter ("mat.arp.hold"), "HOLD");
+        play_->setName ("mat.arp.enabled"); hold_->setName ("mat.arp.hold");
+        play_->setAccent (juce::Colour (0xff91cf82)); hold_->setAccent (juce::Colour (0xff94d5e3));
+        play_->setTooltip ("Start/stop the arpeggiator using held keys");
+        hold_->setTooltip ("Latch arpeggiator notes after releasing the keys");
+        addAndMakeVisible (*play_); addAndMakeVisible (*hold_);
+        tap_.setColour (juce::TextButton::buttonColourId, juce::Colour (0xffe9dc68));
+        tap_.setColour (juce::TextButton::textColourOffId, juce::Colour (0xff252a2b));
+        tap_.setTooltip ("Tap quarter notes to set internal tempo; DAW tempo takes priority");
+        tap_.onClick = [this]
+        {
+            const auto bpm = tapTempo_.tap (juce::Time::getMillisecondCounterHiRes());
+            if (bpm > 0.0) host_.setUiTempoBpm (bpm);
+            tap_.setTooltip ("Internal tempo: " + juce::String (host_.uiTempoBpm(), 1)
+                             + " BPM; DAW tempo takes priority");
+        };
+        addAndMakeVisible (tap_);
+    }
+
     startTimerHz (12);
 }
 
@@ -232,7 +266,17 @@ void KeyboardPanel::resized()
 {
     auto area = getLocalBounds().reduced (12, 8);
 
-    auto left = area.removeFromLeft (118);
+    const auto matriarch = play_ != nullptr;
+    auto left = area.removeFromLeft (matriarch ? 216 : 118);
+    if (matriarch)
+    {
+        glide_.setBounds (left.getX() + 6, left.getY() + 2, 36, 36);
+        glideLabel_.setBounds (left.getX(), left.getY() + 38, 48, 12);
+        play_->setBounds (left.getX() + 58, left.getY() + 8, 46, 28);
+        hold_->setBounds (left.getX() + 110, left.getY() + 8, 46, 28);
+        tap_.setBounds (left.getX() + 162, left.getY() + 8, 44, 28);
+        left.removeFromTop (44);
+    }
     auto topLeft = left.removeFromTop (18);
     juce::ignoreUnused (topLeft);
 

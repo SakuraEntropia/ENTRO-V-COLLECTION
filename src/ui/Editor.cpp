@@ -416,7 +416,7 @@ void TriadEditor::resized()
     }
     else
     {
-        keyboard_.setBounds (area.removeFromBottom (132));
+        keyboard_.setBounds (area.removeFromBottom (host_.definition().id == "matriarch" ? 176 : 132));
     }
 
     auto panelArea = area.reduced (0, 4);

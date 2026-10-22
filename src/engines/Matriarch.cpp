@@ -156,6 +156,9 @@ void MatriarchEngine::buildDefinition()
               ParamCurve::Discrete, choices ({ "1", "2", "3", "4" }));
     addParam ("mat.arp.hold", "HOLD", "Arpeggiator", 0.0f, 1.0f, 0.0f,
               ParamCurve::Discrete, choices ({ "Off", "On" }));
+    // Appended for backward-compatible restoration of existing parameter IDs.
+    addParam ("mat.performance.glide", "GLIDE", "Performance", 0.0f, 2.0f, 0.0f,
+              ParamCurve::Linear, {}, "s");
 
     auto addJack = [this] (const char* id, const char* name, const char* group,
                            bool isOutput, bool audio = false)
@@ -274,7 +277,7 @@ void MatriarchEngine::cacheIndices()
         "mat.lfo2.rate", "mat.lfo2.bipolar",
         "mat.att1", "mat.att2", "mat.att3",
         "mat.delay.time", "mat.delay.spacing", "mat.delay.feedback", "mat.delay.mix",
-        "mat.delay.sync", "mat.delay.pingPong"
+        "mat.delay.sync", "mat.delay.pingPong", "mat.performance.glide"
     };
 
     static const char* jackIds[JJackCount] = {
@@ -351,6 +354,8 @@ void MatriarchEngine::reset()
     aftertouch_ = 0.0f;
     lastVelocity_ = 0.8f;
     currentNote_ = 60.0f;
+    glideNotes_.fill (60.0f);
+    glideHasNote_ = false;
     clockAccumulator_ = 0.0;
     clockPhase_ = 0;
     sampleHoldValue_ = 0.0f;
@@ -522,6 +527,11 @@ void MatriarchEngine::processMidi (const MidiEvent& event)
             heldVelocities_[(size_t) heldCount_] = velocity;
             ++heldCount_;
 
+            if (! glideHasNote_)
+            {
+                glideNotes_.fill ((float) note);
+                glideHasNote_ = true;
+            }
             currentNote_ = (float) note;
             lastVelocity_ = velocity;
             retriggerPending_ = true;
@@ -652,6 +662,9 @@ void MatriarchEngine::render (float* left, float* right, int numSamples)
     const auto velocityAmount = param (PVelocity);
     const auto aftertouchAmount = param (PAftertouch);
     const auto fineCents = param (PFineTune);
+    const auto glideTime = param (PGlide);
+    const auto glideCoefficient = glideTime <= 0.0001f ? 0.0f
+        : (float) std::exp (-5.0 / (sampleRate_ * glideTime));
     const auto pitchAmount = param (PLfoPitchAmt);
     const auto pitchAssign = choice (PLfoPitchAssign);
     const auto cutoffAmount = param (PLfoCutoffAmt);
@@ -782,7 +795,10 @@ void MatriarchEngine::render (float* left, float* right, int numSamples)
             const auto octaveId = i == 0 ? PVco1Octave : (ParamId) (PVco2Octave + (i - 1) * 4);
             const auto octaveIndex = std::clamp ((int) std::lround (param (octaveId)), 0, 3);
             static const float octaveSemitones[4] = { -12.0f, 0.0f, 12.0f, 24.0f };
-            auto semitones = (float) oscNotes[(size_t) i] - 60.0f + octaveSemitones[octaveIndex]
+            auto& glidingNote = glideNotes_[(size_t) i];
+            const auto targetNote = (float) oscNotes[(size_t) i];
+            glidingNote = targetNote + glideCoefficient * (glidingNote - targetNote);
+            auto semitones = glidingNote - 60.0f + octaveSemitones[octaveIndex]
                            + fineCents / 100.0f + pitchBend_ * 2.0f;
 
             if (i > 0)

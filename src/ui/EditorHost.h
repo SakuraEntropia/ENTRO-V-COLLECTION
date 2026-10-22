@@ -40,6 +40,8 @@ public:
     virtual float uiModWheel() const { return 0.0f; }
     virtual void setUiPitchBend (float) {}
     virtual void setUiModWheel (float) {}
+    virtual double uiTempoBpm() const { return 120.0; }
+    virtual void setUiTempoBpm (double) {}
 
     // Global output trim, common to every instrument.  Stored outside APVTS
     // so it survives presets and applies to the final stereo output.

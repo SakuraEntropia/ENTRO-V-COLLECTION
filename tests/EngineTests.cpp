@@ -1,4 +1,5 @@
 #include "engines/Engines.h"
+#include "core/Sequencer.h"
 
 #include <cmath>
 #include <cstdio>
@@ -464,6 +465,45 @@ void testMatriarchPatching()
     engine->clearPatchCables();
 }
 
+void testMatriarchGlideAndTap()
+{
+    triad::TapTempo tap;
+    CHECK (tap.tap (0.0) == 0.0);
+    CHECK (std::abs (tap.tap (500.0) - 120.0) < 0.001);
+    CHECK (std::abs (tap.tap (1000.0) - 120.0) < 0.001);
+    CHECK (tap.tap (5000.0) == 0.0); // A pause resets the average.
+    CHECK (std::abs (tap.tap (6000.0) - 60.0) < 0.001);
+    CHECK (tap.tap (6001.0) == 0.0); // Ignore accidental double-clicks.
+
+    auto crossings = [] (float glide, double duration)
+    {
+        auto engine = triad::makeEngine (triad::InstrumentKind::Matriarch);
+        const auto& def = engine->definition();
+        std::vector<float> values;
+        for (const auto& p : def.params) values.push_back (p.def);
+        auto set = [&] (const char* id, float v) { values[(size_t) def.indexOf (id)] = v; };
+        set ("mat.performance.glide", glide); set ("mat.master.paraphony", 0);
+        set ("mat.mix.osc2", 0); set ("mat.vco1.wave", 0);
+        set ("mat.flt.cutoff", 20000); set ("mat.flt.res1", 0); set ("mat.flt.res2", 0);
+        set ("mat.flt.envAmt", 0); set ("mat.delay.mix", 0); set ("mat.env1.sustain", 1);
+        engine->prepare (48000, 512); engine->setParameters (values.data(), (int) values.size());
+        triad::MidiEvent note; note.type = triad::MidiEventType::NoteOn; note.note = 60; note.value = .8f;
+        engine->processMidi (note);
+        std::vector<float> left, right; renderSeconds (*engine, .2, 48000, left, right);
+        note.note = 72; engine->processMidi (note);
+        renderSeconds (*engine, duration, 48000, left, right);
+        int result = 0;
+        const auto start = duration > .2 ? left.size() - 4800 : (size_t) 0;
+        for (size_t i = start + 1; i < left.size(); ++i)
+            if (left[i - 1] <= 0 && left[i] > 0) ++result;
+        return result;
+    };
+    const auto immediate = crossings (0, .1), gliding = crossings (.8f, .1), settled = crossings (.8f, 1.5);
+    CHECK (immediate > 48 && immediate < 58);
+    CHECK (gliding > 24 && gliding < immediate - 5);
+    CHECK (std::abs (settled - immediate) <= 2);
+}
+
 } // namespace
 
 int main()
@@ -478,6 +518,7 @@ int main()
     testContinuumUserFormula();
     testContinuumPitchExpression();
     testMatriarchPatching();
+    testMatriarchGlideAndTap();
 
     if (failures == 0)
     {

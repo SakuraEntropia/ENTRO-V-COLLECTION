@@ -64,6 +64,8 @@ public:
     void setUiModWheel (float value) override { uiModWheel_.store (value); }
 
     float globalGainDb() const override { return globalGainDb_.load(); }
+    double uiTempoBpm() const override { return uiTempoBpm_.load(); }
+    void setUiTempoBpm (double bpm) override { uiTempoBpm_.store (juce::jlimit (20.0, 300.0, bpm)); }
     void setGlobalGainDb (float value) override { globalGainDb_.store (juce::jlimit (-60.0f, 12.0f, value)); }
     void setMorphPad (float x, float y, float pressure) override;
 
@@ -158,6 +160,7 @@ private:
     std::atomic<float> uiModWheel_ { 0.0f };
     std::atomic<float> uiAftertouch_ { 0.0f };
     std::atomic<float> globalGainDb_ { 0.0f };
+    std::atomic<double> uiTempoBpm_ { 120.0 };
     float lastAftertouchSent_ = -1.0f;
 
     juce::String currentPresetName_ { "INIT" };

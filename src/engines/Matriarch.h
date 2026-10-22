@@ -52,7 +52,7 @@ private:
         PLfo2Rate, PLfo2Bipolar,
         PAtten1, PAtten2, PAtten3,
         PDelayTime, PDelaySpacing, PDelayFeedback, PDelayMix, PDelaySync, PDelayPingPong,
-        PParamCount
+        PGlide, PParamCount
     };
 
     enum JackId
@@ -129,6 +129,8 @@ private:
     float aftertouch_ = 0.0f;     // 0..1
     float lastVelocity_ = 0.8f;
     float currentNote_ = 60.0f;
+    std::array<float, 4> glideNotes_ { 60.0f, 60.0f, 60.0f, 60.0f };
+    bool glideHasNote_ = false;
 
     TransportInfo transport_;
     uint64_t clockSamples_ = 0;

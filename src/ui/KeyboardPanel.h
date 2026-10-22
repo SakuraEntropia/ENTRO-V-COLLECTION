@@ -2,6 +2,7 @@
 
 #include "ui/EditorHost.h"
 #include "ui/LookAndFeel.h"
+#include "ui/Widgets.h"
 
 #include <juce_audio_utils/juce_audio_utils.h>
 #include <juce_gui_basics/juce_gui_basics.h>
@@ -46,6 +47,12 @@ private:
     juce::TextButton octaveUp_ { "OCT +" };
     juce::ComboBox partBox_;
     juce::Label partLabel_;
+    juce::Slider glide_;
+    juce::Label glideLabel_;
+    std::unique_ptr<LedButton> play_, hold_;
+    juce::TextButton tap_ { "TAP" };
+    TapTempo tapTempo_;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> glideAttachment_;
     int octave_ = 0;
     int lastPart_ = 1;
     int lowestNote_ = 36;
