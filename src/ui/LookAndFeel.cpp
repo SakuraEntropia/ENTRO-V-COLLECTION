@@ -55,7 +55,7 @@ void TriadLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, int wi
     const auto isBipolar = slider.getMinimum() < 0.0 && slider.getMaximum() > 0.0;
 
     const auto style = style_;
-    const auto knobRadius = radius * 0.74f;
+    const auto knobRadius = radius * 0.80f;
     const auto arcRadius = radius * 0.9f;
     const auto accentColour = style == HardwareStyle::PolyBrute
                                   ? juce::Colour (0xff3f93e8)
@@ -77,7 +77,7 @@ void TriadLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, int wi
     }
 
     // Illuminated value ring (PolyBrute / One). Matriarch knobs are unlit.
-    if (style != HardwareStyle::Matriarch)
+    if (style != HardwareStyle::Matriarch && ! (bool) slider.getProperties()["panelControl"])
     {
         juce::Path track;
         track.addCentredArc (centre.x, centre.y, arcRadius, arcRadius, 0.0f,
@@ -186,6 +186,18 @@ void TriadLookAndFeel::drawLinearSlider (juce::Graphics& g, int x, int y, int wi
 {
     const auto bounds = juce::Rectangle<int> (x, y, width, height).toFloat();
 
+    if ((bool) slider.getProperties()["numericField"])
+    {
+        g.setColour (juce::Colour (0xffeef0e9));
+        g.fillRect (bounds);
+        g.setColour (juce::Colour (0xff8c9990));
+        g.drawRect (bounds.reduced (0.5f), 0.8f);
+        g.setColour (juce::Colour (0xffad534e));
+        g.fillRect (bounds.getX(), bounds.getBottom() - 2.0f,
+                    bounds.getWidth() * (float) slider.valueToProportionOfLength (slider.getValue()), 1.0f);
+        return;
+    }
+
     if ((bool) slider.getProperties()["wheel"])
     {
         const auto wheel = bounds.reduced (2.0f, 2.0f);
@@ -288,7 +300,14 @@ void TriadLookAndFeel::drawComboBox (juce::Graphics& g, int width, int height, b
                                      int, int, int, int, juce::ComboBox& box)
 {
     const auto bounds = juce::Rectangle<int> (0, 0, width, height).toFloat();
-    if (style_ == HardwareStyle::PolyBrute)
+    if ((bool) box.getProperties()["continuumField"])
+    {
+        g.setColour (juce::Colour (0xffeef0e9));
+        g.fillRect (bounds);
+        g.setColour (juce::Colour (0xff8c9990));
+        g.drawRect (bounds.reduced (0.5f), 0.8f);
+    }
+    else if (style_ == HardwareStyle::PolyBrute)
     {
         g.setColour (juce::Colour (0xff08090b));
         g.fillRoundedRectangle (bounds, 2.0f);

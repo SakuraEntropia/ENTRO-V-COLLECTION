@@ -319,7 +319,7 @@ TriadEditor::TriadEditor (EditorHost& host)
     if (id == "polybrute")
     {
         defaultWidth = 1680;
-        defaultHeight = 1000;
+        defaultHeight = 640;
     }
     else if (id == "moogone" || id == "one")
     {
@@ -365,6 +365,16 @@ TriadEditor::TriadEditor (EditorHost& host)
             {
                 juce::PNGImageFormat png;
                 png.writeImageToStream (image, *stream);
+            }
+            // Native design coordinates, independent of fit-to-window zoom.
+            const auto transform = safe->panel_->getTransform();
+            safe->panel_->setTransform ({});
+            const auto panelImage = safe->panel_->createComponentSnapshot (safe->panel_->getLocalBounds());
+            safe->panel_->setTransform (transform);
+            if (auto stream = juce::File (path + ".panel.png").createOutputStream())
+            {
+                juce::PNGImageFormat png;
+                png.writeImageToStream (panelImage, *stream);
             }
         });
     }

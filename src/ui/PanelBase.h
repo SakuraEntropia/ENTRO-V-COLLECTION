@@ -44,6 +44,8 @@ public:
                            juce::Point<int> centre, int diameter);
     juce::Slider& addFader (const juce::String& paramId, const juce::String& label,
                             juce::Rectangle<int> area);
+    juce::Slider& addNumber (const juce::String& paramId, const juce::String& label,
+                             juce::Rectangle<int> area);
     juce::ComboBox& addChoice (const juce::String& paramId, const juce::String& label,
                                juce::Rectangle<int> area);
     HardwareSwitch& addSwitch (const juce::String& paramId, const juce::String& label,

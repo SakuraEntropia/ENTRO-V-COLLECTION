@@ -94,6 +94,8 @@ juce::Slider& PanelBase::addKnob (const juce::String& paramId, const juce::Strin
     auto* parameter = parameterFor (paramId);
 
     auto slider = std::make_unique<juce::Slider>();
+    slider->setName (paramId);
+    slider->getProperties().set ("panelControl", true);
     slider->setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
     slider->setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
     slider->setScrollWheelEnabled (true);
@@ -140,6 +142,7 @@ juce::Slider& PanelBase::addFader (const juce::String& paramId, const juce::Stri
     auto* parameter = parameterFor (paramId);
 
     auto slider = std::make_unique<juce::Slider>();
+    slider->setName (paramId);
     slider->setSliderStyle (juce::Slider::LinearVertical);
     slider->setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
     slider->setTooltip (spec != nullptr ? juce::String (spec->name) + "  [" + paramId + "]" : paramId);
@@ -167,6 +170,21 @@ juce::Slider& PanelBase::addFader (const juce::String& paramId, const juce::Stri
     return ref;
 }
 
+juce::Slider& PanelBase::addNumber (const juce::String& paramId, const juce::String& label,
+                                    juce::Rectangle<int> area)
+{
+    auto& slider = addKnob (paramId, label, area);
+    slider.setSliderStyle (juce::Slider::LinearBar);
+    slider.setBounds (area.withTrimmedBottom (14));
+    slider.setTextBoxStyle (juce::Slider::TextBoxLeft, false, area.getWidth(), area.getHeight() - 14);
+    slider.setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff34355f));
+    slider.setColour (juce::Slider::textBoxBackgroundColourId, juce::Colours::transparentBlack);
+    slider.setColour (juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
+    slider.setNumDecimalPlacesToDisplay (3);
+    slider.getProperties().set ("numericField", true);
+    return slider;
+}
+
 juce::ComboBox& PanelBase::addChoice (const juce::String& paramId, const juce::String& labelText,
                                       juce::Rectangle<int> area)
 {
@@ -183,6 +201,8 @@ juce::ComboBox& PanelBase::addChoice (const juce::String& paramId, const juce::S
         for (const auto& choice : spec->choices)
             items.add (choice);
 
+    combo->setName (paramId);
+    combo->getProperties().set ("continuumField", finish_ == Finish::Continuum);
     combo->addItemList (items, 1);
     combo->setJustificationType (juce::Justification::centredLeft);
     combo->setTooltip (spec != nullptr ? juce::String (spec->name) + "  [" + paramId + "]" : paramId);
@@ -221,6 +241,7 @@ HardwareSwitch& PanelBase::addSwitch (const juce::String& paramId, const juce::S
 
     auto component = std::make_unique<HardwareSwitch> (
         *parameter, vertical ? HardwareSwitch::Orientation::Vertical : HardwareSwitch::Orientation::Horizontal);
+    component->setName (paramId);
     component->setTooltip (spec != nullptr ? juce::String (spec->name) + "  [" + paramId + "]" : paramId);
 
     const auto labelHeight = 11;
@@ -253,6 +274,7 @@ LedButton& PanelBase::addLed (const juce::String& paramId, const juce::String& l
 
     auto component = std::make_unique<LedButton> (*parameter, labelText);
     component->setAccent (accent_);
+    component->setName (paramId);
     component->setTooltip (spec != nullptr ? juce::String (spec->name) + "  [" + paramId + "]" : paramId);
     component->setBounds (area);
     addAndMakeVisible (*component);
@@ -274,6 +296,7 @@ Jack& PanelBase::addJack (const juce::String& patchId, juce::Rectangle<int> area
     auto jack = std::make_unique<Jack> (index, spec != nullptr && spec->isOutput,
                                         spec != nullptr ? juce::String (spec->name) : patchId,
                                         accent_);
+    jack->setName (patchId);
     jack->setBounds (area);
     jack->onJackClicked = [this] (Jack& j) { handleJackClicked (j); };
     jack->onJackRightClicked = [this] (Jack& j) { handleJackRightClicked (j); };
@@ -289,7 +312,7 @@ Jack& PanelBase::addJack (const juce::String& patchId, juce::Rectangle<int> area
     {
         const auto labelHeight = 8;
         addLabel (juce::String (spec->name),
-                  { area.getX() - 22, area.getBottom(), area.getWidth() + 44, labelHeight },
+                  { area.getX() - 8, area.getBottom(), area.getWidth() + 16, labelHeight },
                   8.4f, juce::Colour (0xffe6e2d9), false);
     }
 
@@ -736,8 +759,11 @@ void PanelBase::paint (juce::Graphics& g)
             subtitleColour = juce::Colour (0xff4f5b56);
         }
 
-        g.setColour (juce::Colours::black.withAlpha (0.52f));
-        g.fillRoundedRectangle (area.translated (0.0f, 2.0f), 2.5f);
+        if (finish_ == Finish::PolyBrute || finish_ == Finish::MoogOne)
+        {
+            g.setColour (juce::Colours::black.withAlpha (0.52f));
+            g.fillRoundedRectangle (area.translated (0.0f, 2.0f), 2.5f);
+        }
 
         if (module.tone == ModuleTone::Light && finish_ != Finish::PolyBrute)
         {
@@ -752,7 +778,7 @@ void PanelBase::paint (juce::Graphics& g)
 
         g.fillRoundedRectangle (area, 2.0f);
         g.setColour (border.withAlpha (finish_ == Finish::PolyBrute ? 0.58f : 0.62f));
-        g.drawRoundedRectangle (area.reduced (0.5f), 2.0f,
+        g.drawRoundedRectangle (area.reduced (0.5f), finish_ == Finish::Matriarch ? 0.0f : 2.0f,
                                 finish_ == Finish::PolyBrute ? 1.2f : 1.0f);
 
         // Engraved plate edge / inner bevel.
@@ -826,7 +852,7 @@ void PanelBase::paint (juce::Graphics& g)
             g.setColour (juce::Colour (0xffd9d5cb).withAlpha (0.55f));
             g.setFont (juce::Font (juce::FontOptions (7.5f)).withExtraKerningFactor (0.28f));
             g.drawText (brandSub_.toUpperCase(),
-                        brandArea.withTrimmedLeft (222).withHeight (48),
+                        brandArea.withTrimmedLeft (280).withHeight (48),
                         juce::Justification::centredLeft);
 
 
