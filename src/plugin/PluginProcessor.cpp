@@ -529,6 +529,7 @@ void TriadAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         MidiEvent allOff;
         allOff.type = MidiEventType::AllNotesOff;
         addScheduledEvent (0, allOff);
+        sequencer_.setPlaying (false);
         sequencer_.allNotesOff();
         lastSequencerEnabled_ = sequencerEnabled;
     }

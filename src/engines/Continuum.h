@@ -155,6 +155,8 @@ private:
 
     int allocateVoice (int note, int channel);
     Voice* findVoice (int note);
+    template <typename Fn>
+    void updateVoicesForNote (int note, Fn&& fn);
     void startVoice (Voice& voice, int note, int channel, float velocity);
     void releaseVoice (Voice& voice);
     void updateChannelExpression (int channel);

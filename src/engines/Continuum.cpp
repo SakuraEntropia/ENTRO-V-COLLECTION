@@ -322,10 +322,9 @@ void ContinuumEngine::processMidi (const MidiEvent& event)
         case MidiEventType::NoteOn:
         {
             const auto channel = clampValue (event.channel, 0, 15);
-            auto* existing = findVoice (event.note);
-
-            if (existing != nullptr && existing->held)
-                releaseVoice (*existing);
+            for (auto& voice : voices_)
+                if (voice.active && voice.held && voice.note == event.note)
+                    releaseVoice (voice);
 
             auto index = allocateVoice (event.note, channel);
             if (index >= 0)
@@ -337,8 +336,12 @@ void ContinuumEngine::processMidi (const MidiEvent& event)
         }
 
         case MidiEventType::NoteOff:
-            if (auto* voice = findVoice (event.note))
-                releaseVoice (*voice);
+            // The surface uses one fixed carrier note.  Release every voice
+            // with that note, including release tails, so a later touch cannot
+            // inherit the previous touch's pitch.
+            for (auto& voice : voices_)
+                if (voice.active && voice.note == event.note)
+                    releaseVoice (voice);
             break;
 
         case MidiEventType::AllNotesOff:
@@ -373,15 +376,15 @@ void ContinuumEngine::processMidi (const MidiEvent& event)
         }
 
         case MidiEventType::NoteExpression:
-            if (auto* voice = findVoice (event.note))
+            updateVoicesForNote (event.note, [&] (Voice& voice)
             {
                 if (event.controller == 0)
-                    voice->exprPitch = clampValue (event.value, -48.0f, 48.0f);
+                    voice.exprPitch = clampValue (event.value, -48.0f, 48.0f);
                 else if (event.controller == 1)
-                    voice->timbre = clamp01 (event.value);
+                    voice.timbre = clamp01 (event.value);
                 else if (event.controller == 2)
-                    voice->pressure = clamp01 (event.value);
-            }
+                    voice.pressure = clamp01 (event.value);
+            });
             break;
 
         case MidiEventType::ControlChange:
@@ -472,15 +475,23 @@ void ContinuumEngine::releaseVoice (Voice& voice)
         env.noteOff();
 }
 
+template <typename Fn>
+void ContinuumEngine::updateVoicesForNote (int note, Fn&& fn)
+{
+    for (auto& voice : voices_)
+        if (voice.active && voice.note == note)
+            fn (voice);
+}
+
 void ContinuumEngine::setNoteExpression (int note, float pitchSemitones,
                                          float timbre01, float pressure01)
 {
-    if (auto* voice = findVoice (note))
+    updateVoicesForNote (note, [&] (Voice& voice)
     {
-        voice->exprPitch = clampValue (pitchSemitones, -48.0f, 48.0f);
-        voice->timbre = clamp01 (timbre01);
-        voice->pressure = clamp01 (pressure01);
-    }
+        voice.exprPitch = clampValue (pitchSemitones, -48.0f, 48.0f);
+        voice.timbre = clamp01 (timbre01);
+        voice.pressure = clamp01 (pressure01);
+    });
 }
 
 int ContinuumEngine::activeVoiceCount() const

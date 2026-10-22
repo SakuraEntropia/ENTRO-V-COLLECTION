@@ -196,9 +196,12 @@ int PatternSequencer::pickArpNote()
     }
 
     const auto octave = (orderIndex_ / noteCount) % octaveCount;
+    const auto orderedNote = mode == Mode::Order
+                                 ? heldNotes_[(size_t) (orderIndex_ % noteCount)]
+                                 : notes[(size_t) index];
     ++orderIndex_;
 
-    return std::clamp (notes[(size_t) index] + 12 * octave, 0, 127);
+    return std::clamp (orderedNote + 12 * octave, 0, 127);
 }
 
 int PatternSequencer::process (int numSamples, Event* events, int maxEventCount)

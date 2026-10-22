@@ -41,7 +41,10 @@ void HardwareSwitch::setAccent (juce::Colour colour)
 
 void HardwareSwitch::setPositionFromValue (float value)
 {
-    const auto index = juce::jlimit (0, positions_ - 1, (int) std::lround (value));
+    // ParameterAttachment delivers a normalised 0..1 value, not the choice
+    // index.  Scale it back to the switch's discrete positions.
+    const auto index = juce::jlimit (0, positions_ - 1,
+                                     (int) std::lround (value * (float) (positions_ - 1)));
     if (index != current_)
     {
         current_ = index;
