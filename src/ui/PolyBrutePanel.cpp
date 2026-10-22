@@ -170,372 +170,154 @@ private:
 };
 
 PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
-    : PanelBase (editorHost, "POLYBRUTE V", 1900, 1000, polyAccent())
+    : PanelBase (editorHost, "POLYBRUTE V", 2360, 600, polyAccent())
 {
     setBranding ("POLYBRUTE V", "SIX-VOICE ANALOG SYNTHESIZER");
+    const juce::Rectangle<int> performance { 24, 16, 176, 516 }, voice { 206, 16, 140, 516 },
+        vco1 { 352, 16, 228, 168 }, mixer { 586, 16, 88, 168 },
+        steiner { 680, 16, 236, 168 }, env1 { 922, 16, 230, 168 }, lfo1 { 1158, 16, 242, 168 },
+        vco2 { 352, 190, 228, 168 }, ladder { 586, 190, 324, 168 },
+        env2 { 916, 190, 230, 168 }, lfo2 { 1152, 190, 248, 168 },
+        fm { 352, 364, 318, 168 }, routing { 676, 364, 240, 168 },
+        env3 { 922, 364, 230, 168 }, lfo3 { 1158, 364, 242, 168 },
+        matrix { 1410, 16, 430, 516 }, fx { 1850, 16, 486, 344 }, arp { 1850, 368, 486, 164 };
+    for (const auto& m : std::vector<std::pair<juce::String, juce::Rectangle<int>>> {
+        { "PERFORMANCE", performance }, { "VOICE", voice }, { "VCO 1", vco1 }, { "MIXER", mixer },
+        { "STEINER FILTER", steiner }, { "VCF ENV", env1 }, { "LFO 1", lfo1 },
+        { "VCO 2", vco2 }, { "LADDER FILTER", ladder }, { "VCA ENV", env2 }, { "LFO 2", lfo2 },
+        { "FILTER FM / NOISE", fm }, { "ROUTING", routing }, { "MOD ENV", env3 }, { "LFO 3", lfo3 },
+        { "MATRIX", matrix }, { "EFFECTS", fx }, { "ARPEGGIATOR", arp } })
+        addModule (m.first, m.second);
 
-    const auto accent = polyAccent();
+    auto knob = [this] (const juce::String& id, const char* label, int x, int y, int d = 42)
+    { addKnob (id, label, { x, y }, d); };
+    addButton ("CAPTURE B", { 38, 52, 148, 26 }, [this] { host().captureMorphB(); });
+    addButton ("SWAP A/B", { 38, 86, 148, 26 }, [this] { host().swapMorphB(); });
+    knob ("poly.voice.morph", "MORPH A / B", 112, 165, 60);
+    knob ("poly.voice.spread", "SPREAD", 72, 248);
+    knob ("poly.voice.analog", "ANALOG", 152, 248);
+    addCaption ("MORPH PERFORMANCE", { 32, 298, 160, 18 }, juce::Justification::centred, 11.0f,
+                juce::Colour (0xffe6e1d6), true);
+    morphPad_ = std::make_unique<MorphPad> (host());
+    morphPad_->setBounds (32, 322, 160, 158);
+    addAndMakeVisible (*morphPad_);
+    addCaption ("X MORPH   Y SPREAD\nZ PRESSURE / WHEEL", { 32, 488, 160, 32 },
+                juce::Justification::centred, 10.0f);
+    addChoice ("poly.voice.mode", "VOICE MODE", { 218, 52, 116, 36 });
+    addChoice ("poly.voice.unison", "UNISON", { 218, 113, 116, 36 });
+    knob ("poly.voice.glide", "GLIDE", 276, 201, 48);
+    addChoice ("poly.voice.pitchBendRange", "BEND RANGE", { 218, 257, 116, 36 });
+    knob ("poly.voice.spread", "SPREAD", 276, 350, 48);
+    knob ("poly.voice.analog", "ANALOG", 276, 447, 48);
 
-    // Layout follows the hardware: performance at the far left, voice
-    // management next, then a three-row synthesis block, matrix, effects and
-    // arpeggiator.
-    const juce::Rectangle<int> perfArea { 8, 8, 168, 820 };
-    const juce::Rectangle<int> voiceArea { 184, 8, 150, 820 };
-
-    const juce::Rectangle<int> vco1Area { 342, 8, 150, 268 };
-    const juce::Rectangle<int> mixerArea { 500, 8, 120, 268 };
-    const juce::Rectangle<int> steinerArea { 628, 8, 160, 268 };
-    const juce::Rectangle<int> vcfEnvArea { 796, 8, 150, 268 };
-    const juce::Rectangle<int> lfo1Area { 954, 8, 128, 268 };
-
-    const juce::Rectangle<int> vco2Area { 342, 284, 150, 268 };
-    const juce::Rectangle<int> ladderArea { 500, 284, 160, 268 };
-    const juce::Rectangle<int> vcaEnvArea { 668, 284, 150, 268 };
-    const juce::Rectangle<int> lfo2Area { 826, 284, 128, 268 };
-
-    const juce::Rectangle<int> filterFmArea { 342, 560, 270, 268 };
-    const juce::Rectangle<int> routingArea { 628, 560, 160, 268 };
-    const juce::Rectangle<int> modEnvArea { 796, 560, 150, 268 };
-    const juce::Rectangle<int> lfo3Area { 954, 560, 128, 268 };
-
-    const juce::Rectangle<int> matrixArea { 1092, 8, 330, 852 };
-    const juce::Rectangle<int> fxArea { 1430, 8, 230, 852 };
-    const juce::Rectangle<int> arpArea { 1668, 8, 224, 852 };
-
-    addModule ("PERFORMANCE", perfArea);
-    addModule ("VOICE", voiceArea);
-    addModule ("VCO 1", vco1Area);
-    addModule ("MIXER", mixerArea);
-    addModule ("STEINER FILTER", steinerArea);
-    addModule ("VCF ENV", vcfEnvArea, ModuleTone::Light);
-    addModule ("LFO 1", lfo1Area);
-    addModule ("VCO 2", vco2Area);
-    addModule ("LADDER FILTER", ladderArea);
-    addModule ("VCA ENV", vcaEnvArea, ModuleTone::Light);
-    addModule ("LFO 2", lfo2Area);
-    addModule ("FILTER FM / NOISE", filterFmArea);
-    addModule ("ROUTING", routingArea);
-    addModule ("MOD ENV", modEnvArea, ModuleTone::Light);
-    addModule ("LFO 3", lfo3Area);
-    addModule ("MATRIX", matrixArea, ModuleTone::Light);
-    addModule ("EFFECTS", fxArea);
-    addModule ("ARPEGGIATOR", arpArea);
-
-    // -----------------------------------------------------------------------
-    // Performance and voice management
-    // -----------------------------------------------------------------------
+    auto oscillator = [&] (const char* prefix, juce::Rectangle<int> area, bool second)
     {
-        const auto x = perfArea.getX() + 8;
-        const auto width = perfArea.getWidth() - 16;
-        auto y = 34;
-
-        auto& lcd = addLcd ({ x, y, width, 84 });
-        lcd.setText ("MORPH", "A / B", "CAPTURE OR SWAP");
-        y += 96;
-
-        addButton ("CAPTURE B", { x, y, width, 30 }, [this] { host().captureMorphB(); });
-        y += 36;
-        addButton ("SWAP A/B", { x, y, width, 30 }, [this] { host().swapMorphB(); });
-        y += 46;
-
-        addCaption ("THE B SIDE IS STORED IN PROJECT STATE.",
-                    { x, y, width, 44 }, juce::Justification::topLeft, 7.0f,
-                    juce::Colour (0xffd0ccc3));
-
-        addKnob ("poly.voice.spread", "SPREAD", { x, 470, width, 58 });
-        addKnob ("poly.voice.analog", "ANALOG", { x, 536, width, 58 });
-    }
-
-    {
-        const auto x = voiceArea.getX() + 6;
-        const auto width = voiceArea.getWidth() - 12;
-        auto y = 38;
-
-        addChoice ("poly.voice.mode", "VOICE MODE", { x, y, width, 42 }); y += 50;
-        addChoice ("poly.voice.unison", "UNISON", { x, y, width, 42 }); y += 50;
-        addKnob ("poly.voice.glide", "GLIDE", { x, y, width, 56 }); y += 62;
-        addChoice ("poly.voice.pitchBendRange", "BEND RANGE", { x, y, width, 42 }); y += 50;
-        addKnob ("poly.voice.spread", "SPREAD", { x, y, width, 56 }); y += 62;
-        addKnob ("poly.voice.analog", "ANALOG", { x, y, width, 56 });
-    }
-
-    // -----------------------------------------------------------------------
-    // VCO 1 / VCO 2
-    // -----------------------------------------------------------------------
-    {
-        const auto x = vco1Area.getX() + 6;
-        const auto cellWidth = (vco1Area.getWidth() - 12) / 2;
-        auto y = vco1Area.getY() + 28;
-
-        addSwitch ("poly.vcoA.octave", "OCTAVE", { x, y, vco1Area.getWidth() - 12, 34 }); y += 38;
-        addKnob ("poly.vcoA.tune", "TUNE", { x, y, cellWidth, 48 });
-        addKnob ("poly.vcoA.wave", "SAW/TRI", { x + cellWidth, y, cellWidth, 48 }); y += 48;
-        addKnob ("poly.vcoA.pw", "PULSE W", { x, y, cellWidth, 48 });
-        addKnob ("poly.vcoA.pulse", "PULSE", { x + cellWidth, y, cellWidth, 48 }); y += 48;
-        addKnob ("poly.vcoA.level", "LEVEL", { x, y, cellWidth, 48 });
-        addKnob ("poly.vcoA.metalizer", "METALIZER", { x + cellWidth, y, cellWidth, 48 });
-    }
-
-    {
-        const auto x = vco2Area.getX() + 6;
-        const auto cellWidth = (vco2Area.getWidth() - 12) / 2;
-        auto y = vco2Area.getY() + 28;
-
-        addSwitch ("poly.vcoB.octave", "OCTAVE", { x, y, vco2Area.getWidth() - 12, 34 }); y += 38;
-        addKnob ("poly.vcoB.tune", "TUNE", { x, y, cellWidth, 46 });
-        addKnob ("poly.vcoB.wave", "SAW/TRI", { x + cellWidth, y, cellWidth, 46 }); y += 46;
-        addKnob ("poly.vcoB.pw", "PULSE W", { x, y, cellWidth, 46 });
-        addKnob ("poly.vcoB.pulse", "PULSE", { x + cellWidth, y, cellWidth, 46 }); y += 46;
-        addKnob ("poly.vcoB.level", "LEVEL", { x, y, cellWidth, 46 });
-        addKnob ("poly.vcoB.sub", "SUB OSC", { x + cellWidth, y, cellWidth, 46 }); y += 50;
-
-        auto& sync = addLed ("poly.vcoB.sync", "HARD SYNC", { x, y, vco2Area.getWidth() - 12, 20 });
-        sync.setAccent (accent);
-        y += 24;
-        addKnob ("poly.vcoB.fm", "B > A FM", { x, y, vco2Area.getWidth() - 12, 44 });
-    }
-
-    // -----------------------------------------------------------------------
-    // Mixer / filters
-    // -----------------------------------------------------------------------
-    {
-        const auto x = mixerArea.getX() + 6;
-        const auto width = mixerArea.getWidth() - 12;
-
-        addKnob ("poly.mixer.noise", "NOISE", { x, 34, width, 62 });
-        addSwitch ("poly.mixer.noiseColor", "COLOR", { x, 104, width, 40 });
-    }
-
-    {
-        const auto x = steinerArea.getX() + 6;
-        const auto cellWidth = (steinerArea.getWidth() - 12) / 2;
-        auto y = 30;
-
-        addKnob ("poly.steiner.mode", "MODE", { x, y, steinerArea.getWidth() - 12, 48 }); y += 52;
-        addKnob ("poly.steiner.cutoff", "CUTOFF", { x, y, cellWidth, 48 });
-        addKnob ("poly.steiner.resonance", "RESO", { x + cellWidth, y, cellWidth, 48 }); y += 52;
-        addKnob ("poly.steiner.envAmt", "ENV AMT", { x, y, cellWidth, 48 });
-        addKnob ("poly.steiner.fm", "FILTER FM", { x + cellWidth, y, cellWidth, 48 }); y += 52;
-        addKnob ("poly.steiner.keyTrack", "KEY TRACK", { x, y, cellWidth, 48 });
-        addKnob ("poly.steiner.level", "LEVEL", { x + cellWidth, y, cellWidth, 48 });
-    }
-
-    {
-        const auto x = ladderArea.getX() + 6;
-        const auto cellWidth = (ladderArea.getWidth() - 12) / 2;
-        auto y = ladderArea.getY() + 30;
-
-        addKnob ("poly.ladder.cutoff", "CUTOFF", { x, y, cellWidth, 48 });
-        addKnob ("poly.ladder.resonance", "RESO", { x + cellWidth, y, cellWidth, 48 }); y += 52;
-        addKnob ("poly.ladder.drive", "BRUTE", { x, y, cellWidth, 48 });
-        addKnob ("poly.ladder.envAmt", "ENV AMT", { x + cellWidth, y, cellWidth, 48 }); y += 52;
-        addKnob ("poly.ladder.keyTrack", "KEY TRACK", { x, y, cellWidth, 48 });
-        addKnob ("poly.ladder.level", "LEVEL", { x + cellWidth, y, cellWidth, 48 });
-    }
-
-    {
-        const auto x = filterFmArea.getX() + 6;
-        const auto cellWidth = (filterFmArea.getWidth() - 12) / 3;
-        auto y = filterFmArea.getY() + 30;
-
-        addKnob ("poly.steiner.fm", "VCO2>VCF", { x, y, cellWidth, 50 });
-        addKnob ("poly.mixer.noise", "NOISE", { x + cellWidth, y, cellWidth, 50 });
-        addSwitch ("poly.mixer.noiseColor", "NOISE COLOR",
-                   { x + cellWidth * 2, y, cellWidth, 34 });
-        y += 62;
-        addCaption ("NOISE INTO THE MIXER AND FILTER FM INTO THE STEINER CUTOFF.",
-                    { x, y, filterFmArea.getWidth() - 12, 52 },
-                    juce::Justification::topLeft, 7.0f, juce::Colour (0xffd0ccc3));
-    }
-
-    {
-        const auto x = routingArea.getX() + 6;
-        const auto width = routingArea.getWidth() - 12;
-
-        addChoice ("poly.filters.routing", "FILTER ROUTING",
-                   { x, routingArea.getY() + 34, width, 40 });
-        addKnob ("poly.filters.balance", "BALANCE",
-                 { x, routingArea.getY() + 88, width, 54 });
-        addCaption ("SERIAL / PARALLEL / SPLIT", { x, routingArea.getY() + 152, width, 24 },
-                    juce::Justification::centred, 7.0f, juce::Colour (0xffd0ccc3));
-    }
-
-    // -----------------------------------------------------------------------
-    // Envelopes (hardware-style faders)
-    // -----------------------------------------------------------------------
-    auto buildEnvelope = [&] (const juce::String& stem, juce::Rectangle<int> area)
-    {
-        const auto x = area.getX() + 6;
-        const auto width = area.getWidth() - 12;
-        const auto cellWidth = width / 5;
-
-        const char* names[5] = { "VELO", "ATT", "DEC", "SUS", "REL" };
-        const char* suffixes[5] = { "velocity", "attack", "decay", "sustain", "release" };
-
-        for (int i = 0; i < 5; ++i)
-            addFader (stem + suffixes[i], names[i],
-                      { x + i * cellWidth, area.getY() + 30, cellWidth, 220 });
-    };
-
-    buildEnvelope ("poly.env1.", vcfEnvArea);
-    buildEnvelope ("poly.env2.", vcaEnvArea);
-    buildEnvelope ("poly.env3.", modEnvArea);
-
-    // -----------------------------------------------------------------------
-    // LFOs
-    // -----------------------------------------------------------------------
-    auto buildLfo = [&] (int index, juce::Rectangle<int> area,
-                         const juce::String& amountId, const juce::String& amountLabel)
-    {
-        const auto stem = "poly.lfo" + juce::String (index) + ".";
-        const auto x = area.getX() + 5;
-        const auto width = area.getWidth() - 10;
-        auto y = area.getY() + 28;
-
-        addKnob (stem + "rate", "RATE", { x, y, width, 46 }); y += 50;
-        addChoice (stem + "wave", "WAVE", { x, y, width, 30 }); y += 34;
-        auto& sync = addLed (stem + "sync", "SYNC", { x, y, width, 20 });
-        sync.setAccent (accent);
-        y += 24;
-        auto& retrig = addLed (stem + "retrigger", "RETRIG", { x, y, width, 20 });
-        retrig.setAccent (accent);
-        y += 24;
-        addKnob (stem + "fade", "FADE", { x, y, width, 44 }); y += 48;
-
-        addKnob (amountId, amountLabel, { x, y, width, 44 });
-    };
-
-    buildLfo (1, lfo1Area, "poly.lfo1.pitchAmt", "PITCH");
-    buildLfo (2, lfo2Area, "poly.lfo2.pwmAmt", "PWM");
-    buildLfo (3, lfo3Area, "poly.lfo3.cutoffAmt", "CUTOFF");
-
-    // -----------------------------------------------------------------------
-    // Morph performance pad, lower-left: X = morph A/B, Y = spread,
-    // Z = touch pressure / aftertouch.  The pressure slider is the fallback
-    // for Windows machines and mice without force/pressure data.
-    // -----------------------------------------------------------------------
-    {
-        const juce::Rectangle<int> morphBar { 8, 836, 740, 108 };
-        addModule ("MORPH PERFORMANCE", morphBar);
-
-        morphPad_ = std::make_unique<MorphPad> (host());
-        morphPad_->setBounds (morphBar.getX() + 8, morphBar.getY() + 26, 280, 72);
-        addAndMakeVisible (*morphPad_);
-
-        addButton ("CAPTURE B", { morphBar.getX() + 300, morphBar.getY() + 30, 150, 28 },
-                   [this] { host().captureMorphB(); });
-        addButton ("SWAP A/B", { morphBar.getX() + 460, morphBar.getY() + 30, 150, 28 },
-                   [this] { host().swapMorphB(); });
-
-        addCaption ("X = MORPH A/B   Y = SPREAD   Z = PRESSURE / AFTERTOUCH",
-                    { morphBar.getX() + 300, morphBar.getY() + 66, 430, 24 },
-                    juce::Justification::centredLeft, 7.0f,
-                    juce::Colour (0xffd0ccc3));
-    }
-
-    // -----------------------------------------------------------------------
-    // Matrix
-    // -----------------------------------------------------------------------
-    {
-        const auto x = matrixArea.getX() + 8;
-        const auto width = matrixArea.getWidth() - 16;
-
-        auto& screen = addLcd ({ x, 28, width, 96 });
-        screen.setText ("POLYBRUTE V",
-                        "MOD MATRIX  /  SOURCE x SLOT",
-                        "A/B  ·  6 VOICE  ·  SLOT 1-8");
-
-        std::vector<juce::String> sources;
-        for (int slot = 1; slot <= 8; ++slot)
-            sources.push_back ("poly.mod.slot" + juce::String (slot) + ".source");
-
-        addSourceMatrix (sources, 12, { x, 134, 190, 300 });
-
-        for (int slot = 1; slot <= 8; ++slot)
+        const juce::String stem (prefix);
+        const auto x = area.getX(); const auto y = area.getY();
+        knob (stem + "tune", "TUNE", x + 40, y + 52);
+        knob (stem + (second ? "sub" : "metalizer"), second ? "SUB OSC" : "METALIZER", x + 114, y + 52);
+        knob (stem + "pw", "PULSE WIDTH", x + 188, y + 52);
+        knob (stem + "wave", "SAW / TRI", x + 40, y + 113);
+        knob (stem + "pulse", "PULSE", x + 114, y + 113);
+        knob (stem + "level", "LEVEL", x + 188, y + 113);
+        addChoice (stem + "octave", "", { x + 12, y + 147, 84, 18 });
+        if (second)
         {
-            const auto y = 454 + (slot - 1) * 48;
-            const auto stem = "poly.mod.slot" + juce::String (slot) + ".";
-
-            addCaption (juce::String (slot), { x, y + 6, 16, 12 },
-                        juce::Justification::centred, 8.0f, juce::Colour (0xff20262a));
-            addChoice (stem + "dest", "", { x + 20, y, 160, 34 });
-            addKnob (stem + "amount", "AMT", { x + 186, y - 6, 48, 42 });
+            addLed (stem + "sync", "SYNC", { x + 102, y + 147, 54, 18 });
+            // FM amount is in the FILTER FM block, alongside filter modulation.
+            knob (stem + "fm", "VCO 2 > 1", fm.getX() + 52, fm.getY() + 70, 48);
         }
-    }
+    };
+    oscillator ("poly.vcoA.", vco1, false);
+    oscillator ("poly.vcoB.", vco2, true);
+    knob ("poly.mixer.noise", "NOISE", 630, 65);
+    addSwitch ("poly.mixer.noiseColor", "COLOR", { 594, 118, 72, 35 });
 
-    // -----------------------------------------------------------------------
-    // Effects
-    // -----------------------------------------------------------------------
+    const char* steinerIds[] = { "mode", "cutoff", "resonance", "envAmt", "fm", "keyTrack", "level" };
+    const char* steinerLabels[] = { "MODE", "CUTOFF", "RESO", "ENV AMT", "FILTER FM", "KEY TRACK", "LEVEL" };
+    for (int i = 0; i < 7; ++i)
+        knob ("poly.steiner." + juce::String (steinerIds[i]), steinerLabels[i],
+              710 + i % 4 * 58, 66 + i / 4 * 68, 38);
+    const char* ladderIds[] = { "cutoff", "resonance", "drive", "envAmt", "keyTrack", "level" };
+    const char* ladderLabels[] = { "CUTOFF", "RESO", "BRUTE", "ENV AMT", "KEY TRACK", "LEVEL" };
+    for (int i = 0; i < 6; ++i)
+        knob ("poly.ladder." + juce::String (ladderIds[i]), ladderLabels[i],
+              640 + i % 3 * 108, 240 + i / 3 * 68, i == 0 ? 48 : 42);
+    knob ("poly.steiner.fm", "VCO 2 > VCF", 510, 434, 48);
+    knob ("poly.mixer.noise", "NOISE", 614, 434, 48);
+    addSwitch ("poly.mixer.noiseColor", "NOISE COLOR", { 454, 491, 128, 32 });
+    addChoice ("poly.filters.routing", "FILTER ROUTING", { 690, 411, 146, 36 });
+    knob ("poly.filters.balance", "BALANCE", 793, 482, 48);
+
+    auto envelope = [&] (int n, juce::Rectangle<int> area)
     {
-        const auto x = fxArea.getX() + 6;
-        const auto width = fxArea.getWidth() - 12;
-        auto y = 28;
-
-        addCaption ("DISTORTION", { x, y, width, 10 }, juce::Justification::centred,
-                    7.5f, juce::Colour (0xffe4e0d7), true);
-        y += 14;
-        addChoice ("poly.fx.dist.type", "", { x, y, width, 28 }); y += 32;
-        addKnob ("poly.fx.dist.drive", "DRIVE", { x, y, width, 44 }); y += 46;
-        addKnob ("poly.fx.dist.mix", "MIX", { x, y, width, 44 }); y += 52;
-
-        addCaption ("MODULATION", { x, y, width, 10 }, juce::Justification::centred,
-                    7.5f, juce::Colour (0xffe4e0d7), true);
-        y += 14;
-        addKnob ("poly.fx.chorus.rate", "CHORUS RATE", { x, y, width, 44 }); y += 46;
-        addKnob ("poly.fx.chorus.depth", "DEPTH", { x, y, width, 44 }); y += 46;
-        addKnob ("poly.fx.chorus.mix", "MIX", { x, y, width, 44 }); y += 52;
-
-        addCaption ("DELAY", { x, y, width, 10 }, juce::Justification::centred,
-                    7.5f, juce::Colour (0xffe4e0d7), true);
-        y += 14;
-        addKnob ("poly.fx.delay.time", "TIME", { x, y, width, 44 }); y += 46;
-        addKnob ("poly.fx.delay.feedback", "FEEDBACK", { x, y, width, 44 }); y += 46;
-        addKnob ("poly.fx.delay.mix", "MIX", { x, y, width, 44 }); y += 46;
-        auto& ping = addLed ("poly.fx.delay.pingPong", "PING PONG", { x, y, width, 20 });
-        ping.setAccent (accent);
-        y += 24;
-        auto& sync = addLed ("poly.fx.delay.sync", "TEMPO SYNC", { x, y, width, 20 });
-        sync.setAccent (accent);
-        y += 30;
-
-        addCaption ("REVERB", { x, y, width, 10 }, juce::Justification::centred,
-                    7.5f, juce::Colour (0xffe4e0d7), true);
-        y += 14;
-        addKnob ("poly.fx.reverb.size", "SIZE", { x, y, width, 44 }); y += 46;
-        addKnob ("poly.fx.reverb.damping", "DAMPING", { x, y, width, 44 }); y += 46;
-        addKnob ("poly.fx.reverb.mix", "MIX", { x, y, width, 44 });
-    }
-
-    // -----------------------------------------------------------------------
-    // Arpeggiator
-    // -----------------------------------------------------------------------
+        const char* ids[] = { "velocity", "attack", "decay", "sustain", "release" };
+        const char* names[] = { "VELO", "ATT", "DEC", "SUS", "REL" };
+        for (int i = 0; i < 5; ++i)
+            addFader ("poly.env" + juce::String (n) + "." + ids[i], names[i],
+                      { area.getX() + 8 + i * 43, area.getY() + 32, 42, 128 });
+    };
+    envelope (1, env1); envelope (2, env2); envelope (3, env3);
+    auto lfo = [&] (int n, juce::Rectangle<int> area, const char* amount, const char* label)
     {
-        const auto x = arpArea.getX() + 6;
-        const auto width = arpArea.getWidth() - 12;
-        auto y = 34;
+        const auto stem = "poly.lfo" + juce::String (n) + ".";
+        const auto x = area.getX(); const auto y = area.getY();
+        knob (stem + "rate", "RATE", x + 42, y + 56);
+        knob (stem + "fade", "FADE", x + 121, y + 56);
+        knob (amount, label, x + 200, y + 56);
+        addChoice (stem + "wave", "WAVEFORM", { x + 14, y + 106, 108, 35 });
+        addLed (stem + "sync", "SYNC", { x + 132, y + 108, 94, 21 });
+        addLed (stem + "retrigger", "RETRIGGER", { x + 132, y + 138, 94, 21 });
+    };
+    lfo (1, lfo1, "poly.lfo1.pitchAmt", "PITCH");
+    lfo (2, lfo2, "poly.lfo2.pwmAmt", "PWM");
+    lfo (3, lfo3, "poly.lfo3.cutoffAmt", "CUTOFF");
 
-        auto& enabled = addLed ("poly.arp.enabled", "ARPEGGIATOR", { x, y, width, 24 });
-        enabled.setAccent (accent);
-        y += 34;
-        addChoice ("poly.arp.mode", "MODE", { x, y, width, 40 }); y += 48;
-        addChoice ("poly.arp.rate", "RATE", { x, y, width, 40 }); y += 48;
-        addSwitch ("poly.arp.octaves", "OCTAVES", { x, y, width, 34 }); y += 42;
-        auto& hold = addLed ("poly.arp.hold", "HOLD", { x, y, width, 22 });
-        hold.setAccent (accent);
-        y += 30;
-        addChoice ("poly.arp.length", "LENGTH", { x, y, width, 40 }); y += 56;
-
-        addCaption ("CLICK A MATRIX CELL TO SET THE SLOT SOURCE. USE THE ROWS BELOW FOR DESTINATION AND AMOUNT.",
-                    { x, y, width, 110 }, juce::Justification::topLeft, 7.0f,
-                    juce::Colour (0xffd0ccc3));
+    auto& lcd = addLcd ({ 1424, 44, 402, 70 });
+    lcd.setText ("POLYBRUTE V  /  MOD MATRIX", "SOURCE x SLOT", "MORPH A / B     6 VOICE     8 SLOTS");
+    std::vector<juce::String> sources;
+    for (int slot = 1; slot <= 8; ++slot)
+        sources.push_back ("poly.mod.slot" + juce::String (slot) + ".source");
+    addSourceMatrix (sources, 12, { 1490, 144, 184, 360 });
+    // Labels come from the actual source enumeration, including None.
+    if (const auto* spec = definition().find ("poly.mod.slot1.source"))
+        for (int i = 0; i < (int) spec->choices.size() && i < 12; ++i)
+            addCaption (spec->choices[(size_t) i], { 1418, 144 + i * 30, 68, 30 },
+                        juce::Justification::centredRight, 9.0f);
+    for (int slot = 1; slot <= 8; ++slot)
+    {
+        const auto y = 138 + (slot - 1) * 47;
+        const auto stem = "poly.mod.slot" + juce::String (slot) + ".";
+        addChoice (stem + "dest", "", { 1684, y + 4, 100, 26 });
+        knob (stem + "amount", "AMT", 1807, y + 19, 30);
     }
+
+    // Right-hand effects block: rows of controls above the sequencer/arp.
+    addChoice ("poly.fx.dist.type", "DISTORTION", { 1868, 54, 154, 35 });
+    knob ("poly.fx.dist.drive", "DRIVE", 2090, 73);
+    knob ("poly.fx.dist.mix", "MIX", 2246, 73);
+    const char* suffix[] = { "rate", "depth", "mix" };
+    const char* labels[] = { "CHORUS RATE", "DEPTH", "MIX" };
+    for (int i = 0; i < 3; ++i)
+        knob ("poly.fx.chorus." + juce::String (suffix[i]), labels[i], 1926 + i * 160, 143);
+    const char* delayIds[] = { "time", "feedback", "mix" };
+    const char* delayLabels[] = { "DELAY TIME", "FEEDBACK", "MIX" };
+    for (int i = 0; i < 3; ++i)
+        knob ("poly.fx.delay." + juce::String (delayIds[i]), delayLabels[i], 1926 + i * 160, 213);
+    addLed ("poly.fx.delay.pingPong", "PING PONG", { 1868, 252, 132, 22 });
+    addLed ("poly.fx.delay.sync", "TEMPO SYNC", { 2010, 252, 132, 22 });
+    knob ("poly.fx.reverb.size", "REVERB SIZE", 1926, 306);
+    knob ("poly.fx.reverb.damping", "DAMPING", 2086, 306);
+    knob ("poly.fx.reverb.mix", "MIX", 2246, 306);
+
+    addLed ("poly.arp.enabled", "ARP", { 1868, 407, 74, 23 });
+    addLed ("poly.arp.hold", "HOLD", { 1950, 407, 74, 23 });
+    addChoice ("poly.arp.mode", "MODE", { 2040, 405, 130, 36 });
+    addChoice ("poly.arp.rate", "RATE", { 2182, 405, 136, 36 });
+    addSwitch ("poly.arp.octaves", "OCTAVES", { 1868, 470, 198, 36 });
+    addChoice ("poly.arp.length", "LENGTH", { 2100, 470, 218, 36 });
 }
 
-void PolyBrutePanel::paint (juce::Graphics& g)
-{
-    PanelBase::paint (g);
-}
-
+void PolyBrutePanel::paint (juce::Graphics& g) { PanelBase::paint (g); }
 PolyBrutePanel::~PolyBrutePanel() = default;
-
 } // namespace triad::ui
