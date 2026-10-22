@@ -1,327 +1,140 @@
 #include "ui/Panels.h"
-#include "ui/LookAndFeel.h"
-
-#include <cmath>
 
 namespace triad::ui
 {
-
-namespace
-{
-juce::Colour matriarchAccent() { return juce::Colour (0xffcf4b2e); }
-
-int rowsFor (int count, int columns)
-{
-    return (count + columns - 1) / columns;
-}
-} // namespace
-
-MatriarchPanel::MatriarchPanel (EditorHost& host)
-    : PanelBase (host, "MATRIARCH V", 1800, 500, matriarchAccent())
+MatriarchPanel::MatriarchPanel (EditorHost& editorHost)
+    : PanelBase (editorHost, "MATRIARCH V", 1900, 480, juce::Colour (0xffd44529))
 {
     setBranding ("MATRIARCH V", "SEMI-MODULAR ANALOG SYNTHESIZER");
 
-    const auto accent = matriarchAccent();
+    // Relative widths from the two front-panel line drawings in the manual.
+    // The software-only expression controls live below the hardware stations.
+    const juce::Rectangle<int> arp { 24, 14, 150, 402 }, mod { 180, 14, 160, 402 },
+        util { 346, 14, 80, 402 }, mix { 808, 14, 160, 402 },
+        filter { 974, 14, 210, 402 }, util2 { 1190, 14, 84, 402 },
+        env { 1280, 14, 300, 402 }, delay { 1586, 14, 166, 402 },
+        out { 1758, 14, 118, 402 };
+    addModule ("ARP / SEQ", arp);
+    addModule ("MODULATION", mod);
+    addModule ("UTILITIES", util);
+    addModule ("OSCILLATORS", { 432, 14, 370, 402 });
+    addModule ("MIXER", mix);
+    addModule ("FILTERS", filter);
+    addModule ("UTILITIES", util2);
+    addModule ("ENVELOPE GENERATORS", env);
+    addModule ("STEREO DELAY", delay);
+    addModule ("OUTPUT", out);
 
-    const juce::Rectangle<int> arpArea { 8, 8, 142, 440 };
-    const juce::Rectangle<int> modArea { 154, 8, 120, 440 };
-    const juce::Rectangle<int> utilArea { 278, 8, 96, 440 };
-    const juce::Rectangle<int> vco1Area { 378, 8, 112, 440 };
-    const juce::Rectangle<int> vco2Area { 494, 8, 112, 440 };
-    const juce::Rectangle<int> vco3Area { 610, 8, 112, 440 };
-    const juce::Rectangle<int> vco4Area { 726, 8, 112, 440 };
-    const juce::Rectangle<int> mixArea { 842, 8, 124, 440 };
-    const juce::Rectangle<int> filterArea { 970, 8, 196, 440 };
-    const juce::Rectangle<int> util2Area { 1170, 8, 108, 440 };
-    const juce::Rectangle<int> envArea { 1282, 8, 236, 440 };
-    const juce::Rectangle<int> delayArea { 1522, 8, 146, 440 };
-    const juce::Rectangle<int> outArea { 1672, 8, 118, 440 };
-
-    addModule ("ARP / SEQ", arpArea);
-    addModule ("MODULATION", modArea);
-    addModule ("UTILITIES", utilArea);
-    addModule ("OSCILLATOR 1", vco1Area);
-    addModule ("OSCILLATOR 2", vco2Area);
-    addModule ("OSCILLATOR 3", vco3Area);
-    addModule ("OSCILLATOR 4", vco4Area);
-    addModule ("MIXER", mixArea);
-    addModule ("FILTERS", filterArea);
-    addModule ("UTILITIES 2", util2Area);
-    addModule ("ENVELOPE GENERATORS", envArea);
-    addModule ("STEREO DELAY", delayArea);
-    addModule ("OUTPUT", outArea);
-
-    // Place jacks in a grid below each module header. Returns the y after the grid.
-    auto jackGrid = [this] (const std::vector<juce::String>& ids,
-                            juce::Rectangle<int> module, int columns, int startY)
+    auto patch = [this] (const char* id, int x, int y) { addJack (id, { x, y }, 18); };
+    auto bay = [this] (const std::vector<juce::String>& ids, juce::Rectangle<int> area, int columns)
     {
-        const auto count = (int) ids.size();
-        const auto colWidth = module.getWidth() / columns;
-        int index = 0;
-
-        for (const auto& id : ids)
-        {
-            const auto column = index % columns;
-            const auto row = index / columns;
-            const auto centreX = module.getX() + column * colWidth + colWidth / 2;
-            const auto topY = startY + row * 27;
-
-            addJack (id, { centreX - 8, topY, 16, 16 });
-            ++index;
-        }
-
-        return startY + rowsFor (count, columns) * 27 + 4;
+        for (int i = 0; i < (int) ids.size(); ++i)
+            addJack (ids[(size_t) i], { area.getX() + (i % columns * 2 + 1) * area.getWidth() / (columns * 2),
+                                       48 + (i / columns) * 34 }, 18);
     };
+    auto knob = [this] (const juce::String& id, const char* name, int x, int y, int d = 48)
+    { addKnob (id, name, { x, y }, d); };
 
-    // -----------------------------------------------------------------------
-    // ARP / SEQ
-    // -----------------------------------------------------------------------
+    bay ({ "mat.patch.clock.in", "mat.patch.clock.out", "mat.patch.clock.step1",
+           "mat.patch.clock.step2", "mat.patch.clock.resetIn", "mat.patch.clock.resetOut" }, arp, 3);
+    addChoice ("mat.arp.rate", "RATE / DIV", { 46, 122, 106, 36 });
+    addChoice ("mat.arp.mode", "DIRECTION", { 46, 188, 106, 36 });
+    addSwitch ("mat.arp.octaves", "OCT / BANK", { 46, 255, 106, 38 });
+    addLed ("mat.arp.enabled", "PLAY", { 40, 357, 58, 28 });
+    addLed ("mat.arp.hold", "HOLD", { 104, 357, 58, 28 });
+
+    // Staggered jacks and two-column modulation controls match the panel stations.
+    patch ("mat.patch.lfo.rateIn", 206, 48); patch ("mat.patch.noise.out", 292, 48);
+    patch ("mat.patch.lfo.syncIn", 200, 82); patch ("mat.patch.sh.out", 260, 82);
+    patch ("mat.patch.lfo.out", 320, 82);
+    knob ("mat.lfo.rate", "RATE", 224, 150);
+    knob ("mat.lfo.wave", "WAVEFORM", 224, 254);
+    knob ("mat.lfo.pitchAmt", "PITCH AMT", 298, 254);
+    addSwitch ("mat.lfo.pitchAssign", "PITCH MOD ASSIGN", { 254, 293, 78, 34 });
+    knob ("mat.lfo.cutoffAmt", "CUTOFF AMT", 220, 366);
+    knob ("mat.lfo.pwAmt", "PULSE WIDTH AMT", 300, 366);
+
+    bay ({ "mat.patch.mult1.a", "mat.patch.mult1.b", "mat.patch.mult1.c", "mat.patch.mult1.d" }, util, 2);
+    knob ("mat.att1", "ATTENUATOR", 386, 150);
+    patch ("mat.patch.att1.in", 366, 203); patch ("mat.patch.att1.out", 406, 203);
+    knob ("mat.att2", "ATTENUATOR", 386, 302);
+    patch ("mat.patch.att2.in", 366, 357); patch ("mat.patch.att2.out", 406, 357);
+
+    for (int i = 1; i <= 4; ++i)
     {
-        const auto y = jackGrid ({ "mat.patch.clock.in", "mat.patch.clock.out",
-                                   "mat.patch.clock.step1", "mat.patch.clock.step2",
-                                   "mat.patch.clock.resetIn", "mat.patch.clock.resetOut" },
-                                 arpArea, 3, 32);
-
-        auto& arp = addLed ("mat.arp.enabled", "ARP / SEQ",
-                            { arpArea.getX() + 8, y + 4, arpArea.getWidth() - 16, 24 });
-        arp.setAccent (accent);
-
-        addChoice ("mat.arp.mode", "MODE", { arpArea.getX() + 8, y + 34,
-                                            arpArea.getWidth() - 16, 34 });
-        addChoice ("mat.arp.rate", "RATE", { arpArea.getX() + 8, y + 74,
-                                            arpArea.getWidth() - 16, 34 });
-        addSwitch ("mat.arp.octaves", "OCTAVES", { arpArea.getX() + 8, y + 114,
-                                                   arpArea.getWidth() - 16, 34 });
-        auto& hold = addLed ("mat.arp.hold", "HOLD",
-                             { arpArea.getX() + 8, y + 156, arpArea.getWidth() - 16, 24 });
-        hold.setAccent (accent);
-    }
-
-    // -----------------------------------------------------------------------
-    // Modulation
-    // -----------------------------------------------------------------------
-    {
-        const auto y = jackGrid ({ "mat.patch.lfo.rateIn", "mat.patch.lfo.syncIn",
-                                   "mat.patch.lfo.out", "mat.patch.noise.out",
-                                   "mat.patch.sh.out" },
-                                 modArea, 2, 32);
-
-        addKnob ("mat.lfo.rate", "RATE", { modArea.getX() + 6, y + 2, modArea.getWidth() - 12, 56 });
-        addSwitch ("mat.lfo.wave", "WAVEFORM", { modArea.getX() + 6, y + 60,
-                                                 modArea.getWidth() - 12, 36 });
-        addKnob ("mat.lfo.pitchAmt", "PITCH AMT",
-                 { modArea.getX() + 6, y + 100, modArea.getWidth() - 12, 56 });
-        addSwitch ("mat.lfo.pitchAssign", "PITCH MOD ASSIGN",
-                   { modArea.getX() + 6, y + 158, modArea.getWidth() - 12, 36 });
-        addKnob ("mat.lfo.cutoffAmt", "CUTOFF AMT",
-                 { modArea.getX() + 6, y + 198, modArea.getWidth() - 12, 56 });
-        addKnob ("mat.lfo.pwAmt", "PULSE W AMT",
-                 { modArea.getX() + 6, y + 256, modArea.getWidth() - 12, 56 });
-
-
-    }
-
-    // -----------------------------------------------------------------------
-    // Utilities 1 (mults + two attenuators)
-    // -----------------------------------------------------------------------
-    {
-        const auto y = jackGrid ({ "mat.patch.mult1.a", "mat.patch.mult1.b",
-                                   "mat.patch.mult1.c", "mat.patch.mult1.d",
-                                   "mat.patch.att1.in", "mat.patch.att1.out",
-                                   "mat.patch.att2.in", "mat.patch.att2.out" },
-                                 utilArea, 2, 32);
-
-        addKnob ("mat.att1", "ATTEN 1",
-                 { utilArea.getX() + 4, y + 4, utilArea.getWidth() - 8, 58 });
-        addKnob ("mat.att2", "ATTEN 2",
-                 { utilArea.getX() + 4, y + 66, utilArea.getWidth() - 8, 58 });
-    }
-
-    // -----------------------------------------------------------------------
-    // Oscillators
-    // -----------------------------------------------------------------------
-    auto buildOscillator = [&] (int index, juce::Rectangle<int> area)
-    {
-        const auto prefix = "mat.vco" + juce::String (index) + ".";
-        const auto patchPrefix = "mat.patch.vco" + juce::String (index) + ".";
-
-        const auto y = jackGrid ({ patchPrefix + "pitch", patchPrefix + "fm",
-                                   patchPrefix + "pwm", patchPrefix + "out" },
-                                 area, 2, 32);
-
-        addSwitch (prefix + "octave", "OCTAVE",
-                   { area.getX() + 4, y + 2, area.getWidth() - 8, 40 });
-
-        if (index > 1)
-            addKnob (prefix + "freq", "FREQUENCY",
-                     { area.getX() + 4, y + 46, area.getWidth() - 8, 56 });
-        else
-            addCaption ("FIXED", { area.getX() + 4, y + 60, area.getWidth() - 8, 12 },
-                        juce::Justification::centred, 7.0f, juce::Colour (0xff6d6a64));
-
-        addSwitch (prefix + "wave", "WAVEFORM",
-                   { area.getX() + 4, y + 106, area.getWidth() - 8, 48 });
-
-        if (index > 1)
+        const auto x = 432 + (i - 1) * 94;
+        const auto id = "mat.vco" + juce::String (i) + ".";
+        const auto p = "mat.patch.vco" + juce::String (i) + ".";
+        addCaption (juce::String (i), { x + 3, 33, 12, 12 }, juce::Justification::centred, 10.0f);
+        bay ({ p + "pitch", p + "out", p + "pwm", p + "fm" }, { x, 0, 88, 0 }, 2);
+        knob (id + "octave", "OCTAVE", x + 44, 150, 46);
+        if (i > 1)
         {
-            auto& sync = addLed (prefix + "sync", "SYNC",
-                                 { area.getX() + 10, y + 164, area.getWidth() - 20, 24 });
-            sync.setAccent (accent);
+            knob (id + "freq", "FREQUENCY", x + 44, 254);
+            addLed (id + "sync", "SYNC", { x + 13, 293, 62, 22 });
         }
         else
-        {
-            auto& sync = addLed ("mat.vco.syncEnable", "SYNC ENABLE",
-                                 { area.getX() + 8, y + 164, area.getWidth() - 16, 24 });
-            sync.setAccent (accent);
-        }
-    };
-
-    buildOscillator (1, vco1Area);
-    buildOscillator (2, vco2Area);
-    buildOscillator (3, vco3Area);
-    buildOscillator (4, vco4Area);
-
-    // -----------------------------------------------------------------------
-    // Mixer
-    // -----------------------------------------------------------------------
-    {
-        const auto y = jackGrid ({ "mat.patch.mix.noiseIn", "mat.patch.mix.osc1In",
-                                   "mat.patch.mix.osc2In", "mat.patch.mix.osc3In",
-                                   "mat.patch.mix.osc4In", "mat.patch.mix.out" },
-                                 mixArea, 3, 32);
-
-        const auto cellWidth = (mixArea.getWidth() - 16) / 2;
-        addKnob ("mat.mix.osc1", "OSC 1", { mixArea.getX() + 6, y + 6, cellWidth, 58 });
-        addKnob ("mat.mix.osc2", "OSC 2", { mixArea.getX() + 10 + cellWidth, y + 6, cellWidth, 58 });
-        addKnob ("mat.mix.osc3", "OSC 3", { mixArea.getX() + 6, y + 68, cellWidth, 58 });
-        addKnob ("mat.mix.osc4", "OSC 4", { mixArea.getX() + 10 + cellWidth, y + 68, cellWidth, 58 });
-        addKnob ("mat.mix.noise", "NOISE", { mixArea.getX() + 6, y + 130, mixArea.getWidth() - 12, 58 });
+            addLed ("mat.vco.syncEnable", "SYNC ENABLE", { x + 8, 242, 72, 28 });
+        knob (id + "wave", "WAVEFORM", x + 44, 366, 46);
     }
 
-    // -----------------------------------------------------------------------
-    // Filters
-    // -----------------------------------------------------------------------
+    bay ({ "mat.patch.mix.noiseIn", "mat.patch.mix.osc1In", "mat.patch.mix.osc2In",
+           "mat.patch.mix.osc3In", "mat.patch.mix.osc4In", "mat.patch.mix.out" }, mix, 3);
+    knob ("mat.mix.noise", "NOISE", 888, 150);
+    knob ("mat.mix.osc1", "OSCILLATOR 1", 849, 254);
+    knob ("mat.mix.osc2", "OSCILLATOR 2", 927, 254);
+    knob ("mat.mix.osc3", "OSCILLATOR 3", 849, 366);
+    knob ("mat.mix.osc4", "OSCILLATOR 4", 927, 366);
+
+    bay ({ "mat.patch.flt1.in", "mat.patch.flt2.in", "mat.patch.flt1.out", "mat.patch.flt2.out" }, filter, 4);
+    patch ("mat.patch.flt1.cutoff", 1014, 82); patch ("mat.patch.flt2.cutoff", 1079, 82);
+    patch ("mat.patch.flt.envAmt", 1144, 82);
+    knob ("mat.flt.cutoff", "CUTOFF", 1079, 158, 72);
+    knob ("mat.flt.res1", "RESONANCE 1", 1014, 225);
+    knob ("mat.flt.res2", "RESONANCE 2", 1144, 225);
+    addChoice ("mat.flt.mode", "FILTER MODE", { 1019, 262, 120, 34 });
+    knob ("mat.flt.spacing", "SPACING", 1014, 324);
+    knob ("mat.flt.envAmt", "ENVELOPE AMT", 1144, 324);
+    knob ("mat.flt.kbTrack", "KB TRACKING", 1079, 380, 40);
+
+    bay ({ "mat.patch.mult2.a", "mat.patch.mult2.b", "mat.patch.mult2.c", "mat.patch.mult2.d" }, util2, 2);
+    knob ("mat.att3", "ATTENUATOR", 1232, 150);
+    patch ("mat.patch.att3.in", 1211, 203); patch ("mat.patch.att3.out", 1253, 203);
+    knob ("mat.lfo2.rate", "LFO RATE", 1232, 302);
+    patch ("mat.patch.lfo2.rateIn", 1211, 357); patch ("mat.patch.lfo2.out", 1253, 357);
+    addLed ("mat.lfo2.bipolar", "BIPOLAR", { 1198, 386, 68, 20 });
+
+    // Each envelope: three knobs on the left, a long sustain slider on the right.
+    for (int i = 0; i < 2; ++i)
     {
-        const auto y = jackGrid ({ "mat.patch.flt1.in", "mat.patch.flt2.in",
-                                   "mat.patch.flt1.cutoff", "mat.patch.flt2.cutoff",
-                                   "mat.patch.flt.envAmt", "mat.patch.flt1.out",
-                                   "mat.patch.flt2.out" },
-                                 filterArea, 4, 32);
-
-        addChoice ("mat.flt.mode", "FILTER MODE",
-                   { filterArea.getX() + 6, y + 2, filterArea.getWidth() - 12, 36 });
-
-        const auto cellWidth = (filterArea.getWidth() - 16) / 2;
-        const auto x1 = filterArea.getX() + 6;
-        const auto x2 = x1 + cellWidth + 4;
-        auto rowY = y + 44;
-
-        addKnob ("mat.flt.cutoff", "CUTOFF", { x1, rowY, cellWidth, 58 });
-        addKnob ("mat.flt.spacing", "SPACING", { x2, rowY, cellWidth, 58 });
-        rowY += 62;
-        addKnob ("mat.flt.res1", "RESONANCE 1", { x1, rowY, cellWidth, 58 });
-        addKnob ("mat.flt.res2", "RESONANCE 2", { x2, rowY, cellWidth, 58 });
-        rowY += 62;
-        addKnob ("mat.flt.envAmt", "ENV AMOUNT", { x1, rowY, cellWidth, 58 });
-        addKnob ("mat.flt.kbTrack", "KB TRACK", { x2, rowY, cellWidth, 58 });
+        const auto x = 1280 + i * 150;
+        const auto stem = i == 0 ? juce::String ("mat.env2.") : juce::String ("mat.env1.");
+        const auto p = i == 0 ? juce::String ("mat.patch.fltEnv.") : juce::String ("mat.patch.amp.");
+        addCaption (i == 0 ? "FILTER" : "AMPLITUDE", { x + 20, 33, 110, 12 }, juce::Justification::centred, 10.0f);
+        addJack (p + "trig", { x + 32, 56 }, 18); addJack (p + "out", { x + 119, 56 }, 18);
+        addJack (p + "end", { x + 75, 88 }, 18);
+        knob (stem + "attack", "ATTACK", x + 36, 150);
+        knob (stem + "decay", "DECAY", x + 36, 254);
+        knob (stem + "release", "RELEASE", x + 36, 366);
+        addFader (stem + "sustain", "SUSTAIN", { x + 90, 135, 50, 248 });
     }
 
-    // -----------------------------------------------------------------------
-    // Utilities 2 (mult, LFO 2, attenuator 3)
-    // -----------------------------------------------------------------------
-    {
-        const auto y = jackGrid ({ "mat.patch.mult2.a", "mat.patch.mult2.b",
-                                   "mat.patch.mult2.c", "mat.patch.mult2.d",
-                                   "mat.patch.lfo2.rateIn", "mat.patch.lfo2.out",
-                                   "mat.patch.att3.in", "mat.patch.att3.out" },
-                                 util2Area, 2, 32);
+    bay ({ "mat.patch.delay.in1", "mat.patch.delay.in2", "mat.patch.delay.out1", "mat.patch.delay.out2",
+           "mat.patch.delay.fbCv", "mat.patch.delay.time1Cv", "mat.patch.delay.time2Cv", "mat.patch.delay.mixCv" }, delay, 4);
+    knob ("mat.delay.time", "TIME", 1669, 150);
+    knob ("mat.delay.spacing", "SPACING", 1627, 247);
+    knob ("mat.delay.feedback", "FEEDBACK", 1711, 247);
+    knob ("mat.delay.mix", "MIX", 1669, 336);
+    addLed ("mat.delay.sync", "SYNC / TAP", { 1595, 382, 74, 24 });
+    addLed ("mat.delay.pingPong", "PING PONG", { 1675, 382, 69, 24 });
 
-        addKnob ("mat.lfo2.rate", "LFO RATE",
-                 { util2Area.getX() + 4, y + 4, util2Area.getWidth() - 8, 58 });
-        addKnob ("mat.att3", "ATTEN 3",
-                 { util2Area.getX() + 4, y + 68, util2Area.getWidth() - 8, 58 });
-        addSwitch ("mat.lfo2.bipolar", "BIPOLAR",
-                   { util2Area.getX() + 4, y + 132, util2Area.getWidth() - 8, 40 });
-    }
-
-    // -----------------------------------------------------------------------
-    // Envelope generators
-    // -----------------------------------------------------------------------
-    {
-        const auto y = jackGrid ({ "mat.patch.amp.trig", "mat.patch.amp.out",
-                                   "mat.patch.amp.end", "mat.patch.fltEnv.trig",
-                                   "mat.patch.fltEnv.out", "mat.patch.fltEnv.end" },
-                                 envArea, 3, 32);
-
-        const auto columnWidth = (envArea.getWidth() - 20) / 2;
-        const auto ampX = envArea.getX() + 8;
-        const auto filterX = ampX + columnWidth + 4;
-
-        addCaption ("AMPLITUDE", { ampX, y, columnWidth, 12 }, juce::Justification::centred,
-                    8.0f, juce::Colour (0xffc7c3ba), true);
-        addCaption ("FILTER", { filterX, y, columnWidth, 12 }, juce::Justification::centred,
-                    8.0f, juce::Colour (0xffc7c3ba), true);
-
-        auto buildEnvelope = [&] (const juce::String& prefix, int x)
-        {
-            auto top = y + 16;
-            addKnob (prefix + "attack", "ATTACK", { x, top, columnWidth, 50 });
-            addKnob (prefix + "decay", "DECAY", { x, top + 48, columnWidth, 50 });
-            addFader (prefix + "sustain", "SUSTAIN", { x + columnWidth / 2 - 30, top + 96, 60, 76 });
-            addKnob (prefix + "release", "RELEASE", { x, top + 176, columnWidth, 50 });
-        };
-
-        buildEnvelope ("mat.env1.", ampX);
-        buildEnvelope ("mat.env2.", filterX);
-    }
-
-    // -----------------------------------------------------------------------
-    // Stereo delay
-    // -----------------------------------------------------------------------
-    {
-        const auto y = jackGrid ({ "mat.patch.delay.in1", "mat.patch.delay.in2",
-                                   "mat.patch.delay.fbCv", "mat.patch.delay.mixCv",
-                                   "mat.patch.delay.time1Cv", "mat.patch.delay.time2Cv",
-                                   "mat.patch.delay.out1", "mat.patch.delay.out2" },
-                                 delayArea, 2, 32);
-
-        const auto x = delayArea.getX() + 8;
-        const auto width = delayArea.getWidth() - 16;
-
-        addKnob ("mat.delay.time", "TIME", { x, y + 2, width, 54 });
-        addKnob ("mat.delay.spacing", "SPACING", { x, y + 58, width, 54 });
-        addKnob ("mat.delay.feedback", "FEEDBACK", { x, y + 114, width, 54 });
-        addKnob ("mat.delay.mix", "MIX", { x, y + 170, width, 54 });
-
-        auto& sync = addLed ("mat.delay.sync", "SYNC / TAP",
-                             { x, y + 230, width, 24 });
-        sync.setAccent (juce::Colour (0xffd8b03c));
-
-        auto& ping = addLed ("mat.delay.pingPong", "PING PONG",
-                             { x, y + 258, width, 24 });
-        ping.setAccent (juce::Colour (0xff3f8ed6));
-    }
-
-    // -----------------------------------------------------------------------
-    // Output
-    // -----------------------------------------------------------------------
-    {
-        const auto y = jackGrid ({ "mat.patch.vca1.in", "mat.patch.vca2.in",
-                                   "mat.patch.vca1.cv", "mat.patch.vca2.cv" },
-                                 outArea, 2, 32);
-
-        const auto x = outArea.getX() + 6;
-        const auto width = outArea.getWidth() - 12;
-
-        addKnob ("mat.master.volume", "MAIN VOL", { x, y + 4, width, 54 });
-        addKnob ("mat.output.velocity", "VELOCITY", { x, y + 62, width, 54 });
-        addKnob ("mat.output.aftertouch", "AFTERTOUCH", { x, y + 120, width, 54 });
-        addKnob ("mat.global.fine", "FINE TUNE", { x, y + 180, width, 54 });
-        addSwitch ("mat.master.vcaMode", "VCA MODE", { x, y + 240, width, 42 }); 
-        addSwitch ("mat.master.paraphony", "PARAPHONY", { x, y + 290, width, 42 });
-    }
-
+    bay ({ "mat.patch.vca1.in", "mat.patch.vca2.in", "mat.patch.vca1.cv", "mat.patch.vca2.cv" }, out, 2);
+    knob ("mat.master.volume", "MAIN VOLUME", 1817, 150);
+    addSwitch ("mat.master.vcaMode", "VCA MODE", { 1772, 207, 90, 34 });
+    addSwitch ("mat.master.paraphony", "PARAPHONY", { 1772, 268, 90, 34 });
+    knob ("mat.output.velocity", "VELOCITY", 1788, 346, 36);
+    knob ("mat.output.aftertouch", "PRESSURE", 1844, 346, 36);
+    knob ("mat.global.fine", "FINE TUNE", 1817, 391, 28);
     onPatchChanged = [this] { refreshPatchCables(); };
 }
-
 } // namespace triad::ui
