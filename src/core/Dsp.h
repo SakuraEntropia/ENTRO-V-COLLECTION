@@ -125,7 +125,7 @@ private:
 class StateVariableFilter
 {
 public:
-    enum class Mode { LowPass, HighPass, BandPass, Notch };
+    enum class Mode { LowPass, HighPass, BandPass, Notch, LowShelf, HighShelf, UnityBandPass, AllPass, OnePoleLowPass, OnePoleHighPass };
 
     void prepare (double sampleRate);
     void reset();
@@ -148,6 +148,7 @@ private:
     float ic2_ = 0.0f;
     float lastCutoff_ = -1.0f;
     float lastResonance_ = -1.0f;
+    float onePole_ = 0.0f;
 };
 
 /** Smoothly variable multimode filter used for the Brute "Steiner" model. */
@@ -373,6 +374,7 @@ private:
 class ConvolutionEffect
 {
 public:
+    void setControls (int model, float length, float tuning, float width) noexcept;
     void prepare (double sampleRate, int seed);
     void reset();
     void setMix (float mix01);
@@ -385,6 +387,9 @@ private:
     int writeIndex_ = 0;
     int size_ = 1;
     float mix_ = 0.0f;
+    std::array<std::array<std::array<float, 384>, 2>, 4> library_ {};
+    int model_ = 0;
+    float length_ = 1.0f, tuning_ = 1.0f, width_ = 1.0f;
 };
 
 class ReverbEffect

@@ -39,18 +39,20 @@ void OnePanel::rebuildForPart()
         const int x = 182 + i * 210;
         const auto stem = prefix + "vco" + juce::String (i + 1) + ".";
         addModule ("OSCILLATOR " + juce::String (i + 1), { x, 24, 202, 350 });
-        auto& octave = addKnob (stem + "octave", "OCTAVE", { x + 34, 82 }, 38);
+        // Point-up hexagon around the OLED, from the hardware close-up.
+        auto& octave = addKnob (stem + "octave", "OCTAVE", { x + 101, 79 }, 50);
         octave.getProperties().set ("chickenHead", true);
-        knob (stem + "tune", "FREQUENCY", x + 101, 82, 46);
-        knob (stem + "shape", "MIX", x + 168, 82, 38);
-        knob (stem + "waveAngle", "WAVE ANGLE", x + 42, 176, 46);
-        knob (stem + "pw", "PULSE WIDTH", x + 160, 176, 46);
+        knob (stem + "tune", "FREQUENCY", x + 35, 137, 44);
+        knob (stem + "beatHz", "BEAT FREQ", x + 167, 137, 44);
+        knob (stem + "waveAngle", "WAVE ANGLE", x + 35, 253, 44);
+        knob (stem + "pw", "PULSE WIDTH", x + 167, 253, 44);
+        knob (stem + "shape", "MIX", x + 101, 311, 44);
         auto& display = waveformDisplays_[(size_t) i];
         display = std::make_unique<OneWaveDisplay> (apvts(), stem);
-        display->setBounds (x + 69, 239, 64, 46);
+        display->setBounds (x + 69, 172, 64, 46);
         addAndMakeVisible (*display);
         addLed (stem + (i == 0 ? "on" : "sync"), i == 0 ? "ON" : "HARD SYNC",
-                { x + 53, 324, 96, 24 });
+                { x + 5, 345, 60, 22 });
     }
     addModule ("NOISE", { 820, 24, 66, 350 });
     knob (prefix + "mix.noise", "LEVEL", 853, 94, 38);

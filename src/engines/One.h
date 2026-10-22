@@ -117,6 +117,7 @@ private:
 
         PArpEnabled, PArpMode, PArpRate, PArpOctaves, PArpHold, PArpLength,
 
+        PVco1BeatHz, PVco2BeatHz, PVco3BeatHz,
         PParamCount
     };
 

@@ -230,6 +230,7 @@ juce::ComboBox& PanelBase::addChoice (const juce::String& paramId, const juce::S
 
     combo->setName (paramId);
     combo->getProperties().set ("continuumField", finish_ == Finish::Continuum);
+    if (finish_ == Finish::Continuum) combo->setColour (juce::ComboBox::textColourId, juce::Colour (0xff34355f));
     combo->addItemList (items, 1);
     combo->setJustificationType (juce::Justification::centredLeft);
     combo->setTooltip (spec != nullptr ? juce::String (spec->name) + "  [" + paramId + "]" : paramId);

@@ -14,7 +14,7 @@ Baseline: 99e35af. Preserve the other agent's 128-parameter engine, 613 presets,
 | Voltage outputs | Eight physical CVC outputs with hardware | Four MIDI CC proxies, not hardware CV. |
 | Editor functions | Current 10.81 update dated 19 October 2026; 10.70/10.73 add Master columns, descriptions and Undo | Numeric editing exists. Full editor Undo, formula descriptions, hardware preset-slot management and device communication absent. |
 
-This is a researched gap list, not a claim that these functions have been implemented. The current UI must expose only genuinely wired functionality. Extending to the full EaganMatrix requires separate engine, parameter/state-compatibility and audio tests; adding empty control artwork would misrepresent the instrument.
+This table records the pre-extension baseline. The selected compressor/Tilt/IR, named-formula/Master-column and filter/bank/SG gaps have since been implemented as original software approximations; see UI-REDRAW-STATUS.md for precise scope and tests. The current UI must expose only genuinely wired functionality. Extending to the full EaganMatrix requires separate engine, parameter/state-compatibility and audio tests; adding empty control artwork would misrepresent the instrument.
 
 ## Sources
 

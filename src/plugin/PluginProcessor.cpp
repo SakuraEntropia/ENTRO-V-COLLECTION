@@ -970,6 +970,15 @@ void TriadAudioProcessor::encodeState (juce::ValueTree& state)
         state.addChild (matrix, -1, nullptr);
     }
 
+    if (engine_->matrixRows() > 0)
+    {
+        state.removeChild (state.getChildWithName ("FORMULAS"), nullptr);
+        juce::ValueTree formulas ("FORMULAS");
+        for (int i = 0; i < 7; ++i)
+            formulas.setProperty ("f" + juce::String (i), juce::String (engine_->formulaText (i)), nullptr);
+        state.addChild (formulas, -1, nullptr);
+    }
+
     juce::ValueTree sequence ("SEQUENCER");
     for (int i = 0; i < PatternSequencer::maxSteps; ++i)
     {
@@ -982,6 +991,16 @@ void TriadAudioProcessor::encodeState (juce::ValueTree& state)
 
 void TriadAudioProcessor::decodeState (const juce::ValueTree& state)
 {
+    if (engine_->matrixRows() > 0)
+    {
+        const auto formulas = state.getChildWithName ("FORMULAS");
+        for (int i = 0; i < 7; ++i)
+        {
+            const auto text = formulas.getProperty ("f" + juce::String (i), i == 0 ? "sin(pi*x)*y" : "s*z").toString();
+            if (! engine_->setFormulaText (i, text.toStdString()))
+                engine_->setFormulaText (i, i == 0 ? "sin(pi*x)*y" : "s*z");
+        }
+    }
     const auto matrixTree = state.getChildWithName ("EIGEN_MATRIX");
     if (matrixTree.isValid() && engine_->matrixRows() > 0)
     {

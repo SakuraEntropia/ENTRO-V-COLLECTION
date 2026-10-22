@@ -1,29 +1,19 @@
-# UI redraw status — 2026-10-22
+# Hardware detail pass — 2026-10-22
 
-Branch: `ui/hardware-redraw`. Changes are committed locally. The user explicitly selected local commits only after GitHub's public push was blocked; do not push this branch without new authorization.
+Current branch: main. Local commits only, per user instruction. Preserve the other agent's 99e35af preset/expression changes.
 
-## Implemented
-
-- MATRIARCH V: single-row front panel, manual-derived module proportions, staggered patch bay, large cutoff knob, paired long sustain faders, silver knob caps and original coloured sections: yellow ARP, blue oscillators, green filters, purple stereo delay, charcoal utilities/mixer/envelopes/output, blue branding rail. All artwork is drawn in JUCE.
-- All **79** Matriarch engine patch points are accessible. The old panel exposed 74; five pre-existing keyboard outputs were missing and are now on the lower rail.
-- User follow-up: lower-left **GLIDE / PLAY / HOLD / TAP** controls. PLAY and HOLD use the existing arp parameters. TAP averages four intervals and sets the internal quarter-note tempo, 20–300 BPM; DAW BPM takes priority. Internal tap tempo is transient. GLIDE appends `mat.performance.glide` (0–2 seconds, default zero), preserving the previous 63 IDs and their order. Matriarch now has **64** parameters. First note starts immediately; later note changes slew per oscillator, including paraphonic assignments. Zero glide keeps the existing pitch calculation.
-- POLYBRUTE V: three compact synthesis rows, aligned envelope faders, black/white unit style with orange Steiner tab; LCD above the 12×8 source matrix; effects above arpeggiator; lower-left MorphPad with pressure fallback. All 117 parameters accessible.
-- ONE V: filled oscillator section, central part console, right filters/envelopes/LFOs/effects and lower modulation matrix. Three parts retained; all 408 parameter IDs retained. The old LFO UI used non-existent `.retrigger` IDs; these now bind the existing `.retrig` parameters.
-- CONTINUUM V: light silver-green master/effect parameter rows, six tall narrow inverted trapezoid Delay-LPF controls, full-width light 16×16 matrix, numeric oscillator/filter/bank/delay/shape/envelope blocks below. All 126 parameters accessible. Formula editor, six modes, physical key mapping, red surface and 3D monitor retained. Dragging a Delay-LPF control keeps its original column and sends host change gestures.
-- Native-resolution panel snapshots accompany normal editor snapshots (`TRIAD_SNAPSHOT` writes `<path>.panel.png` too).
+- ONE: oscillator controls now form the hardware's point-up hexagon: octave at top, frequency/beat frequency upper left/right, wave angle/pulse width lower left/right, mix at bottom. OLED at centre shows three periods. Four LFOs occupy the far-left strip; ladder sits below SVF; modulation matrix opens in the centre MOD page. All original 408 IDs/order retained; nine default-zero `one.pN.vcoN.beatHz` controls appended, -7 to +7 Hz, genuinely added to oscillator frequency. Total 417 parameters, 145 exposed per selected part including shared controls.
+- Knobs: separate vector geometry for Moog One scalloped black skirts/silver inset/white index dots and octave chickenheads, Matriarch fine-fluted skirts/silver caps/black index lines, PolyBrute black caps/white lines and silver ladder cutoff.
+- PolyBrute: existing functional XY/Z MorphPad now in the keyboard-left sculpted wooden recess. Pitch/mod wheels moved into the upper-left panel. Bindings and pressure fallback tested.
+- Continuum: 204 parameters; original 128 IDs/order retained. Added linked compressor, complementary tilt EQ, pre/post gains; two generated-IR model/length/tuning/width sets; six separately compiled A-F expressions with transfer curve/offset/scale; six matrix Master columns assigned to 20 master destinations; extended filter modes and 1-4 cascades; 8/48 filter banks with bandwidth spread/spectral centre/weight; free/retrigger/one-shot/gated SG cycles and trigger inputs. Four detail pages keep the wide 16×22 matrix dominant. Expressions save in the FORMULAS state child; older states restore expression defaults. Audio receives compiled formulas via nonblocking snapshot.
+- Matriarch original colour scheme, 79 jacks, and functional GLIDE/PLAY/HOLD/TAP preserved.
 
 ## Verification
 
-`triad_panel_tests` uses a device-free EditorHost with the actual panel classes and JUCE attachments. It checks every parameter against the engine metadata, host-to-slider and slider/choice-to-host changes, natural-unit numeric text round trips, interactive bounds/overlaps, all 79 patch points and connect/disconnect callbacks, PLAY/HOLD/GLIDE bindings and Delay-LPF endpoints/column capture. It checks each ONE part independently.
+Engine, preset and panel tests passed after the hexagon correction. Tests cover actual constant-Hz beat tuning at two octaves across three parts; three-period OLED repetition and parameter response; hexagon positions; every parameter binding on every detail page; compressor linkage/bypass, tilt frequency response, convolution variants, named formula isolation/invalid-expression rejection, 48 banks, filter cascades, master routing and SG one-shot retrigger. Panel PNG writer now truncates previous files so previews cannot silently show an older image.
 
-`ctest` passed all three targets: engine contracts, factory presets and panel bindings. Engine tests now also check tap averaging/reset and compare actual rendered pitch crossings for immediate, gliding and settled notes. Existing preset tests pass with the additional default-zero glide parameter.
+Native screenshots are in the current chat outputs/hex-final directory. Release build/installation results are recorded in the delivery report.
 
-Release build, app screenshots, plugin format validation and installation are recorded in the final verification report accompanying the delivered screenshots.
+## Fidelity limits
 
-## Limits
-
-These are reference-based redraws, not measured 1:1 reproductions. The engines still approximate the hardware. Continuum formula/source sets, generated convolution IRs, shared micro delay and CVC MIDI CC proxies retain their existing limitations. Windows has not been run on a real host during this handoff.
-
-## References
-
-Existing manual line drawings and reference images listed in `HANDOFF-GPT.md`. The original-colour Matriarch was additionally checked against the [top-down product photograph](https://www.altomusic.com/cdn/shop/files/d1948-top.jpg) and [manufacturer manual](https://api.moogmusic.com/sites/default/files/2023-03/Matriarch_Manual_012023.pdf). Reference raster art is not used by the UI or packaged as panel artwork.
+Reference-based vector redraws, not measured 1:1 reproductions. Continuum remains an original approximation: generated IRs rather than hardware factory IRs, SVF-based modal banks, shared delay banks rather than full per-voice waveguides, four MIDI CC proxies rather than eight hardware CV outputs. The complete summation oscillator, hardware communication, editor undo and factory patch data are not implemented. “All” in this pass covers the three feature groups explicitly selected by the user, not a complete hardware engine replacement.

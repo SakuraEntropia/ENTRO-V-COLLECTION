@@ -219,6 +219,7 @@ void StateVariableFilter::prepare (double sampleRate)
 void StateVariableFilter::reset()
 {
     ic1_ = ic2_ = 0.0f;
+    onePole_ = 0.0f;
 }
 
 void StateVariableFilter::setCutoffHz (float hz)
@@ -273,6 +274,14 @@ float StateVariableFilter::process (float input, Mode mode) noexcept
         case Mode::HighPass: return high;
         case Mode::BandPass: return band;
         case Mode::Notch: return high + low;
+        case Mode::LowShelf: return x + low;
+        case Mode::HighShelf: return x + high;
+        case Mode::UnityBandPass: return k_ * band;
+        case Mode::AllPass: return high + low - k_ * band;
+        case Mode::OnePoleLowPass:
+        case Mode::OnePoleHighPass:
+            onePole_ += (1.0f - std::exp (-2.0f * (float) kPi * cutoffHz_ / (float) sampleRate_)) * (x - onePole_);
+            return mode == Mode::OnePoleLowPass ? onePole_ : x - onePole_;
     }
 
     return low;
@@ -905,7 +914,7 @@ void ConvolutionEffect::prepare (double sampleRate, int seed)
     const auto taps = 384;
     const auto noiseSeed = (uint32_t) (seed * 2654435761u + 0x9e3779b9u);
 
-    size_ = 512;
+    size_ = 1024;
     writeIndex_ = 0;
 
     for (int channel = 0; channel < 2; ++channel)
@@ -932,6 +941,25 @@ void ConvolutionEffect::prepare (double sampleRate, int seed)
         for (auto& v : impulse_[(size_t) channel])
             v *= norm;
     }
+    for (int model = 0; model < 4; ++model)
+        for (int ch = 0; ch < 2; ++ch)
+            for (int i = 0; i < 384; ++i)
+            {
+                const auto base = impulse_[(size_t) ch][(size_t) i];
+                library_[(size_t) model][(size_t) ch][(size_t) i] = model == 0 ? base
+                    : (model == 1 ? base * std::cos (i * 0.13f) : (model == 2
+                       ? std::sin (i * (ch == 0 ? .21f : .23f)) * std::exp (-i * .012f) * .08f
+                       : (i % 41 == 0 ? .35f * std::exp (-i * .009f) : 0.0f)));
+            }
+
+}
+
+void ConvolutionEffect::setControls (int model, float length, float tuning, float width) noexcept
+{
+    model_ = std::clamp (model, 0, 3);
+    length_ = clampf (length, 0.05f, 1.0f);
+    tuning_ = clampf (tuning, 0.5f, 2.0f);
+    width_ = clampf (width, 0.0f, 2.0f);
 }
 
 void ConvolutionEffect::reset()
@@ -953,7 +981,8 @@ StereoSample ConvolutionEffect::process (float inputLeft, float inputRight) noex
 
     float wetLeft = 0.0f;
     float wetRight = 0.0f;
-    const auto taps = (int) impulse_[0].size();
+    const auto taps = std::min (768, (int) (384 * length_ / tuning_));
+    if (mix_ <= 0.0f) { writeIndex_ = (writeIndex_ + 1) % size_; return { inputLeft, inputRight }; }
 
     for (int k = 0; k < taps; ++k)
     {
@@ -961,12 +990,22 @@ StereoSample ConvolutionEffect::process (float inputLeft, float inputRight) noex
         if (index < 0)
             index += size_;
 
-        wetLeft += buffer_[0][(size_t) index] * impulse_[0][(size_t) k];
-        wetRight += buffer_[1][(size_t) index] * impulse_[1][(size_t) k];
+        const auto irPosition = std::min (383.0f, k * tuning_);
+        const auto lo = (int) irPosition, hi = std::min (383, lo + 1);
+        const auto f = irPosition - lo;
+        const auto& ir = library_[(size_t) model_];
+        wetLeft += buffer_[0][(size_t) index] * lerpf (ir[0][(size_t) lo], ir[0][(size_t) hi], f);
+        wetRight += buffer_[1][(size_t) index] * lerpf (ir[1][(size_t) lo], ir[1][(size_t) hi], f);
     }
 
     writeIndex_ = (writeIndex_ + 1) % size_;
 
+    if (width_ != 1.0f)
+    {
+        const auto mid = (wetLeft + wetRight) * 0.5f;
+        const auto side = (wetLeft - wetRight) * 0.5f * width_;
+        wetLeft = mid + side; wetRight = mid - side;
+    }
     StereoSample out;
     out.left = inputLeft * (1.0f - mix_) + wetLeft * mix_;
     out.right = inputRight * (1.0f - mix_) + wetRight * mix_;

@@ -57,7 +57,7 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ContinuumSurface)
 };
 
-/** 16 x 16 EIGEN MATRIX: click cycles the formula, drag changes the amount. */
+/** 16 x 22 EIGEN MATRIX: click cycles the formula, drag changes the amount. */
 class ContinuumMatrix final : public juce::Component, private juce::Timer
 {
 public:
@@ -93,8 +93,11 @@ class ContinuumPanel final : public PanelBase
 public:
     explicit ContinuumPanel (EditorHost& host);
     ~ContinuumPanel() override;
+    void showDetailPage (int page);
 
 private:
+    std::array<std::vector<juce::Component*>, 4> pageControls_;
+    std::vector<std::unique_ptr<juce::Component>> details_;
     std::unique_ptr<ContinuumMatrix> matrix_;
     std::unique_ptr<juce::Component> fxModes_;
     std::unique_ptr<juce::Component> delayFaders_;

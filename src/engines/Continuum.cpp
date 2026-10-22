@@ -35,13 +35,13 @@ const char* const kDestinationNames[ContinuumEngine::kDestinations] =
     "FLT 1 IN", "FLT 2 IN", "FLT 3 IN", "FLT 4 IN", "FLT 5 IN",
     "FLT 1 CUT", "FLT 2 CUT", "FLT 3 CUT", "FLT 4 CUT", "FLT 5 CUT",
     "OSC 1 PITCH", "OSC 2 PITCH", "OSC 3 PITCH", "OSC 4 PITCH", "OSC 5 PITCH",
-    "MASTER"
+    "MASTER", "MASTER 1", "MASTER 2", "MASTER 3", "MASTER 4", "MASTER 5", "MASTER 6"
 };
 
 const char* const kFormulaNames[ContinuumEngine::kFormulaCount] =
 {
     "Off", "Direct", "X", "Y", "Z", "X*Y", "X*Z", "Y*Z", "X*Y*Z",
-    "Invert", "Soft", "Gate", "User"
+    "Invert", "Soft", "Gate", "User", "A", "B", "C", "D", "E", "F"
 };
 
 template <typename T>
@@ -216,11 +216,62 @@ void ContinuumEngine::buildDefinition()
         envIndex_[(size_t) i][(size_t) EnvRelease] = add ((prefix + "release").c_str(), "RELEASE", group.c_str(), 0.002f, 10.0f, i == 0 ? 0.7f : 0.5f, ParamCurve::Log, {}, "s");
     }
 
+    // Append extensions after the original 128 slots. Existing automation and
+    // preset parameter ordering, including the four legacy filter types, stay stable.
+    scalarIndex_[(size_t) PCompEnabled] = add ("con.fx.comp.enabled", "COMPRESSOR", "Master Processing", 0.0f, 1.0f, 0.0f, ParamCurve::Discrete, choices ({ "Off", "On" }), "");
+    scalarIndex_[(size_t) PCompThreshold] = add ("con.fx.comp.threshold", "THRESHOLD", "Master Processing", -60.0f, 0.0f, -18.0f, ParamCurve::Linear, {}, "dB");
+    scalarIndex_[(size_t) PCompRatio] = add ("con.fx.comp.ratio", "RATIO", "Master Processing", 1.0f, 20.0f, 4.0f, ParamCurve::Linear, {}, "");
+    scalarIndex_[(size_t) PCompAttack] = add ("con.fx.comp.attack", "ATTACK", "Master Processing", 0.0001f, 0.2f, 0.01f, ParamCurve::Log, {}, "s");
+    scalarIndex_[(size_t) PCompRelease] = add ("con.fx.comp.release", "RELEASE", "Master Processing", 0.01f, 2.0f, 0.15f, ParamCurve::Log, {}, "s");
+    scalarIndex_[(size_t) PCompMakeup] = add ("con.fx.comp.makeup", "MAKEUP", "Master Processing", 0.0f, 24.0f, 0.0f, ParamCurve::Linear, {}, "dB");
+    scalarIndex_[(size_t) PTilt] = add ("con.fx.tilt.gain", "TILT", "Master Processing", -12.0f, 12.0f, 0.0f, ParamCurve::Linear, {}, "dB");
+    scalarIndex_[(size_t) PTiltFrequency] = add ("con.fx.tilt.frequency", "TILT PIVOT", "Master Processing", 20.0f, 20000.0f, 1000.0f, ParamCurve::Log, {}, "Hz");
+    scalarIndex_[(size_t) PPreGain] = add ("con.fx.preGain", "PRE GAIN", "Master Processing", -24.0f, 24.0f, 0.0f, ParamCurve::Linear, {}, "dB");
+    scalarIndex_[(size_t) PPostGain] = add ("con.fx.postGain", "POST GAIN", "Master Processing", -24.0f, 24.0f, 0.0f, ParamCurve::Linear, {}, "dB");
+    for (int i = 0; i < 2; ++i)
+    {
+        const auto prefix = "con.fx.conv" + std::to_string (i + 1) + ".";
+        irIndices_[(size_t) i][0] = add ((prefix + "model").c_str(), "IR MODEL", "Convolution", 0, 3, 0, ParamCurve::Discrete,
+            choices ({ "Original", "Damped Wood", "Metal", "Early Room" }));
+        irIndices_[(size_t) i][1] = add ((prefix + "length").c_str(), "IR LENGTH", "Convolution", .05f, 1, 1);
+        irIndices_[(size_t) i][2] = add ((prefix + "tuning").c_str(), "IR TUNING", "Convolution", .5f, 2, 1);
+        irIndices_[(size_t) i][3] = add ((prefix + "width").c_str(), "IR WIDTH", "Convolution", 0, 2, 1);
+        const auto bank = "con.bank" + std::to_string (i + 1) + ".";
+        bankIndex_[(size_t) i][BankSize] = add ((bank + "size").c_str(), "FILTER COUNT", "Biquad", 0, 1, 0, ParamCurve::Discrete, choices ({ "8", "48" }));
+        bankIndex_[(size_t) i][BankBWSpread] = add ((bank + "bwSpread").c_str(), "BW SPREAD", "Biquad", -1, 1, 0);
+        bankIndex_[(size_t) i][BankCentre] = add ((bank + "centre").c_str(), "SPECTRAL CENTRE", "Biquad", 0, 1, .5f);
+        bankIndex_[(size_t) i][BankWeight] = add ((bank + "weight").c_str(), "SPECTRAL WEIGHT", "Biquad", 0, 1, 0);
+    }
+    for (int i = 0; i < 5; ++i)
+    {
+        const auto f = "con.flt" + std::to_string (i + 1) + ".";
+        filterIndex_[(size_t) i][FltModel] = add ((f + "model").c_str(), "EXTENDED TYPE", "Filter", 0, 6, 0, ParamCurve::Discrete,
+            choices ({ "Legacy Type", "Low Shelf", "High Shelf", "Unity Bandpass", "Allpass", "1-Pole LP", "1-Pole HP" }));
+        filterIndex_[(size_t) i][FltStages] = add ((f + "stages").c_str(), "CASCADE", "Filter", 0, 3, 0, ParamCurve::Discrete, choices ({ "1", "2", "3", "4" }));
+        const auto g = "con.sg" + std::to_string (i + 1) + ".";
+        sgIndex_[(size_t) i][SgCycle] = add ((g + "cycle").c_str(), "CYCLE", "Shape Generator", 0, 3, 0, ParamCurve::Discrete,
+            choices ({ "Free", "Retrigger", "One Shot", "Gate" }));
+        sgIndex_[(size_t) i][SgTrigger] = add ((g + "trigger").c_str(), "TRIGGER", "Shape Generator", 0, 1, 0, ParamCurve::Discrete, choices ({ "Low", "High" }));
+    }
+    for (int i = 0; i < 6; ++i)
+    {
+        const auto f = "con.formula" + std::to_string (i + 1) + ".";
+        formulaIndices_[(size_t) i][0] = add ((f + "curve").c_str(), "TRANSFER", "Formula", 0, 7, 0, ParamCurve::Discrete,
+            choices ({ "Linear", "Smooth S", "Steep S", "Square", "Square Root", "Absolute", "Bipolar", "Steps" }));
+        formulaIndices_[(size_t) i][1] = add ((f + "offset").c_str(), "OFFSET", "Formula", -1, 1, 0);
+        formulaIndices_[(size_t) i][2] = add ((f + "scale").c_str(), "SCALE", "Formula", -2, 2, 1);
+        const auto m = "con.mastercol" + std::to_string (i + 1) + ".";
+        masterIndices_[(size_t) i][0] = add ((m + "target").c_str(), "MASTER TARGET", "Master Columns", 0, 20, 0, ParamCurve::Discrete,
+            choices ({ "None", "Volume", "Reverb Mix", "Reverb Size", "Reverb Damping", "Delay Mix", "Delay Time", "Delay Feedback", "Delay LPF", "Chorus Mix", "Phaser Mix", "IR 1 Mix", "IR 2 Mix", "Delay Mod", "Delay Rate", "Pre Gain", "Post Gain", "Tilt", "Tilt Pivot", "Comp Threshold", "Comp Ratio" }));
+        masterIndices_[(size_t) i][1] = add ((m + "depth").c_str(), "MASTER DEPTH", "Master Columns", -1, 1, 1);
+    }
+
     defaults_.resize (definition_.params.size());
     for (size_t i = 0; i < defaults_.size(); ++i)
         defaults_[i] = definition_.params[i].def;
 
     setUserFormula ("sin(pi*x)*y");
+    for (int i = 1; i <= 6; ++i) setFormulaText (i, "s*z");
 }
 
 void ContinuumEngine::prepare (double sampleRate, int maxBlockSize)
@@ -236,6 +287,7 @@ void ContinuumEngine::prepare (double sampleRate, int maxBlockSize)
     chorus_.prepare (sampleRate);
     phaser_.prepare (sampleRate);
     reverb_.prepare (sampleRate);
+    masterProcessor_.prepare (sampleRate);
 
     for (auto& voice : voices_)
     {
@@ -244,6 +296,9 @@ void ContinuumEngine::prepare (double sampleRate, int maxBlockSize)
 
         for (auto& filter : voice.filters)
             filter.prepare (sampleRate);
+
+        for (auto& cascade : voice.extraFilters)
+            for (auto& filter : cascade) filter.prepare (sampleRate);
 
         for (auto& band : voice.bank1)
             band.prepare (sampleRate);
@@ -278,6 +333,9 @@ void ContinuumEngine::reset()
         for (auto& filter : voice.filters)
             filter.reset();
 
+        for (auto& cascade : voice.extraFilters)
+            for (auto& filter : cascade) filter.reset();
+        for (auto& gen : voice.shapes) { gen.phase = 0; gen.finished = false; gen.triggerHigh = false; }
         for (auto& band : voice.bank1)
             band.reset();
 
@@ -299,6 +357,7 @@ void ContinuumEngine::reset()
     chorus_.reset();
     phaser_.reset();
     reverb_.reset();
+    masterProcessor_.reset();
     dcLeft_.reset();
     dcRight_.reset();
     meter_ = 0.0f;
@@ -464,6 +523,13 @@ void ContinuumEngine::startVoice (Voice& voice, int note, int channel, float vel
     }
 
     voice.lastFilter.fill (0.0f);
+    for (int i = 0; i < kSgCount; ++i)
+        if (svalue (i, SgCycle) > .5f)
+        {
+            auto& gen = voice.shapes[(size_t) i];
+            gen.phase = 0; gen.finished = false;
+        }
+
 }
 
 void ContinuumEngine::releaseVoice (Voice& voice)
@@ -918,15 +984,51 @@ float ContinuumEngine::UserFormula::eval (float source, float x, float y, float 
     return sp > 0 ? stack[sp - 1] : 0.0f;
 }
 
-void ContinuumEngine::setUserFormula (const std::string& text)
+void ContinuumEngine::setUserFormula (const std::string& text) { setFormulaText (0, text); }
+
+bool ContinuumEngine::setFormulaText (int slot, const std::string& text)
 {
-    const auto inactive = 1 - activeUserFormula_.load (std::memory_order_acquire);
+    if (slot < 0 || slot > 6 || text.size() > 1024) return false;
     UserFormula parsed;
-    if (compileUserFormula (text, parsed))
+    if (! compileUserFormula (text, parsed)) return false;
+    const std::lock_guard<std::mutex> lock (formulaMutex_);
+    pendingFormulas_[(size_t) slot] = parsed;
+    formulaTexts_[(size_t) slot] = text;
+    return true;
+}
+
+std::string ContinuumEngine::formulaText (int slot) const
+{
+    if (slot < 0 || slot > 6) return {};
+    const std::lock_guard<std::mutex> lock (formulaMutex_);
+    return formulaTexts_[(size_t) slot];
+}
+
+float ContinuumEngine::transfer (float input, int curve)
+{
+    const float sign = input < 0 ? -1.0f : 1.0f;
+    const float v = std::min (1.0f, std::abs (input));
+    switch (curve)
     {
-        userFormulas_[(size_t) inactive] = parsed;
-        activeUserFormula_.store (inactive, std::memory_order_release);
+        case 1: return sign * v * v * (3 - 2 * v);
+        case 2: return std::tanh (input * 3.0f) / std::tanh (3.0f);
+        case 3: return sign * v * v;
+        case 4: return sign * std::sqrt (v);
+        case 5: return std::abs (input);
+        case 6: return 2 * input - 1;
+        case 7: return std::round (input * 7) / 7;
+        default: return input;
     }
+}
+
+float ContinuumEngine::evaluateNamedFormula (int slot, float source, float x, float y, float z)
+{
+    if (slot < 0 || slot >= 6) return 0;
+    const auto& indices = formulaIndices_[(size_t) slot];
+    float value = renderFormulas_[(size_t) slot + 1].eval (source, x, y, z);
+    value = transfer (value, (int) std::lround (values_[(size_t) indices[0]]));
+    value = value * values_[(size_t) indices[2]] + values_[(size_t) indices[1]];
+    return std::isfinite (value) ? clampValue (value, -16.0f, 16.0f) : 0;
 }
 
 float ContinuumEngine::evalFormula (int formula, float source, float x, float y, float z)
@@ -944,11 +1046,9 @@ float ContinuumEngine::evalFormula (int formula, float source, float x, float y,
         case 9:  return -source;
         case 10: return source * (0.2f + 0.8f * z);
         case 11: return source > 0.5f ? 1.0f : 0.0f;
-        case 12:
-        {
-            const auto index = activeUserFormula_.load (std::memory_order_acquire);
-            return userFormulas_[(size_t) index].eval (source, x, y, z);
-        }
+        case 12: return renderFormulas_[0].eval (source, x, y, z);
+        case 13: case 14: case 15: case 16: case 17: case 18:
+            return evaluateNamedFormula (formula - 13, source, x, y, z);
         default: return 0.0f;
     }
 }
@@ -959,6 +1059,18 @@ void ContinuumEngine::render (float* left, float* right, int numSamples)
         return;
 
     refreshMatrix();
+    // Compile and allocate on the control thread. Audio takes a nonblocking snapshot.
+    if (formulaMutex_.try_lock())
+    {
+        renderFormulas_ = pendingFormulas_;
+        formulaMutex_.unlock();
+    }
+    for (int i = 0; i < 2; ++i)
+    {
+        const auto& p = irIndices_[(size_t) i];
+        auto& conv = i == 0 ? convPre_ : convPost_;
+        conv.setControls ((int) values_[(size_t) p[0]], values_[(size_t) p[1]], values_[(size_t) p[2]], values_[(size_t) p[3]]);
+    }
 
     const auto glide = std::max (0.001f, param (PMasterGlide));
     const auto glideCoef = 1.0f - std::exp (-1.0f / (float) (sampleRate_ * glide));
@@ -1024,7 +1136,24 @@ void ContinuumEngine::render (float* left, float* right, int numSamples)
     const auto filterCount = kFilterCount;
     const auto sourceCount = kSources;
 
+    std::array<float, 20> masterOffsets {};
+    const ScalarParam targets[] = { PMasterVolume, PMasterReverbMix, PMasterReverbSize,
+        PFxReverbDamping, PMasterDelayMix, PMasterDelayTime, PMasterDelayFeedback,
+        PFxDelayLpf, PFxChorusMix, PFxPhaserMix, PFxConv1Mix, PFxConv2Mix,
+        PFxDelayModDepth, PFxDelayModRate, PPreGain, PPostGain, PTilt, PTiltFrequency,
+        PCompThreshold, PCompRatio };
+    const auto controlled = [&] (int target)
+    {
+        const auto index = scalarIndex_[(size_t) targets[target]];
+        const auto& spec = definition_.params[(size_t) index];
+        const float base = values_[(size_t) index];
+        const float offset = clampValue (masterOffsets[(size_t) target], -1.0f, 1.0f);
+        return spec.curve == ParamCurve::Log
+            ? clampValue (base * std::pow (spec.max / spec.min, offset), spec.min, spec.max)
+            : clampValue (base + offset * (spec.max - spec.min), spec.min, spec.max);
+    };
     float peak = 0.0f;
+    float preGain = 1, postGain = 1;
 
     for (int sample = 0; sample < numSamples; ++sample)
     {
@@ -1035,6 +1164,8 @@ void ContinuumEngine::render (float* left, float* right, int numSamples)
 
         float mixLeft = 0.0f;
         float mixRight = 0.0f;
+        std::array<float, 20> nextOffsets {};
+        int contributingVoices = 0;
 
         for (int vi = 0; vi < kVoices; ++vi)
         {
@@ -1067,8 +1198,13 @@ void ContinuumEngine::render (float* left, float* right, int numSamples)
             {
                 auto& gen = voice.shapes[(size_t) i];
                 const auto rate = std::max (0.01f, svalue (i, SgRate));
-                gen.phase += (double) rate / sampleRate_;
-                if (gen.phase >= 1.0)
+                const int cycle = (int) svalue (i, SgCycle);
+                const bool trigger = svalue (i, SgTrigger) > .5f;
+                if (trigger && ! gen.triggerHigh) { gen.phase = 0; gen.finished = false; }
+                gen.triggerHigh = trigger;
+                if (! gen.finished && (cycle != 3 || voice.held)) gen.phase += (double) rate / sampleRate_;
+                if (gen.phase >= 1.0 && cycle == 2) { gen.phase = 1; gen.finished = true; }
+                else if (gen.phase >= 1.0)
                 {
                     gen.phase -= 1.0;
                     gen.sampleHold = gen.rng.nextBipolar();
@@ -1179,9 +1315,19 @@ void ContinuumEngine::render (float* left, float* right, int numSamples)
                 auto& filter = voice.filters[(size_t) f];
                 filter.setCutoffHz (cutoff);
                 filter.setResonance01 (clampValue (fvalue (f, FltResonance), 0.0f, 0.98f));
-                const auto mode = static_cast<StateVariableFilter::Mode> (
-                    clampValue ((int) std::lround (fvalue (f, FltType)), 0, 3));
-                filterOut[(size_t) f] = filter.process (input, mode);
+                const int extended = clampValue ((int) fvalue (f, FltModel), 0, 6);
+                const auto mode = static_cast<StateVariableFilter::Mode> (extended == 0
+                    ? clampValue ((int) std::lround (fvalue (f, FltType)), 0, 3) : extended + 3);
+                float output = filter.process (input, mode);
+                const int stages = clampValue ((int) fvalue (f, FltStages), 0, 3);
+                for (int stage = 0; stage < stages; ++stage)
+                {
+                    auto& extra = voice.extraFilters[(size_t) f][(size_t) stage];
+                    extra.setCutoffHz (cutoff);
+                    extra.setResonance01 (clampValue (fvalue (f, FltResonance), 0.0f, .98f));
+                    output = extra.process (output, mode);
+                }
+                filterOut[(size_t) f] = output;
             }
 
             // Two modal/biquad banks on filter outputs 1 and 2.
@@ -1198,17 +1344,21 @@ void ContinuumEngine::render (float* left, float* right, int numSamples)
                 const auto dry = filterOut[(size_t) b];
                 float wet = 0.0f;
 
-                for (int band = 0; band < 8; ++band)
+                const int count = bvalue (b, BankSize) > .5f ? 48 : 8;
+                for (int band = 0; band < count; ++band)
                 {
-                    const auto ratio = 0.5f + 0.5f * (float) band;
+                    const float position = (float) band / (count - 1);
+                    const auto ratio = count == 8 ? 0.5f + 0.5f * (float) band : 0.5f + 3.5f * position;
                     const auto bandFreq = freq * keyScale * std::pow (2.0f, spread * (ratio - 1.0f) * 3.0f);
                     auto& filter = bank[(size_t) band];
                     filter.setCutoffHz (clampValue (bandFreq, 20.0f, 20000.0f));
-                    filter.setResonance01 (clampValue (0.9f - bandwidth * 0.6f, 0.0f, 0.95f));
-                    wet += filter.process (dry, StateVariableFilter::Mode::BandPass);
+                    filter.setResonance01 (clampValue (0.9f - clamp01 (bandwidth + bvalue (b, BankBWSpread) * (position - .5f)) * 0.6f, 0.0f, 0.95f));
+                    const float distance = position - bvalue (b, BankCentre);
+                    const float weight = std::exp (-bvalue (b, BankWeight) * 20.0f * distance * distance);
+                    wet += filter.process (dry, StateVariableFilter::Mode::BandPass) * weight;
                 }
 
-                wet *= level * 0.22f;
+                wet *= level * 0.22f * (8.0f / count);
                 filterOut[(size_t) b] = dry * (1.0f - mix) + wet * mix;
             }
 
@@ -1228,6 +1378,21 @@ void ContinuumEngine::render (float* left, float* right, int numSamples)
                               * matrixAmount_[cell];
             }
 
+            ++contributingVoices;
+            for (int column = 0; column < 6; ++column)
+            {
+                const auto& p = masterIndices_[(size_t) column];
+                const int target = (int) values_[(size_t) p[0]] - 1;
+                if (target < 0 || target >= 20) continue;
+                for (int source = 0; source < sourceCount; ++source)
+                {
+                    const size_t cell = (size_t) (source * kDestinations + 16 + column);
+                    if (matrixFormula_[cell] != 0)
+                        nextOffsets[(size_t) target] += evalFormula (matrixFormula_[cell], sourceAudio[(size_t) source], x, y, z)
+                            * matrixAmount_[cell] * values_[(size_t) p[1]];
+                }
+            }
+
             const auto amp = ampEnv * (0.15f + 0.85f * z);
             const auto pan = clampValue ((x - 0.5f) * 1.2f, -1.0f, 1.0f);
             const auto signal = master * amp;
@@ -1235,7 +1400,31 @@ void ContinuumEngine::render (float* left, float* right, int numSamples)
             mixRight += signal * (1.0f + pan) * 0.7f;
         }
 
-        auto stereo = convPre_.process (mixLeft, mixRight);
+        for (int i = 0; i < 20; ++i)
+            masterOffsets[(size_t) i] = nextOffsets[(size_t) i] / std::max (1, contributingVoices);
+        // Master assignment controls update at 1/32 audio rate; oscillator/filter
+        // routes retain their existing per-sample behavior.
+        if (sample % 32 == 0)
+        {
+            const float dt = controlled (5);
+            delay_.setDelaySeconds (dt, dt * 1.18f);
+            delay_.setFeedback (controlled (6));
+            float dm = controlled (4), rm = controlled (1), cm = controlled (8);
+            if (fxMode <= 1) { dm *= .15f; rm = std::max (rm, fxMode == 0 ? .35f : .55f); }
+            else { dm = std::max (dm, .35f); rm *= .45f; if (fxMode == 2) cm = std::max (cm, .25f); }
+            delay_.setMix (dm);
+            delay_.setModulation (controlled (12), controlled (13));
+            delayBank1_.setDampingHz (600 + controlled (7) * 11000);
+            chorus_.setMix (cm); phaser_.setMix (controlled (9));
+            reverb_.setMix (rm); reverb_.setSize (controlled (2)); reverb_.setDamping (controlled (3));
+            convPre_.setMix (controlled (10)); convPost_.setMix (controlled (11));
+            preGain = std::pow (10.0f, controlled (14) / 20);
+            postGain = std::pow (10.0f, controlled (15) / 20);
+            masterProcessor_.configure (param (PCompEnabled) > .5f, controlled (18), controlled (19),
+                param (PCompAttack), param (PCompRelease), param (PCompMakeup), controlled (16), controlled (17));
+        }
+        auto stereo = masterProcessor_.processCompressor (mixLeft * preGain, mixRight * preGain);
+        stereo = convPre_.process (stereo.left, stereo.right);
         stereo = delay_.process (stereo.left, stereo.right);
         stereo = delayBank1_.process (stereo.left, stereo.right);
         stereo = delayBank2_.process (stereo.left, stereo.right);
@@ -1244,7 +1433,8 @@ void ContinuumEngine::render (float* left, float* right, int numSamples)
         stereo = reverb_.process (stereo.left, stereo.right);
         stereo = convPost_.process (stereo.left, stereo.right);
 
-        const auto gain = volumeSmoother_.next();
+        stereo = masterProcessor_.processTilt (stereo.left, stereo.right);
+        const auto gain = clampValue (volumeSmoother_.next() + masterOffsets[0], 0.0f, 1.0f) * postGain;
         const auto outLeft = dcLeft_.process (softClip (stereo.left * gain));
         const auto outRight = dcRight_.process (softClip (stereo.right * gain));
 

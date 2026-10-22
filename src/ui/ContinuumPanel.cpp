@@ -27,6 +27,8 @@ juce::String formulaAbbreviation (int formula)
         case 10: return "SFT";
         case 11: return "GATE";
         case 12: return "USER";
+        case 13: case 14: case 15: case 16: case 17: case 18:
+            return juce::String::charToString ((juce::juce_wchar) ('A' + formula - 13));
         default: return {};
     }
 }
@@ -306,7 +308,7 @@ ContinuumMatrix::ContinuumMatrix (EditorHost& host) : host_ (host)
     formulaEditor_.setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xfff0f2eb));
     formulaEditor_.setColour (juce::TextEditor::textColourId, juce::Colour (0xff30355d));
     formulaEditor_.setColour (juce::TextEditor::outlineColourId, juce::Colour (0xff2fb6a8).withAlpha (0.45f));
-    formulaEditor_.setText ("sin(pi*x)*y", false);
+    formulaEditor_.setText (juce::String (host_.engine().formulaText (0)), false);
     formulaEditor_.setTooltip ("User formula: s, x, y, z; sin/cos/tan/abs/sqrt/exp/log; + - * / ^");
     addAndMakeVisible (formulaEditor_);
 
@@ -314,7 +316,8 @@ ContinuumMatrix::ContinuumMatrix (EditorHost& host) : host_ (host)
     applyFormula_.setTooltip ("Compile the user formula for cells set to user formula");
     applyFormula_.onClick = [this]
     {
-        host_.engine().setUserFormula (formulaEditor_.getText().toStdString());
+        const bool valid = host_.engine().setFormulaText (0, formulaEditor_.getText().toStdString());
+        applyFormula_.setButtonText (valid ? "APPLIED" : "ERROR");
     };
     addAndMakeVisible (applyFormula_);
 
@@ -724,8 +727,65 @@ private:
     int dragIndex_ = 0;
 };
 
+namespace
+{
+class ContinuumDetailBackground final : public juce::Component
+{
+public:
+    explicit ContinuumDetailBackground (juce::String title) : title_ (std::move (title)) { setOpaque (true); }
+    void paint (juce::Graphics& g) override
+    {
+        g.fillAll (juce::Colour (0xffe4e8dd));
+        g.setColour (juce::Colour (0xff89978a)); g.drawRect (getLocalBounds(), 1);
+        g.setColour (juce::Colour (0xff35443c)); g.setFont (16.0f);
+        g.drawText (title_, getLocalBounds().reduced (16).removeFromTop (28), juce::Justification::centredLeft);
+    }
+private:
+    juce::String title_;
+};
+
+class FormulaTransferGraph final : public juce::Component, private juce::Timer
+{
+public:
+    FormulaTransferGraph (juce::AudioProcessorValueTreeState& state, int slot)
+    {
+        const auto stem = "con.formula" + juce::String (slot + 1) + ".";
+        curve_ = state.getRawParameterValue (stem + "curve");
+        offset_ = state.getRawParameterValue (stem + "offset");
+        scale_ = state.getRawParameterValue (stem + "scale");
+        startTimerHz (10);
+    }
+    void paint (juce::Graphics& g) override
+    {
+        g.fillAll (juce::Colour (0xfff4f5ee));
+        const auto a = getLocalBounds().toFloat().reduced (8);
+        g.setColour (juce::Colour (0xffbdc6b9));
+        for (int i = 0; i < 5; ++i)
+        {
+            const float f = i * .25f;
+            g.drawLine (a.getX() + f * a.getWidth(), a.getY(), a.getX() + f * a.getWidth(), a.getBottom());
+            g.drawLine (a.getX(), a.getY() + f * a.getHeight(), a.getRight(), a.getY() + f * a.getHeight());
+        }
+        juce::Path line;
+        for (int i = 0; i <= 128; ++i)
+        {
+            const float x = i / 128.0f;
+            const float v = ContinuumEngine::transfer (x, (int) curve_->load()) * scale_->load() + offset_->load();
+            const juce::Point<float> point (a.getX() + x * a.getWidth(), a.getBottom() - juce::jlimit (0.0f, 1.0f, (v + 2) / 4) * a.getHeight());
+            if (i == 0) line.startNewSubPath (point); else line.lineTo (point);
+        }
+        g.setColour (juce::Colour (0xff67598e)); g.strokePath (line, juce::PathStrokeType (2));
+    }
+private:
+    void timerCallback() override { if (isShowing()) repaint(); }
+    std::atomic<float>* curve_ = nullptr;
+    std::atomic<float>* offset_ = nullptr;
+    std::atomic<float>* scale_ = nullptr;
+};
+} // namespace
+
 ContinuumPanel::ContinuumPanel (EditorHost& host)
-    : PanelBase (host, "CONTINUUM V", 2800, 1340, continuumAccent())
+    : PanelBase (host, "CONTINUUM V", 2800, 1372, continuumAccent())
 {
     setBranding ("CONTINUUM V", "EIGEN MATRIX  /  CONTINUOUS SURFACE");
     addModule ("CONTROL PANEL 1 / MASTER & EXPRESSION", { 8, 8, 2784, 68 });
@@ -763,6 +823,7 @@ ContinuumPanel::ContinuumPanel (EditorHost& host)
     matrix_ = std::make_unique<ContinuumMatrix> (host);
     matrix_->setBounds (8, 302, 2784, 510); addAndMakeVisible (*matrix_);
 
+    const int voiceStart = getNumChildComponents();
     // Numeric model blocks below the matrix, as in the editor's parameter tables.
     for (int i = 0; i < 5; ++i)
     {
@@ -813,6 +874,73 @@ ContinuumPanel::ContinuumPanel (EditorHost& host)
             addNumber ("con.env" + juce::String (env + 1) + "." + ids[n], names[n],
                        { x + 16 + n * 342, 1226, 320, 42 });
     }
+    for (int i = voiceStart; i < getNumChildComponents(); ++i)
+    {
+        auto* c = getChildComponent (i); c->setTopLeftPosition (c->getX(), c->getY() + 32);
+        pageControls_[0].push_back (c);
+    }
+    for (auto& module : modules_) if (module.bounds.getY() >= 822) module.bounds.translate (0, 32);
+    const char* titles[] = { "VOICE", "MASTER / COMPRESSOR / TILT / IR", "FILTERS / BANKS / SG", "FORMULAS A-F" };
+    for (int page = 0; page < 4; ++page)
+        addButton (titles[page], { 8 + page * 698, 822, 690, 26 }, [this, page] { showDetailPage (page); });
+    for (int page = 1; page < 4; ++page)
+    {
+        auto background = std::make_unique<ContinuumDetailBackground> (titles[page]);
+        background->setBounds (8, 854, 2784, 452);
+        addAndMakeVisible (*background); pageControls_[(size_t) page].push_back (background.get());
+        details_.push_back (std::move (background));
+        const int start = getNumChildComponents();
+        int field = 0;
+        for (size_t i = 128; i < definition().params.size(); ++i)
+        {
+            const auto& spec = definition().params[i];
+            const juce::String id (spec.id);
+            const int parameterPage = id.startsWith ("con.formula") ? 3
+                : (id.startsWith ("con.fx.") || id.startsWith ("con.mastercol") ? 1 : 2);
+            if (parameterPage != page || page == 3) continue;
+            const auto label = juce::String (spec.id).fromFirstOccurrenceOf ("con.", false, false).toUpperCase();
+            const juce::Rectangle<int> bounds (22 + field % 8 * 345, 918 + field / 8 * 82, 320, 48);
+            if (spec.choices.empty()) addNumber (id, label, bounds);
+            else addChoice (id, label, bounds);
+            ++field;
+        }
+        if (page == 3)
+            for (int slot = 0; slot < 6; ++slot)
+            {
+                const int x = 22 + slot * 462;
+                const auto stem = "con.formula" + juce::String (slot + 1) + ".";
+                addCaption (juce::String::charToString ((juce::juce_wchar) ('A' + slot)), { x, 904, 436, 24 },
+                            juce::Justification::centred, 18.0f, juce::Colour (0xff514674), true);
+                auto editor = std::make_unique<juce::TextEditor>(); auto* text = editor.get();
+                editor->setTooltip ("s=matrix source, x=pitch, y=timbre, z=pressure; sin/cos/abs/min/max; + - * / ^");
+                editor->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xfff4f5ee));
+                editor->setColour (juce::TextEditor::textColourId, juce::Colour (0xff393457));
+                editor->setText (juce::String (host.engine().formulaText (slot + 1)), false);
+                editor->setBounds (x, 940, 436, 36); addAndMakeVisible (*editor); details_.push_back (std::move (editor));
+                auto status = std::make_unique<juce::TextButton> ("APPLY EXPRESSION"); auto* button = status.get();
+                status->setBounds (x, 984, 436, 28);
+                status->onClick = [&host, slot, text, button]
+                {
+                    const bool valid = host.engine().setFormulaText (slot + 1, text->getText().toStdString());
+                    button->setButtonText (valid ? "APPLIED" : "INVALID - PREVIOUS EXPRESSION KEPT");
+                };
+                addAndMakeVisible (*status); details_.push_back (std::move (status));
+                auto graph = std::make_unique<FormulaTransferGraph> (apvts(), slot);
+                graph->setBounds (x, 1024, 436, 144); addAndMakeVisible (*graph); details_.push_back (std::move (graph));
+                addChoice (stem + "curve", "TRANSFER CURVE (OUTPUT -2 TO +2)", { x, 1186, 436, 42 });
+                addNumber (stem + "offset", "OFFSET", { x, 1248, 206, 42 });
+                addNumber (stem + "scale", "SCALE", { x + 230, 1248, 206, 42 });
+            }
+        for (int i = start; i < getNumChildComponents(); ++i)
+            pageControls_[(size_t) page].push_back (getChildComponent (i));
+    }
+    showDetailPage (0);
+
 }
 ContinuumPanel::~ContinuumPanel() = default;
+void ContinuumPanel::showDetailPage (int page)
+{
+    for (int i = 0; i < 4; ++i)
+        for (auto* c : pageControls_[(size_t) i]) c->setVisible (i == page);
+}
 } // namespace triad::ui

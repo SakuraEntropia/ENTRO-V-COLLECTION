@@ -111,6 +111,18 @@ void OneEngine::buildDefinition()
     for (int part = 0; part < kPartCount; ++part)
         addArpeggiatorDefinition (part);
 
+    // Append to the complete original layout, preserving all 408 old indices.
+    for (int part = 0; part < kPartCount; ++part)
+        for (int osc = 0; osc < 3; ++osc)
+        {
+            ParamSpec spec;
+            spec.id = "one.p" + std::to_string (part + 1) + ".vco" + std::to_string (osc + 1) + ".beatHz";
+            spec.name = "VCO " + std::to_string (osc + 1) + " BEAT FREQ";
+            spec.group = "Part " + std::to_string (part + 1);
+            spec.min = -7; spec.max = 7; spec.def = 0; spec.unit = "Hz";
+            partIndex_[(size_t) part][(size_t) (PVco1BeatHz + osc)] = definition_.addParam (std::move (spec));
+        }
+
     struct NamedItem
     {
         const char* id;
@@ -1467,9 +1479,9 @@ StereoSample OneEngine::renderVoice (Voice& voice, int sampleIndex)
     const auto pitchRatio2 = pitchMod2 != 0.0f ? std::exp2 (pitchMod2 * (1.0f / 12.0f)) : 1.0f;
     const auto pitchRatio3 = pitchMod3 != 0.0f ? std::exp2 (pitchMod3 * (1.0f / 12.0f)) : 1.0f;
 
-    auto frequency1 = baseHz * vcoRatio_[(size_t) part][0] * pitchRatio1;
-    auto frequency2 = baseHz * vcoRatio_[(size_t) part][1] * pitchRatio2;
-    auto frequency3 = baseHz * vcoRatio_[(size_t) part][2] * pitchRatio3;
+    auto frequency1 = baseHz * vcoRatio_[(size_t) part][0] * pitchRatio1 + praw (part, PVco1BeatHz);
+    auto frequency2 = baseHz * vcoRatio_[(size_t) part][1] * pitchRatio2 + praw (part, PVco2BeatHz);
+    auto frequency3 = baseHz * vcoRatio_[(size_t) part][2] * pitchRatio3 + praw (part, PVco3BeatHz);
 
     const auto fmAmount = clamp01 (praw (part, PVco3Fm));
 

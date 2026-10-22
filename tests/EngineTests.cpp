@@ -1,5 +1,8 @@
 #include "engines/Engines.h"
 #include "core/Sequencer.h"
+#include "core/ContinuumProcessing.h"
+#include "engines/Continuum.h"
+#include <numeric>
 
 #include <cmath>
 #include <cstdio>
@@ -359,6 +362,31 @@ void testTuning (triad::InstrumentKind kind, const char* name)
     }
 }
 
+void testOneBeatFrequency()
+{
+    for (int part = 1; part <= 3; ++part)
+        for (int note : { 69, 81 })
+        {
+            auto engine = triad::makeEngine (triad::InstrumentKind::MoogOne);
+            const auto& def = engine->definition();
+            CHECK (def.params.size() == 417 && def.params[408].id == "one.p1.vco1.beatHz");
+            std::vector<float> values; for (const auto& spec : def.params) values.push_back (spec.def);
+            auto set = [&] (std::string id, float value) { values[(size_t) def.indexOf (id)] = value; };
+            const auto prefix = "one.p" + std::to_string (part) + ".";
+            set ("one.master.drift", 0); set ("one.master.reverbMix", 0);
+            set (prefix + "vco2.level", 0); set (prefix + "vco3.level", 0);
+            set (prefix + "mix.noise", 0); set (prefix + "mix.ring", 0);
+            set (prefix + "vco1.beatHz", 7);
+            set (prefix + "svf.cutoff", 20000); set (prefix + "ladder.cutoff", 20000);
+            engine->prepare (48000, 512); engine->setParameters (values.data(), (int) values.size());
+            triad::MidiEvent on; on.type = triad::MidiEventType::NoteOn;
+            on.note = note; on.channel = part - 1; on.value = .8f; engine->processMidi (on);
+            std::vector<float> l, r; renderSeconds (*engine, 1, 48000, l, r);
+            const double expected = (note == 69 ? 440 : 880) + 7;
+            CHECK (std::abs (estimateFundamental (l, 1, 48000) - expected) < .5);
+        }
+}
+
 void testContinuumUserFormula()
 {
     auto engine = triad::makeEngine (triad::InstrumentKind::Continuum);
@@ -371,7 +399,7 @@ void testContinuumUserFormula()
     engine->prepare (48000.0, 256);
     engine->setParameters (values.data(), (int) values.size());
 
-    CHECK (engine->matrixFormulaCount() == 13);
+    CHECK (engine->matrixFormulaCount() == 19);
     CHECK (engine->matrixFormulaName (12) == "User");
 
     engine->setUserFormula ("sin(pi*x)*y + z");
@@ -391,6 +419,115 @@ void testContinuumUserFormula()
     engine->setUserFormula ("sin(");
     renderSeconds (*engine, 0.05, 48000.0, left, right);
     checkFinite (left, right, "continuum invalid user formula");
+}
+
+void testContinuumExtensions()
+{
+    // Neutral master controls are sample-exact bypass; compression is stereo linked.
+    triad::ContinuumMasterProcessor processor;
+    processor.prepare (48000);
+    processor.configure (false, -18, 4, .001f, .1f, 0, 0, 1000);
+    auto output = processor.process (.6f, -.3f);
+    CHECK (output.left == .6f && output.right == -.3f);
+    processor.configure (true, -24, 10, .0001f, .1f, 0, 0, 1000);
+    for (int i = 0; i < 10000; ++i) output = processor.process (.8f, -.4f);
+    CHECK (std::abs (output.left) < .15f);
+    CHECK (std::abs (output.left + output.right * 2) < .00001f);
+    const auto tiltEnergy = [] (float hz)
+    {
+        triad::ContinuumMasterProcessor p; p.prepare (48000);
+        p.configure (false, -18, 4, .01f, .1f, 0, 12, 1000);
+        double energy = 0;
+        for (int i = 0; i < 10000; ++i)
+        {
+            const float value = std::sin (triad::kTwoPi * hz * i / 48000);
+            const auto sample = p.process (value, value);
+            if (i > 1000) energy += sample.left * sample.left;
+        }
+        return energy;
+    };
+    CHECK (tiltEnergy (8000) > tiltEnergy (80) * 6);
+
+    // Generated impulse controls affect the actual convolution, including width.
+    const auto impulse = [] (int model, float length, float tuning, float width)
+    {
+        triad::ConvolutionEffect effect; effect.prepare (48000, 17);
+        effect.setMix (1); effect.setControls (model, length, tuning, width);
+        std::vector<float> result;
+        for (int i = 0; i < 512; ++i)
+        {
+            const auto sample = effect.process (i == 0 ? 1.0f : 0.0f, i == 0 ? .3f : 0.0f);
+            CHECK (std::isfinite (sample.left) && std::isfinite (sample.right));
+            if (width == 0) CHECK (sample.left == sample.right);
+            result.push_back (sample.left);
+        }
+        return result;
+    };
+    const auto original = impulse (0, 1, 1, 1);
+    CHECK (original != impulse (1, 1, 1, 1)); CHECK (original != impulse (2, 1, 1, 1));
+    CHECK (original != impulse (3, 1, 1, 1)); CHECK (original != impulse (0, .2f, 1, 1));
+    CHECK (original != impulse (0, 1, 1.5f, 1)); CHECK (original != impulse (0, 1, 1, 0));
+
+    triad::ContinuumEngine engine;
+    const auto& definition = engine.definition();
+    CHECK (definition.params.size() == 204);
+    CHECK (definition.params[127].id == "con.env2.release");
+    CHECK (definition.params[128].id == "con.fx.comp.enabled");
+    CHECK (engine.matrixColumns() == 22 && engine.matrixDestinationName (15) == "MASTER");
+    CHECK (engine.matrixFormulaName (13) == "A" && engine.matrixFormulaName (18) == "F");
+    std::vector<float> values;
+    for (const auto& spec : definition.params) values.push_back (spec.def);
+    auto set = [&] (const char* id, float value) { values[(size_t) definition.indexOf (id)] = value; };
+    engine.prepare (48000, 256);
+    for (int i = 1; i <= 6; ++i)
+    {
+        const auto text = "s*" + std::to_string (i);
+        CHECK (engine.setFormulaText (i, text));
+        CHECK (! engine.setFormulaText (i, "sin("));
+        CHECK (engine.formulaText (i) == text);
+    }
+    float l[256] {}, r[256] {};
+    engine.setParameters (values.data(), (int) values.size()); engine.render (l, r, 1);
+    for (int i = 0; i < 6; ++i)
+        CHECK (std::abs (engine.evaluateNamedFormula (i, .1f, .2f, .3f, .4f) - .1f * (i + 1)) < .0001f);
+    set ("con.formula1.curve", 3); set ("con.formula1.scale", 2); set ("con.formula1.offset", .1f);
+    engine.setParameters (values.data(), (int) values.size()); engine.render (l, r, 1);
+    CHECK (std::abs (engine.evaluateNamedFormula (0, .5f, 0, 0, 0) - .6f) < .0001f);
+
+    const auto audio = [] (const std::vector<std::pair<const char*, float>>& changes, bool masterColumn = false)
+    {
+        auto e = triad::makeEngine (triad::InstrumentKind::Continuum);
+        const auto& d = e->definition(); std::vector<float> v;
+        for (const auto& spec : d.params) v.push_back (spec.def);
+        for (const auto& change : changes) v[(size_t) d.indexOf (change.first)] = change.second;
+        e->prepare (48000, 256); e->setParameters (v.data(), (int) v.size());
+        if (masterColumn) e->setMatrixCell (11, 16, 1, 1);
+        triad::MidiEvent on; on.type = triad::MidiEventType::NoteOn; on.note = 60; on.value = .8f; e->processMidi (on);
+        std::vector<float> left, right; renderSeconds (*e, .12, 48000, left, right);
+        checkFinite (left, right, "Continuum extensions"); return left;
+    };
+    const auto base = audio ({});
+    CHECK (base != audio ({{ "con.fx.comp.enabled", 1 }, { "con.fx.comp.threshold", -50 }}));
+    CHECK (base != audio ({{ "con.fx.tilt.gain", 9 }}));
+    CHECK (base != audio ({{ "con.bank1.size", 1 }}));
+    CHECK (base != audio ({{ "con.bank1.bwSpread", .8f }, { "con.bank1.centre", .8f }, { "con.bank1.weight", 1 }}));
+    for (int type = 1; type <= 6; ++type)
+        CHECK (base != audio ({{ "con.flt1.model", (float) type }, { "con.flt1.stages", 3 }}));
+    CHECK (audio ({{ "con.mastercol1.target", 15 }}) != audio ({{ "con.mastercol1.target", 15 }}, true));
+
+    // A one-shot SG holds its final value; a rising trigger restarts it.
+    for (int row = 0; row < engine.matrixRows(); ++row)
+        for (int col = 0; col < engine.matrixColumns(); ++col) engine.setMatrixCell (row, col, 0, 0);
+    engine.setMatrixCell (11, 15, 1, 1);
+    set ("con.sg1.cycle", 2); set ("con.sg1.rate", 30); set ("con.sg1.shape", 0);
+    set ("con.master.reverbMix", 0); set ("con.master.delayMix", 0); set ("con.fx.mode", 5);
+    engine.setParameters (values.data(), (int) values.size());
+    triad::MidiEvent note; note.type = triad::MidiEventType::NoteOn; note.note = 60; note.value = 1; engine.processMidi (note);
+    std::vector<float> left, right; renderSeconds (engine, .5, 48000, left, right);
+    double tail = 0; for (size_t i = left.size() - 256; i < left.size(); ++i) tail += std::abs (left[i]);
+    set ("con.sg1.trigger", 1); engine.setParameters (values.data(), (int) values.size());
+    engine.render (l, r, 256); double restarted = 0; for (float v : l) restarted += std::abs (v);
+    CHECK (restarted > tail * 2 + .01);
 }
 
 void testContinuumPitchExpression()
@@ -539,7 +676,9 @@ int main()
     testTuning (triad::InstrumentKind::PolyBrute, "PolyBrute");
     testTuning (triad::InstrumentKind::MoogOne, "Moog One");
     testTuning (triad::InstrumentKind::Continuum, "Continuum");
+    testOneBeatFrequency();
     testContinuumUserFormula();
+    testContinuumExtensions();
     testContinuumPitchExpression();
     testMatriarchPatching();
     testMatriarchGlideAndTap();

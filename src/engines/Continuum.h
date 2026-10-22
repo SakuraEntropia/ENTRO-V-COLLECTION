@@ -2,6 +2,8 @@
 
 #include "core/Dsp.h"
 #include "core/Engine.h"
+#include "core/ContinuumProcessing.h"
+#include <mutex>
 
 #include <array>
 #include <atomic>
@@ -28,8 +30,8 @@ public:
     static constexpr int kSgCount = 5;
     static constexpr int kEnvCount = 2;
     static constexpr int kSources = 16;
-    static constexpr int kDestinations = 16;
-    static constexpr int kFormulaCount = 13;
+    static constexpr int kDestinations = 22;
+    static constexpr int kFormulaCount = 19;
 
     ContinuumEngine();
 
@@ -58,6 +60,11 @@ public:
     void setNoteExpression (int note, float pitchSemitones,
                             float timbre01, float pressure01) override;
     void setUserFormula (const std::string& formula) override;
+
+    bool setFormulaText (int slot, const std::string& text) override;
+    std::string formulaText (int slot) const override;
+    float evaluateNamedFormula (int slot, float source, float x, float y, float z);
+    static float transfer (float input, int curve);
 
     struct UserFormula
     {
@@ -90,14 +97,16 @@ private:
         PFxPhaserRate, PFxPhaserDepth, PFxPhaserFeedback, PFxPhaserMix,
         PFxDelayModDepth, PFxDelayModRate,
         PNoiseLevel, PNoiseColor,
+        PCompEnabled, PCompThreshold, PCompRatio, PCompAttack, PCompRelease, PCompMakeup,
+        PTilt, PTiltFrequency, PPreGain, PPostGain,
         PScalarParamCount
     };
 
     enum OscParam { OscRatio, OscFine, OscPhase, OscShape, OscLevel, OscWave, OscParamCount };
-    enum FilterParam { FltType, FltCutoff, FltResonance, FltEnv, FilterParamCount };
-    enum BankParam { BankFreq, BankSpread, BankBandwidth, BankMix, BankLevel, BankKeyTrack, BankParamCount };
+    enum FilterParam { FltType, FltCutoff, FltResonance, FltEnv, FltModel, FltStages, FilterParamCount };
+    enum BankParam { BankFreq, BankSpread, BankBandwidth, BankMix, BankLevel, BankKeyTrack, BankSize, BankBWSpread, BankCentre, BankWeight, BankParamCount };
     enum DelayParam { DelayTime, DelayFeedback, DelayMix, DelayParamCount };
-    enum SgParam { SgRate, SgShape, SgLevel, SgParamCount };
+    enum SgParam { SgRate, SgShape, SgLevel, SgCycle, SgTrigger, SgParamCount };
     enum EnvParam { EnvAttack, EnvDecay, EnvSustain, EnvRelease, EnvParamCount };
 
     struct ShapeGenerator
@@ -105,6 +114,7 @@ private:
         double phase = 0.0;
         float last = 0.0f;
         float sampleHold = 0.0f;
+        bool finished = false, triggerHigh = false;
         Rng rng { 0x6d2b79f5u };
     };
 
@@ -126,8 +136,9 @@ private:
         std::array<Oscillator, kOscCount> oscillators;
         std::array<StateVariableFilter, kFilterCount> filters;
         std::array<float, kFilterCount> lastFilter {};
-        std::array<StateVariableFilter, 8> bank1;
-        std::array<StateVariableFilter, 8> bank2;
+        std::array<std::array<StateVariableFilter, 3>, kFilterCount> extraFilters;
+        std::array<StateVariableFilter, 48> bank1;
+        std::array<StateVariableFilter, 48> bank2;
         std::array<ShapeGenerator, kSgCount> shapes;
         std::array<Envelope, kEnvCount> envelopes;
     };
@@ -177,8 +188,13 @@ private:
     int maxBlock_ = 512;
     uint64_t ageCounter_ = 0;
     float meter_ = 0.0f;
-    std::array<UserFormula, 2> userFormulas_ {};
-    std::atomic<int> activeUserFormula_ { 0 };
+    mutable std::mutex formulaMutex_;
+    std::array<UserFormula, 7> pendingFormulas_ {}, renderFormulas_ {};
+    std::array<std::string, 7> formulaTexts_ {};
+    std::array<std::array<int, 3>, 6> formulaIndices_ {};
+    std::array<std::array<int, 2>, 6> masterIndices_ {};
+    std::array<std::array<int, 4>, 2> irIndices_ {};
+    ContinuumMasterProcessor masterProcessor_;
 
     std::array<Voice, kVoices> voices_ {};
     std::array<float, 16> channelBend_ {};

@@ -118,6 +118,16 @@ void verifyPanel (PanelHost& host, PanelBase& panel)
             auto* angle = host.apvts().getParameter (stem + "waveAngle");
             auto* shape = host.apvts().getParameter (stem + "shape");
             auto* pw = host.apvts().getParameter (stem + "pw");
+            const auto centre = oled->getBounds().getCentre();
+            const auto position = [&] (const char* suffix) { return panel.knobFor (stem + suffix).getBounds().getCentre(); };
+            const auto octave = position ("octave"), frequency = position ("tune"), beat = position ("beatHz");
+            const auto wave = position ("waveAngle"), pulse = position ("pw"), mix = position ("shape");
+            require (octave.x == centre.x && mix.x == centre.x && octave.y < frequency.y && mix.y > wave.y,
+                     "Point-up oscillator hexagon, top octave / bottom mix");
+            require (frequency.x < centre.x && beat.x > centre.x && frequency.y == beat.y && frequency.y < centre.y,
+                     "Hexagon upper left frequency / upper right beat");
+            require (wave.x == frequency.x && pulse.x == beat.x && wave.y == pulse.y && wave.y > centre.y,
+                     "Hexagon lower left wave angle / lower right pulse width");
             const auto a = angle->getValue(), s = shape->getValue(), w = pw->getValue();
             shape->setValueNotifyingHost (0); angle->setValueNotifyingHost (0);
             const auto saw = oled->waveform();
@@ -312,12 +322,47 @@ int main (int argc, char** argv)
                         if (auto stream = folder.getChildFile (host.definition().id + "-keyboard.png").createOutputStream())
                         {
                             stream->setPosition (0); stream->truncate();
-                        juce::PNGImageFormat png;
+                            juce::PNGImageFormat png;
                             png.writeImageToStream (keyboard.createComponentSnapshot (keyboard.getLocalBounds()), *stream);
                         }
                         keyboard.setLookAndFeel (nullptr);
                     }
                 }
+            }
+            if (auto* continuum = dynamic_cast<ContinuumPanel*> (panel.get()))
+                for (int page = 1; page < 4; ++page)
+                {
+                    continuum->showDetailPage (page); verifyPanel (host, *panel);
+                    if (argc > 1)
+                    {
+                        const auto file = juce::File (juce::String (argv[1])).getChildFile ("continuum-page" + juce::String (page) + ".png");
+                        if (auto stream = file.createOutputStream())
+                        {
+                            stream->setPosition (0); stream->truncate(); juce::PNGImageFormat png;
+                            png.writeImageToStream (panel->createComponentSnapshot (panel->getLocalBounds()), *stream);
+                        }
+                    }
+                }
+            if (auto* one = dynamic_cast<OnePanel*> (panel.get()))
+            {
+                for (auto* c : one->getChildren())
+                    if (auto* button = dynamic_cast<juce::TextButton*> (c); button != nullptr && button->getButtonText() == "MOD / HOME")
+                    {
+                        button->onClick(); verifyPanel (host, *panel);
+                        require (panel->knobFor ("one.p3.mod.slot1.amount").isVisible(), "MOD page exposes bindings");
+                        if (argc > 1)
+                        {
+                            const auto file = juce::File (juce::String (argv[1])).getChildFile ("moogone-mod.png");
+                            if (auto stream = file.createOutputStream())
+                            {
+                                stream->setPosition (0); stream->truncate(); juce::PNGImageFormat png;
+                                png.writeImageToStream (panel->createComponentSnapshot (panel->getLocalBounds()), *stream);
+                            }
+                        }
+                        button->onClick();
+                    }
+                require (panel->knobFor ("one.p3.lfo1.rate").getX() < panel->knobFor ("one.p3.vco1.tune").getX(), "LFO strip left of oscillators");
+                require (panel->knobFor ("one.p3.ladder.cutoff").getY() > panel->knobFor ("one.p3.svf.cutoff").getY(), "Ladder below SVF");
             }
             panel->setLookAndFeel (nullptr);
         }
