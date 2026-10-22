@@ -643,8 +643,102 @@ private:
     EditorHost& host_;
 };
 
+class DelayLpfFaders final : public juce::Component, private juce::Timer
+{
+public:
+    explicit DelayLpfFaders (EditorHost& host) : host_ (host)
+    {
+        setInterceptsMouseClicks (true, false);
+        startTimerHz (20);
+    }
+
+    ~DelayLpfFaders() override { stopTimer(); }
+
+    void paint (juce::Graphics& g) override
+    {
+        static const char* ids[6] = { "con.fx.delay.lpf", "con.fx.delay.offset",
+                                      "con.fx.delay.pingpong", "con.fx.delay.fb",
+                                      "con.fx.delay.full", "con.fx.delay.time" };
+        static const char* labels[6] = { "LPF", "OFFSET", "PINGPONG", "FEEDBACK", "FULL", "TIME" };
+        auto area = getLocalBounds().toFloat().reduced (4.0f);
+        const auto width = area.getWidth() / 6.0f;
+
+        for (int i = 0; i < 6; ++i)
+        {
+            const auto x = area.getX() + width * (float) i;
+            auto column = juce::Rectangle<float> (x + 8.0f, area.getY() + 4.0f,
+                                                   width - 16.0f, area.getHeight() - 22.0f);
+
+            juce::Path trapezoid;
+            // Inverted Haken-style vertical fader: wide top, narrow bottom.
+            trapezoid.startNewSubPath (column.getX(), column.getY());
+            trapezoid.lineTo (column.getRight(), column.getY());
+            trapezoid.lineTo (column.getRight() - 14.0f, column.getBottom());
+            trapezoid.lineTo (column.getX() + 14.0f, column.getBottom());
+            trapezoid.closeSubPath();
+
+            g.setColour (juce::Colour (0xffe7e8e2));
+            g.fillPath (trapezoid);
+            g.setColour (juce::Colour (0xff7d8b86));
+            g.strokePath (trapezoid, juce::PathStrokeType (1.0f));
+
+            const auto value = normalizedValue (ids[i]);
+            const auto y = column.getBottom() - value * column.getHeight();
+            g.setColour (juce::Colour (0xff2fb6a8));
+            g.drawLine (column.getX() + 5.0f, y, column.getRight() - 5.0f, y, 2.0f);
+            g.fillEllipse (column.getCentreX() - 4.0f, y - 4.0f, 8.0f, 8.0f);
+
+            g.setColour (juce::Colour (0xff33403b));
+            g.setFont (juce::Font (juce::FontOptions (8.0f, juce::Font::bold)));
+            g.drawText (labels[i], (int) x, (int) area.getBottom() - 18,
+                        (int) width, 14, juce::Justification::centred);
+        }
+    }
+
+    void mouseDown (const juce::MouseEvent& event) override
+    {
+        updateFromEvent (event);
+    }
+
+    void mouseDrag (const juce::MouseEvent& event) override
+    {
+        updateFromEvent (event);
+    }
+
+private:
+    static constexpr const char* ids[6] = { "con.fx.delay.lpf", "con.fx.delay.offset",
+                                             "con.fx.delay.pingpong", "con.fx.delay.fb",
+                                             "con.fx.delay.full", "con.fx.delay.time" };
+
+    float normalizedValue (const char* id) const
+    {
+        auto* parameter = host_.apvts().getParameter (id);
+        auto* raw = host_.apvts().getRawParameterValue (id);
+        if (parameter == nullptr || raw == nullptr)
+            return 0.0f;
+        return juce::jlimit (0.0f, 1.0f, parameter->convertTo0to1 (raw->load()));
+    }
+
+    void updateFromEvent (const juce::MouseEvent& event)
+    {
+        auto area = getLocalBounds().toFloat().reduced (4.0f);
+        const auto width = area.getWidth() / 6.0f;
+        const auto index = juce::jlimit (0, 5, (int) (event.position.x / width));
+        const auto top = area.getY() + 4.0f;
+        const auto bottom = area.getBottom() - 22.0f;
+        const auto normalized = juce::jlimit (0.0f, 1.0f,
+                                              (bottom - event.position.y) / juce::jmax (1.0f, bottom - top));
+
+        if (auto* parameter = host_.apvts().getParameter (ids[index]))
+            parameter->setValueNotifyingHost (normalized);
+    }
+
+    void timerCallback() override { repaint(); }
+    EditorHost& host_;
+};
+
 ContinuumPanel::ContinuumPanel (EditorHost& host)
-    : PanelBase (host, "CONTINUUM V", 2800, 1100, continuumAccent())
+    : PanelBase (host, "CONTINUUM V", 2800, 1260, continuumAccent())
 {
     setBranding ("CONTINUUM V", "EIGEN MATRIX  /  CONTINUOUS SURFACE");
 
@@ -799,6 +893,12 @@ ContinuumPanel::ContinuumPanel (EditorHost& host)
         addKnob ("con.fx.conv2.mix", "CONV 2", { 2480, 960, 210, 66 });
     }
 
+    {
+        addModule ("DELAY / LPF  ·  R1-R6", { 8, 1040, 2784, 140 });
+        delayFaders_ = std::make_unique<DelayLpfFaders> (host);
+        delayFaders_->setBounds (16, 1064, 2768, 108);
+        addAndMakeVisible (*delayFaders_);
+    }
 }
 
 ContinuumPanel::~ContinuumPanel() = default;

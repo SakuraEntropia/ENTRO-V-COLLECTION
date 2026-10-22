@@ -97,6 +97,7 @@ public:
 private:
     std::unique_ptr<ContinuumMatrix> matrix_;
     std::unique_ptr<juce::Component> fxModes_;
+    std::unique_ptr<juce::Component> delayFaders_;
 };
 
 } // namespace triad::ui

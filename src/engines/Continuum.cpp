@@ -120,6 +120,12 @@ void ContinuumEngine::buildDefinition()
                                                      "Analog Echo", "Swept Echo", "Digital Echo LPF" }));
     scalarIndex_[(size_t) PFxReverbDamping] = add ("con.fx.reverb.damping", "REVERB DAMP", "FX", 0.0f, 1.0f, 0.35f);
     scalarIndex_[(size_t) PFxConv1Mix] = add ("con.fx.conv1.mix", "CONV 1 MIX", "FX", 0.0f, 1.0f, 0.0f);
+    scalarIndex_[(size_t) PFxDelayLpf] = add ("con.fx.delay.lpf", "DELAY LPF", "FX", 0.0f, 1.0f, 0.7f);
+    scalarIndex_[(size_t) PFxDelayOffset] = add ("con.fx.delay.offset", "DELAY OFFSET", "FX", 0.0f, 0.5f, 0.0f);
+    scalarIndex_[(size_t) PFxDelayPingPong] = add ("con.fx.delay.pingpong", "DELAY PINGPONG", "FX", 0.0f, 1.0f, 0.0f, ParamCurve::Discrete, choices ({ "Off", "On" }));
+    scalarIndex_[(size_t) PFxDelayFeedback] = add ("con.fx.delay.fb", "DELAY FB", "FX", 0.0f, 0.9f, 0.35f);
+    scalarIndex_[(size_t) PFxDelayFull] = add ("con.fx.delay.full", "DELAY FULL", "FX", 0.0f, 1.0f, 0.0f, ParamCurve::Discrete, choices ({ "None", "Full" }));
+    scalarIndex_[(size_t) PFxDelayTime] = add ("con.fx.delay.time", "DELAY TIME", "FX", 0.01f, 1.5f, 0.3f, ParamCurve::Log, {}, "s");
     scalarIndex_[(size_t) PFxConv2Mix] = add ("con.fx.conv2.mix", "CONV 2 MIX", "FX", 0.0f, 1.0f, 0.0f);
 
     scalarIndex_[(size_t) PFxChorusRate] = add ("con.fx.chorus.rate", "CHORUS RATE", "FX", 0.05f, 8.0f, 0.35f, ParamCurve::Log, {}, "Hz");
@@ -969,9 +975,13 @@ void ContinuumEngine::render (float* left, float* right, int numSamples)
         if (fxMode == 3 || fxMode == 5) { delay_.setDampingHz (fxMode == 5 ? 2600.0f : 4200.0f); }
     }
 
-    delayBank1_.setDelaySeconds (dvalue (0, DelayTime), dvalue (0, DelayTime) * 1.17f);
-    delayBank1_.setFeedback (dvalue (0, DelayFeedback));
-    delayBank1_.setMix (dvalue (0, DelayMix));
+    const auto delayTime = param (PFxDelayTime);
+    const auto delayOffset = param (PFxDelayOffset);
+    delayBank1_.setDelaySeconds (delayTime, delayTime * (1.0f + delayOffset));
+    delayBank1_.setFeedback (param (PFxDelayFeedback));
+    delayBank1_.setPingPong (param (PFxDelayPingPong) > 0.5f);
+    delayBank1_.setDampingHz (600.0f + param (PFxDelayLpf) * 11000.0f);
+    delayBank1_.setMix (param (PFxDelayFull) > 0.5f ? 0.65f : dvalue (0, DelayMix));
     delayBank2_.setDelaySeconds (dvalue (1, DelayTime), dvalue (1, DelayTime) * 1.23f);
     delayBank2_.setFeedback (dvalue (1, DelayFeedback));
     delayBank2_.setMix (dvalue (1, DelayMix));
