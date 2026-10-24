@@ -8,7 +8,9 @@ The historical log below describes earlier builds and is not evidence for every 
 - Sequencer tests cover chord/tie playback, bank limits and arp ordering. PolyBrute tests exercise connection 64 and expression destinations; One tests cover 8/16 budget, mono fallback and unison.
 - `triad_render_presets` exports all 22 Ref patches at 48 kHz / 16 bit stereo, with a numerical audit. This is offline synthesis, not hardware listening calibration or host arpeggiator validation.
 - Previous main `309ea79` passed GitHub Actions macOS and Windows jobs: https://github.com/SakuraEntropia/ENTRO-V-COLLECTION/actions/runs/39747181936.
-- Full-bundle rebuild and external VST3 validation for this revision are recorded below when finished. Historical AU validation does not certify the changed build.
+- Full macOS arm64 build succeeds for all four instruments in VST3 / AU / Standalone formats. All four final VST3 bundles pass pluginval strictness 5 with default GUI tests.
+- macOS ZIP integrity check passes; a native unsigned `.pkg` was produced with VST3, AU and apps at standard system locations. Installation itself was not executed. Historical AU validation does not certify the changed build; fresh AU/real-DAW testing remains pending.
+- Source commit: `757b1ec`. Windows/macOS CI for this source revision: https://github.com/SakuraEntropia/ENTRO-V-COLLECTION/actions/runs/40070850199 (in progress when this log was written).
 
 ---
 

@@ -104,7 +104,7 @@ Reference: 2019 manual + 1.8.2 release notes; later firmware not audited page by
 | Item | Status | Notes |
 |---|---|---|
 | macOS arm64 VST3 | Built, tested | pluginval 1.0.4 strictness 5, including GUI tests |
-| macOS AUv2 | Built, tested | `auval` passes for all four |
+| macOS AUv2 | Rebuilt | earlier builds passed auval; this changed revision has not been re-run through auval |
 | macOS standalone | Built, tested | launches; used for screenshots; audio device selection is JUCE's panel |
 | Windows x64 | Previous revision built in CI | main 309ea79 passed both platform jobs; this revision must be checked separately |
 | Universal binary | Supported, **not built** | `-DTRIAD_UNIVERSAL=ON`; only arm64 artifacts inspected |
