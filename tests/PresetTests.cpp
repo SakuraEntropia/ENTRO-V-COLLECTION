@@ -36,6 +36,8 @@ int main()
         std::set<juce::String> names;
         int lastCategoryIndex = -1;
         int bassCount = 0;
+        int studioCount = 0;
+        std::set<std::vector<std::pair<juce::String, float>>> studioSignatures;
         bool hasReese = false;
 
         const juce::StringArray categoryOrder { "Bass", "Lead", "Brass", "Pad", "Strings",
@@ -47,6 +49,10 @@ int main()
 
         for (const auto& preset : presets)
         {
+            if (preset.name.endsWith("[Studio]")) {
+                ++studioCount;
+                check(studioSignatures.insert(preset.values).second, "duplicate Studio parameter payload", preset.name);
+            }
             check (names.insert (preset.name).second, "duplicate preset name", preset.name);
             check (! preset.values.empty(), "empty preset", preset.name);
             check (preset.category.isNotEmpty(), "empty preset category", preset.name);
@@ -117,6 +123,7 @@ int main()
             }
         }
 
+        check(studioCount == 64, "expected 64 Studio patches", definition.id);
         check (presets.size() >= 12, "too few factory presets", definition.id);
         check (bassCount >= 2, "bass category too small", definition.id);
         check (hasReese, "missing Reese bass preset", definition.id);
@@ -131,7 +138,7 @@ int main()
             // The restored Haken library has 600+ entries; render a
             // representative subset so the contract test stays fast while
             // every preset's parameter data is still validated above.
-            if (presets.size() > 100 && (renderCounter++ % 12) != 0)
+            if (!preset.name.endsWith("[Studio]") && presets.size() > 100 && (renderCounter++ % 12) != 0)
                 continue;
 
             std::vector<float> values (definition.params.size());

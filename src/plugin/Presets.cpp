@@ -2586,24 +2586,18 @@ std::vector<FactoryPreset> continuumPresets()
 
 std::vector<FactoryPreset> factoryPresetsFor (const std::string& instrumentId)
 {
-    if (instrumentId == "matriarch" || instrumentId == "polybrute") {
-        auto result=instrumentId=="matriarch"?matriarchPresets():polyBrutePresets();
-        auto reference=analogReferencePresets(instrumentId);
-        result.insert(result.end(),std::make_move_iterator(reference.begin()),std::make_move_iterator(reference.end()));
-        return sortedPresets(std::move(result));
-    }
-
-
-    if (instrumentId == "moogone") {
-        auto result=onePresets();auto reference=oneReferencePresets();
-        result.insert(result.end(),std::make_move_iterator(reference.begin()),std::make_move_iterator(reference.end()));
-        return sortedPresets(std::move(result));
-    }
-
-    if (instrumentId == "continuum")
-        return continuumPresets();
-
-    return {};
+    std::vector<FactoryPreset> result;
+    if (instrumentId == "matriarch") result = matriarchPresets();
+    else if (instrumentId == "polybrute") result = polyBrutePresets();
+    else if (instrumentId == "moogone") result = onePresets();
+    else if (instrumentId == "continuum") result = continuumPresets();
+    else return {};
+    auto append = [&result] (std::vector<FactoryPreset> bank) {
+        result.insert(result.end(), std::make_move_iterator(bank.begin()), std::make_move_iterator(bank.end()));
+    };
+    append(instrumentId == "moogone" ? oneReferencePresets() : analogReferencePresets(instrumentId));
+    append(studioPresets(instrumentId));
+    return sortedPresets(std::move(result));
 }
 
 

@@ -27,6 +27,7 @@ struct FactoryPreset
     std::vector<std::pair<juce::String, juce::String>> cables;
 };
 
+std::vector<FactoryPreset> studioPresets (const std::string& instrumentId);
 std::vector<FactoryPreset> oneReferencePresets();
 std::vector<FactoryPreset> analogReferencePresets(const std::string&);
 std::vector<FactoryPreset> factoryPresetsFor (const std::string& instrumentId);

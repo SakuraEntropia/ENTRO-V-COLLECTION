@@ -14,10 +14,10 @@ Legend:
 
 | Instrument | Parameters | Patch points | Factory presets | MIDI handling |
 |---|---:|---:|---:|---|
-| MATRIARCH V | 65 | 79 | 19 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
-| POLYBRUTE V | 286 | 0 | 23 | same |
-| ONE V | 427 | 0 | 27 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
-| CONTINUUM V | 204 | 0 (16×16 matrix) | 613 | MPE per-note pitch bend / CC74 / pressure; internal 3D surface |
+| MATRIARCH V | 65 | 79 | 83 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
+| POLYBRUTE V | 286 | 0 | 87 | same |
+| ONE V | 427 | 0 | 91 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
+| CONTINUUM V | 204 | 0 (16×22 matrix) | 677 | MPE per-note pitch bend / CC74 / pressure; internal 3D surface |
 
 All parameters have stable string IDs, natural-unit ranges and group metadata. All are saved in the APVTS tree and exposed to host automation.
 
@@ -37,7 +37,7 @@ All parameters have stable string IDs, natural-unit ranges and group metadata. A
 | MIDI event offsets | Implemented | render is split at event sample offsets |
 | Keyboard UI | Implemented | Matriarch F1–F5; PolyBrute/One 61 keys C2–C7; wheels send bend/CC1 |
 | Panel layout | Implemented, documented | Matriarch single-row manual order; PolyBrute three-row synth block; One left/centre/right sections (see `docs/LAYOUT.md`) |
-| Presets | Implemented, tested | 19 / 23 / 27 / 613 presets; all IDs/ranges validated by `triad_preset_tests` |
+| Presets | Implemented, tested | 83 / 87 / 91 / 677 presets; all IDs/ranges validated by `triad_preset_tests` |
 | Patch cables | Implemented (Matriarch) | click output → input, right-click clears; saved in state |
 | Sequencer/arpeggiator | Partial | banked poly step editor via SEQ: Matriarch 12 × 256 × 4 notes; PolyBrute/One 64 × 6 notes. Ties, velocity, gate, host transport. No hardware recording/ratchets/Motion automation |
 
@@ -146,3 +146,5 @@ Reference: [Haken Continuum / EaganMatrix public documentation](https://www.hake
 ## Reference-bank update
 
 22 new Ref studies are documented in [PRESET-REFERENCES.md](PRESET-REFERENCES.md). Seven local test suites pass. Standalone audition renders check finite, non-silent, unclipped output; they do not establish hardware fidelity. Ribbon CC9 and Morphée CC114/115/89 are available as modulation sources.
+
+All four banks now include 64 Studio patches each; see [STUDIO-PRESETS.md](STUDIO-PRESETS.md). The preceding Windows/macOS code revision passed CI run 40070850199.
