@@ -29,10 +29,10 @@
 `getStateInformation()` writes the APVTS tree plus:
 
 - `instrument` — rejects state written by another plugin.
-- `formatVersion` — currently `2`.
+- `formatVersion` — currently `3`.
 - `patchCables` — `from:to;...` for Matriarch.
 - `MORPH_B` — PolyBrute's B-side parameter snapshot.
-- `SEQUENCER` — 16-step pattern data shared by the arpeggiators.
+- `SEQUENCER` — banked polyphonic pattern data shared by the arpeggiators.
 - `presetName` — last selected preset.
 
 Unknown properties are ignored. A malformed tree, wrong instrument id or unreadable XML leaves the current state untouched.
@@ -93,3 +93,7 @@ python3 scripts/generate-logo-assets.py
 The script uses headless Chrome for transparent SVG rasterisation, `sips` and
 `iconutil` for macOS icons, and Pillow for Windows `.ico` files. Generated
 assets are committed so CI does not need those tools.
+
+## Install after each validated batch
+
+User preference: replace installed versions after each completed batch. Build and test, stage using `package-macos.sh`, then run `python3 scripts/install-macos-current.py` with permission to update user plugin folders and /Applications. This backs up previous versions and verifies signatures/hashes. Preserve user DAW sessions; never stop them automatically.

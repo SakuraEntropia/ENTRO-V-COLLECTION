@@ -56,7 +56,7 @@ std::vector<FactoryPreset> matriarchPresets()
               { "mat.vco2.octave", 0.0f }, { "mat.vco2.freq", -0.1f },
               { "mat.vco2.wave", 1.0f },
               { "mat.mix.osc1", 0.8f }, { "mat.mix.osc2", 0.6f },
-              { "mat.flt.mode", 0.0f }, { "mat.flt.cutoff", 420.0f },
+              { "mat.flt.mode", 2.0f }, { "mat.flt.cutoff", 420.0f },
               { "mat.flt.spacing", 0.3f }, { "mat.flt.res1", 0.35f },
               { "mat.flt.res2", 0.45f }, { "mat.flt.envAmt", 0.55f },
               { "mat.flt.kbTrack", 0.5f },
@@ -217,7 +217,7 @@ std::vector<FactoryPreset> matriarchPresets()
               { "mat.vco4.wave", 1.0f },
               { "mat.mix.osc1", 0.7f }, { "mat.mix.osc2", 0.65f },
               { "mat.mix.osc3", 0.45f }, { "mat.mix.osc4", 0.4f },
-              { "mat.flt.mode", 0.0f }, { "mat.flt.cutoff", 420.0f },
+              { "mat.flt.mode", 2.0f }, { "mat.flt.cutoff", 420.0f },
               { "mat.flt.spacing", 0.15f }, { "mat.flt.res1", 0.3f },
               { "mat.flt.res2", 0.35f }, { "mat.flt.envAmt", 0.25f },
               { "mat.flt.kbTrack", 0.2f },
@@ -235,7 +235,7 @@ std::vector<FactoryPreset> matriarchPresets()
               { "mat.vco2.octave", 1.0f }, { "mat.vco2.freq", 0.0f },
               { "mat.vco2.wave", 2.0f },
               { "mat.mix.osc1", 0.8f }, { "mat.mix.osc2", 0.5f },
-              { "mat.flt.mode", 0.0f }, { "mat.flt.cutoff", 450.0f },
+              { "mat.flt.mode", 2.0f }, { "mat.flt.cutoff", 450.0f },
               { "mat.flt.spacing", 0.1f }, { "mat.flt.res1", 0.78f },
               { "mat.flt.res2", 0.4f }, { "mat.flt.envAmt", 0.85f },
               { "mat.flt.kbTrack", 0.7f },
@@ -302,7 +302,7 @@ std::vector<FactoryPreset> matriarchPresets()
               { "mat.mix.osc1", 0.8f }, { "mat.mix.osc2", 0.5f },
               { "mat.mix.osc3", 0.25f }, { "mat.mix.osc4", 0.25f },
               { "mat.mix.noise", 0.0f },
-              { "mat.flt.mode", 0.0f }, { "mat.flt.cutoff", 9000.0f },
+              { "mat.flt.mode", 2.0f }, { "mat.flt.cutoff", 9000.0f },
               { "mat.flt.res1", 0.02f }, { "mat.flt.res2", 0.02f },
               { "mat.flt.envAmt", 0.0f }, { "mat.flt.kbTrack", 0.0f },
               { "mat.env1.attack", 0.003f }, { "mat.env1.decay", 0.1f },
@@ -377,6 +377,7 @@ std::vector<FactoryPreset> polyBrutePresets()
         { "LD - Metalizer Mono", "Lead",
           Values {
               { "poly.voice.mode", 1.0f },
+              { "poly.filters.routing", 1.0f }, { "poly.filters.balance", 0.6f },
               { "poly.vcoA.metalizer", 0.65f }, { "poly.vcoA.wave", 0.05f },
               { "poly.vcoA.level", 0.8f },
               { "poly.vcoB.tune", 7.0f }, { "poly.vcoB.level", 0.5f },
@@ -1559,6 +1560,8 @@ void setPresetValue (Values& values, const char* id, float value)
 Values hakenValues (const juce::String& code, const juce::String& name)
 {
     Values values;
+    // Legacy matrix recipes were about 12 dB quieter than the new banks.
+    setPresetValue(values,"con.fx.postGain",12.0f);
     const auto hash = (uint32_t) name.hashCode();
     const auto vary = [hash] (int range)
     {
@@ -1615,7 +1618,7 @@ Values hakenValues (const juce::String& code, const juce::String& name)
         return false;
     };
 
-    // Instrument-named Haken entries get a dedicated physical model rather
+    // Instrument-named Haken entries get an instrument-specific additive/filter recipe rather
     // than the generic category pad.  These are still original approximations.
     if (containsAny ({ "piano", "pianoforte", "rhodes", "wurli", "wurlitzer" }))
     {
@@ -1692,27 +1695,48 @@ Values hakenValues (const juce::String& code, const juce::String& name)
     if (containsAny ({ "flute", "clarinet", "oboe", "bassoon", "sax", "saxophone",
                        "trumpet", "trombone", "horn", "brass" }))
     {
-        const auto isBrass = containsAny ({ "trumpet", "trombone", "horn", "brass" });
-        setPresetValue (values, "con.master.volume", 0.58f);
-        setPresetValue (values, "con.master.reverbMix", isBrass ? 0.26f : 0.34f);
-        setPresetValue (values, "con.noise.level", isBrass ? 0.006f : 0.12f);
-        setPresetValue (values, "con.noise.color", 0.35f);
-        setPresetValue (values, "con.osc1.wave", isBrass ? 2.0f : 0.0f);
-        setPresetValue (values, "con.osc1.level", 0.55f);
-        setPresetValue (values, "con.osc2.wave", 1.0f);
-        setPresetValue (values, "con.osc2.ratio", 2.0f);
-        setPresetValue (values, "con.osc2.level", 0.22f);
-        setPresetValue (values, "con.osc3.wave", 0.0f);
-        setPresetValue (values, "con.osc3.ratio", 3.0f);
-        setPresetValue (values, "con.osc3.level", 0.12f);
-        setPresetValue (values, "con.flt1.type", isBrass ? 0.0f : 2.0f);
-        setPresetValue (values, "con.flt1.cutoff", isBrass ? 2200.0f : 1800.0f);
-        setPresetValue (values, "con.flt1.res", isBrass ? 0.18f : 0.32f);
-        setPresetValue (values, "con.flt1.env", 0.35f);
-        setPresetValue (values, "con.env1.attack", isBrass ? 0.03f : 0.08f);
-        setPresetValue (values, "con.env1.decay", 0.4f);
-        setPresetValue (values, "con.env1.sustain", isBrass ? 0.80f : 0.85f);
-        setPresetValue (values, "con.env1.release", 0.8f);
+        // The previous recipe shared a narrow bandpass for all woodwinds,
+        // suppressing the fundamental and making several instruments identical.
+        const bool brass=containsAny({"trumpet","trombone","horn","brass"});
+        const bool clarinet=containsAny({"clarinet"});
+        const bool flute=containsAny({"flute"}) && !clarinet;
+        const bool sax=containsAny({"sax"});
+        const bool oboe=!brass && !clarinet && !flute && !sax;
+        setPresetValue(values,"con.fx.postGain",6.0f);
+        setPresetValue(values,"con.master.volume",.58f);
+        setPresetValue(values,"con.master.reverbMix",brass?.22f:.28f);
+        setPresetValue(values,"con.noise.level",flute?.035f:oboe?.018f:.008f);
+        setPresetValue(values,"con.noise.color",flute?.65f:.35f);
+        setPresetValue(values,"con.osc1.wave",flute?0:clarinet?3:2);
+        setPresetValue(values,"con.osc1.level",.55f);
+        setPresetValue(values,"con.osc2.wave",0);
+        setPresetValue(values,"con.osc2.ratio",clarinet?3:2);
+        setPresetValue(values,"con.osc2.level",flute?.08f:clarinet?.16f:.23f);
+        setPresetValue(values,"con.osc3.wave",0);
+        setPresetValue(values,"con.osc3.ratio",clarinet?5:3);
+        setPresetValue(values,"con.osc3.level",flute?.025f:.09f);
+        setPresetValue(values,"con.flt1.type",0);
+        setPresetValue(values,"con.flt1.cutoff",flute?5200:clarinet?3200:oboe?4400:sax?2800:2200);
+        setPresetValue(values,"con.flt1.res",oboe?.24f:.12f);
+        setPresetValue(values,"con.flt1.env",brass?.35f:.08f);
+        setPresetValue(values,"con.bank1.freq",clarinet?900:oboe?1150:sax?650:flute?1800:800);
+        setPresetValue(values,"con.bank2.freq",oboe?2300:sax?1800:clarinet?2700:3600);
+        setPresetValue(values,"con.bank1.mix",oboe?.3f:.14f);
+        setPresetValue(values,"con.bank2.mix",oboe?.22f:.1f);
+        setPresetValue(values,"con.env1.attack",flute?.035f:clarinet?.02f:oboe?.045f:sax?.06f:.03f);
+        setPresetValue(values,"con.env1.decay",.4f);
+        setPresetValue(values,"con.env1.sustain",.82f);
+        setPresetValue(values,"con.env1.release",.35f);
+        if(name.containsIgnoreCase("Chinese")){
+            setPresetValue(values,"con.osc2.fine",7);
+            setPresetValue(values,"con.bank1.freq",1450);
+            setPresetValue(values,"con.noise.level",.025f);
+        }
+        if(containsAny({"Space","Spinning"})){
+            setPresetValue(values,"con.fx.chorus.mix",.16f);
+            setPresetValue(values,"con.sg1.rate",.65f);
+            setPresetValue(values,"con.sg1.level",.08f);
+        }
         return values;
     }
 
@@ -2597,6 +2621,7 @@ std::vector<FactoryPreset> factoryPresetsFor (const std::string& instrumentId)
     };
     append(instrumentId == "moogone" ? oneReferencePresets() : analogReferencePresets(instrumentId));
     append(studioPresets(instrumentId));
+    append(stagePresets(instrumentId));
     return sortedPresets(std::move(result));
 }
 

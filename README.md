@@ -101,7 +101,7 @@ Windows 使用 GitHub Actions 的 Windows runner 构建，产物为 `.vst3` 与 
 
 ## 使用
 
-- 顶部栏有四个插件共用的 **OUT 全局输出音量**（-60..+12 dB，独立于预设保存）；选择预设、INIT、保存/载入 `.triadpreset` 文件；`BROWSE` 打开预设浏览器（分类筛选、搜索、列表/详情）；预设按 Bass / Lead / Brass / Pad / Strings / Winds / Vocal / Keyboard / Classic / Other / Percussion / Tuned Percussion / Processor / Drone / Midi / Pluck / Keys / Organ / Arp / Sequence / Split / Utility / FX 分类，名称带 `BA -`、`LD -` 等类型前缀；顶部 `BROWSE` 打开可搜索浏览器。四台琴分别内置 83、87、91、677 个预设（含 Reese、Acid、Supersaw、Warm Pad、Organ、Pluck 以及 Continuum 的 Strings/Winds/Vocal/Keyboard/Classic/Other 等原厂类别预设（含 Harp、Koto、Glass Harp，以及按真实乐器重做的 Piano/Violin/Flute/Guitar/Bell 等音色））。
+- 顶部栏有四个插件共用的 **OUT 全局输出音量**（-60..+12 dB，独立于预设保存）；选择预设、INIT、保存/载入 `.triadpreset` 文件；`BROWSE` 打开预设浏览器（分类筛选、搜索、列表/详情）；预设按 Bass / Lead / Brass / Pad / Strings / Winds / Vocal / Keyboard / Classic / Other / Percussion / Tuned Percussion / Processor / Drone / Midi / Pluck / Keys / Organ / Arp / Sequence / Split / Utility / FX 分类，名称带 `BA -`、`LD -` 等类型前缀；顶部 `BROWSE` 打开可搜索浏览器。四台琴分别内置 115、119、123、709 个预设（含 Reese、Acid、Supersaw、Warm Pad、Organ、Pluck 以及 Continuum 的 Strings/Winds/Vocal/Keyboard/Classic/Other 等原厂类别预设（含 Harp、Koto、Glass Harp，以及按真实乐器重做的 Piano/Violin/Flute/Guitar/Bell 等音色））。
 - 面板按官方手册与产品照片重排：Matriarch 单行模块顺序、PolyBrute 三段式合成区（VCO/滤波/包络/LFO 三行）、Moog One 左/中/右三块面板。资料页码与模块位置见 [docs/LAYOUT.md](docs/LAYOUT.md)。旋转拖动旋钮，双击回到默认值；硬件开关按档位点击。
 - 底部键盘可点击演奏；滚轮为 Pitch/Mod（Pitch 松手回中）。Matriarch 显示 49 键 F1–F5，PolyBrute 与 Moog One 显示 61 键 C2–C7。Moog One 的 `MIDI PART` 选择屏幕键盘发送到哪一部分。
 - Matriarch 插线：先点一个输出插孔，再点一个输入插孔建立连线；右键点击插孔清除与它相连的线缆。线缆随工程状态保存。
@@ -134,3 +134,5 @@ Logo 源文件：`assets/logos/*.svg`；应用图标：`assets/icons/*.icns` / `
 本轮新增 22 个原版参考改编预设，来源、转换方法与限制见 [预设参考记录](docs/PRESET-REFERENCES.md)。三款模拟琴顶部 `SEQ` 打开步进编辑器；PolyBrute 调制连接支持 64 槽分页，One 支持共享 8/16 声部与每部分 Mono/Unison，Matriarch/One 可启用宿主音频输入。
 
 四款各增加 **64 个 Studio 预设，共 256 个**。在 BROWSE 搜索 `Studio`；类别、结构与试听导出见 [Studio 音色库](docs/STUDIO-PRESETS.md)。
+
+旧音色修复与新增 **128 个 Stage 音色**见 [修复记录](docs/LEGACY-STAGE-PRESETS.md)。在 BROWSE 搜索 `Stage`。已启用每批验证完成后备份并替换本机已安装版本的流程。

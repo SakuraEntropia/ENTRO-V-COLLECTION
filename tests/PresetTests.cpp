@@ -37,6 +37,8 @@ int main()
         int lastCategoryIndex = -1;
         int bassCount = 0;
         int studioCount = 0;
+        int stageCount = 0;
+        std::set<std::vector<int>> woodwindSignatures;
         std::set<std::vector<std::pair<juce::String, float>>> studioSignatures;
         bool hasReese = false;
 
@@ -49,6 +51,10 @@ int main()
 
         for (const auto& preset : presets)
         {
+            if (preset.name.endsWith("[Stage]")) {
+                ++stageCount;
+                check(studioSignatures.insert(preset.values).second, "duplicate Stage parameter payload", preset.name);
+            }
             if (preset.name.endsWith("[Studio]")) {
                 ++studioCount;
                 check(studioSignatures.insert(preset.values).second, "duplicate Studio parameter payload", preset.name);
@@ -123,6 +129,7 @@ int main()
             }
         }
 
+        check(stageCount == 32, "expected 32 Stage patches", definition.id);
         check(studioCount == 64, "expected 64 Studio patches", definition.id);
         check (presets.size() >= 12, "too few factory presets", definition.id);
         check (bassCount >= 2, "bass category too small", definition.id);
@@ -132,15 +139,9 @@ int main()
         auto renderEngine = triad::makeEngine (kind);
         renderEngine->prepare (48000.0, 256);
 
-        int renderCounter = 0;
+
         for (const auto& preset : presets)
         {
-            // The restored Haken library has 600+ entries; render a
-            // representative subset so the contract test stays fast while
-            // every preset's parameter data is still validated above.
-            if (!preset.name.endsWith("[Studio]") && presets.size() > 100 && (renderCounter++ % 12) != 0)
-                continue;
-
             std::vector<float> values (definition.params.size());
 
             for (size_t i = 0; i < values.size(); ++i)
@@ -179,6 +180,8 @@ int main()
             double energy = 0.0;
             float peak = 0.0f;
             bool finite = true;
+            const bool checkWoodwind=definition.id=="continuum" && (preset.name=="WI - Clarinet" || preset.name=="WI - Chinese Clarinet" || preset.name=="WI - Spinning Oboe" || preset.name=="WI - Sine2Sax");
+            std::vector<int> signature;
 
             for (int block = 0; block < (int) (0.75 * 48000.0 / 256.0); ++block)
             {
@@ -187,16 +190,20 @@ int main()
                 for (int i = 0; i < 256; ++i)
                 {
                     finite = finite && std::isfinite (left[i]) && std::isfinite (right[i]);
+                    if(checkWoodwind && block<8)signature.push_back((int)std::lround(left[i]*1000000));
                     energy += (double) left[i] * left[i] + (double) right[i] * right[i];
                     peak = std::max (peak, std::max (std::abs (left[i]), std::abs (right[i])));
                 }
             }
 
+            if(checkWoodwind)check(woodwindSignatures.insert(signature).second,"woodwind recipes produce identical audio",preset.name);
+            if(preset.name=="BA - Stacked Foundation Ref")check(energy/(2*256*140)>1.0e-4,"reference bass VCA loses sustained body",preset.name);
             check (finite, "preset produced non-finite audio", preset.name);
             check (energy > 1.0e-5, "preset is silent", preset.name);
             check (peak < 1.05f, "preset clips", preset.name);
         }
 
+        if(definition.id=="continuum")check(woodwindSignatures.size()==4,"missing woodwind comparison cases",definition.id);
         std::printf ("%s: %d presets, %zu parameters\n", definition.id.c_str(),
                      (int) presets.size(), definition.params.size());
     }

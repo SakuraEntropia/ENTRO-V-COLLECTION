@@ -62,3 +62,5 @@
 `triad_render_presets OUTPUT_DIR` 对全部 22 个 Ref 音色导出 48 kHz / 16 bit 立体声 WAV 和 `audit.csv`（峰值、RMS、DC、差分 RMS）。PolyBrute 扫描 A/B；使用统一短句演奏，末段留给尾音。Studio 扩展后，工具对已启用的琶音预设使用共享 PatternSequencer，在 110 BPM 下按事件采样位置驱动引擎；这仍不能代替 DAW 内完整音序和 transport 测试。
 
 数值检查能发现静音、失控和响度问题；不能替代听辨或实机音色校准。原有 Continuum 库此次保持不变，另见原有覆盖表。
+
+包络映射修正：本引擎 ENV 1/2 控制两路滤波，ENV 3 控制 VCA。源硬件 Filter EG 1 映射到引擎 ENV 1/2，VCA EG 2 映射到引擎 ENV 3；辅助 EG 3 不再错误驱动音量。

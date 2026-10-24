@@ -82,6 +82,12 @@ if [[ ${found_any} -eq 0 ]]; then
     exit 1
 fi
 
+for bundle in "${STAGE}"/*.vst3 "${STAGE}"/*.component "${STAGE}"/*.app; do
+    [[ -e "${bundle}" ]] || continue
+    codesign --force --deep --sign - "${bundle}"
+    codesign --verify --deep --strict "${bundle}"
+done
+
 echo
 echo "Bundle architectures and signatures:"
 for bundle in "${STAGE}"/*.vst3 "${STAGE}"/*.component "${STAGE}"/*.app; do
@@ -94,27 +100,7 @@ for bundle in "${STAGE}"/*.vst3 "${STAGE}"/*.component "${STAGE}"/*.app; do
 done
 
 if [[ ${DO_INSTALL} -eq 1 ]]; then
-    cleanup_installed_legacy
-    mkdir -p "${HOME}/Library/Audio/Plug-Ins/VST3" "${HOME}/Library/Audio/Plug-Ins/Components"
-    for name in "${INSTRUMENTS[@]}"; do
-        product="$(product_name "$name")"
-        if [[ -d "${STAGE}/${product}.vst3" ]]; then
-            rm -rf "${HOME}/Library/Audio/Plug-Ins/VST3/${product}.vst3"
-            ditto "${STAGE}/${product}.vst3" "${HOME}/Library/Audio/Plug-Ins/VST3/${product}.vst3"
-        fi
-        if [[ -d "${STAGE}/${product}.component" ]]; then
-            rm -rf "${HOME}/Library/Audio/Plug-Ins/Components/${product}.component"
-            ditto "${STAGE}/${product}.component" "${HOME}/Library/Audio/Plug-Ins/Components/${product}.component"
-        fi
-        if [[ -d "${STAGE}/${product}.app" ]]; then
-            rm -rf "/Applications/${product}.app"
-            ditto "${STAGE}/${product}.app" "/Applications/${product}.app" || {
-                echo "could not copy ${product}.app to /Applications (permission denied?)" >&2
-            }
-        fi
-    done
-    echo "installed VST3/AU for the current user; standalone apps copied when permitted."
-    echo "restart the DAW or rescan plugins before use."
+    python3 "${ROOT}/scripts/install-macos-current.py" --source "${STAGE}"
 fi
 
 if [[ ${DO_ZIP} -eq 1 ]]; then

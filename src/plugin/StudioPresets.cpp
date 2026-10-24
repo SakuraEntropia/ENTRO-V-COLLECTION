@@ -152,7 +152,8 @@ FactoryPreset make (const std::string& id, int family, int variant)
             set(v,stem+"ladder.cutoff",cutoff);set(v,stem+"ladder.resonance",c.resonance);
             set(v,stem+"svf.resonance",c.resonance*.7f);set(v,stem+"ladder.envAmt",f.envelope);
             set(v,stem+"svf.envAmt",f.envelope*.6f);set(v,stem+"ladder.drive",.08f);
-            envelope(v,stem+"env1.",f,timeScale*(part==2?1.3f:1));envelope(v,stem+"env2.",f,timeScale*.8f);
+            envelope(v,stem+"env3.",f,timeScale*(part==2?1.3f:1));
+            envelope(v,stem+"env1.",f,timeScale*.8f);envelope(v,stem+"env2.",f,timeScale*.8f);
             set(v,stem+"lfo3.rate",.1f+variant*.12f);set(v,stem+"lfo3.cutoffAmt",c.motion*.18f);
             set(v,stem+"fx.chorus.mix",wide?.2f:.04f);set(v,stem+"fx.delay.mix",bass?.025f:c.space*.5f);
             set(v,stem+"fx.delay.time",.21f+variant*.037f);set(v,stem+"fx.reverb.send",.25f);
@@ -212,4 +213,80 @@ std::vector<FactoryPreset> studioPresets (const std::string& instrumentId)
             result.push_back(make(instrumentId,family,variant));
     return result;
 }
+
+std::vector<FactoryPreset> stagePresets (const std::string& id)
+{
+    if(id!="matriarch" && id!="polybrute" && id!="moogone" && id!="continuum")return {};
+    std::vector<FactoryPreset> result;
+    constexpr float intervals[]{-.07f,7,12,.11f};
+    for(int family=0;family<8;++family)
+        for(int colour=0;colour<4;++colour)
+        {
+            auto p=make(id,family,colour*2+1);
+            p.name=p.name.replace("[Studio]","[Stage]");
+            auto& v=p.values;
+            const auto& f=families[family];
+            if(id=="matriarch")
+            {
+                set(v,"mat.vco2.freq",std::clamp(intervals[colour],-7.f,7.f));
+                set(v,"mat.vco3.octave",colour==2?2:1);
+                set(v,"mat.vco1.wave",(family+colour)%4);
+                set(v,"mat.vco4.wave",(family+colour+2)%4);
+                set(v,"mat.flt.cutoff",f.cutoff*(.7f+colour*.4f));
+                set(v,"mat.flt.spacing",-.3f+colour*.18f);
+                set(v,"mat.env1.decay",f.decay*1.6f);
+                set(v,"mat.delay.time",.14f+colour*.095f);
+                set(v,"mat.delay.pingPong",colour%2);
+            }
+            else if(id=="polybrute")
+            {
+                set(v,"poly.vcoB.tune",intervals[colour]);
+                set(v,"poly.vcoA.wave",.8f-colour*.21f);
+                set(v,"poly.vcoA.metalizer",.12f+colour*.16f);
+                set(v,"poly.vcoB.fm",family==0?.015f:.025f+colour*.025f);
+                set(v,"poly.filters.balance",.2f+colour*.2f);
+                set(v,"poly.env2.decay",f.decay*1.4f);
+                set(v,"poly.mod.slot2.source",9);set(v,"poly.mod.slot2.dest",5);
+                set(v,"poly.mod.slot2.amount",.18f);
+                if(family==1 && colour==2){set(v,"poly.voice.mode",2);set(v,"poly.voice.unison",1);}
+                if(!p.morphB.empty()){
+                    set(p.morphB,"poly.vcoB.tune",intervals[colour]+12);
+                    set(p.morphB,"poly.vcoA.wave",.15f+colour*.2f);
+                }
+            }
+            else if(id=="moogone")
+            {
+                for(int part=1;part<=3;++part){
+                    const auto stem="one.p"+juce::String(part)+".";
+                    set(v,stem+"vco2.tune",intervals[colour]);
+                    set(v,stem+"vco1.waveAngle",.45f-colour*.12f);
+                    set(v,stem+"svf.mode",colour==3 && family>=6?2:0);
+                    set(v,stem+"filters.mix",.22f+colour*.18f);
+                    set(v,stem+"env3.decay",(p.category=="Arp"?.18f:f.decay)*1.5f);
+                    set(v,stem+"fx.delay.time",.17f+colour*.1f);
+                }
+                if(family==1 && colour==1){set(v,"one.p1.voice.mode",2);set(v,"one.p1.voice.unisonVoices",4);}
+                if(family==3 || family==4){
+                    set(v,"one.p2.enabled",1);set(v,"one.p2.level",.2f);
+                    set(v,"one.p2.vco1.tune",12);set(v,"one.p2.pan",.32f);
+                }
+            }
+            else
+            {
+                set(v,"con.osc2.ratio",colour==0?1.5f:colour==1?2.01f:colour==2?2.75f:3.5f);
+                set(v,"con.osc3.ratio",colour==0?2.5f:colour==1?3.02f:colour==2?4.25f:5.5f);
+                set(v,"con.osc1.wave",(family+colour)%3);
+                set(v,"con.env1.decay",f.decay*1.7f);
+                set(v,"con.bank1.spread",.15f+colour*.22f);
+                set(v,"con.bank1.bandwidth",.15f+colour*.16f);
+                set(v,"con.fx.chorus.mix",.08f+colour*.05f);
+                set(v,"con.fx.delay.mod",.03f+colour*.04f);
+                set(v,"con.sg1.rate",.35f+colour*.43f);
+                p.matrix.push_back({12,6,3,.025f+colour*.012f});
+            }
+            result.push_back(std::move(p));
+        }
+    return result;
+}
+
 }

@@ -14,18 +14,27 @@ void wav(const std::filesystem::path& path,const std::vector<float>& l,const std
     for(size_t i=0;i<l.size();++i){word(f,(uint16_t)(int16_t)std::lround(std::clamp(l[i],-1.f,1.f)*32767),2);word(f,(uint16_t)(int16_t)std::lround(std::clamp(r[i],-1.f,1.f)*32767),2);}
 }
 int main(int argc,char** argv){
-    if(argc<2 || argc>3){std::cerr<<"usage: triad_render_presets OUTPUT_DIRECTORY [reference|studio|all|smoke]\n";return 2;}
-    const std::string bank=argc==3?argv[2]:"reference";
-    if(bank!="reference" && bank!="studio" && bank!="all" && bank!="smoke")return 2;
+    if(argc<2 || argc>5){std::cerr<<"usage: triad_render_presets OUTPUT_DIRECTORY [reference|studio|stage|all|smoke] [--audit-only] [--instrument=ID]\n";return 2;}
+    bool auditOnly=false;std::string instrument;
+    for(int i=3;i<argc;++i){const std::string option=argv[i];
+        if(option=="--audit-only")auditOnly=true;
+        else if(option.starts_with("--instrument="))instrument=option.substr(13);
+        else return 2;
+    }
+    const std::string bank=argc>=3?argv[2]:"reference";
+    if(bank!="reference" && bank!="studio" && bank!="all" && bank!="smoke" && bank!="stage")return 2;
     std::filesystem::path folder(argv[1]);std::filesystem::create_directories(folder);
     std::ofstream report(folder/"audit.csv");report<<"instrument,preset,peak,rms,dc,derivative_rms\n";
-    int failures=0;
+    int failures=0, rendered=0;
     for(auto kind:{triad::InstrumentKind::Matriarch,triad::InstrumentKind::PolyBrute,triad::InstrumentKind::MoogOne,triad::InstrumentKind::Continuum}){
         auto e=triad::makeEngine(kind);const auto& d=e->definition();
+        if(!instrument.empty() && instrument!=d.id)continue;
         for(const auto& preset:triad::factoryPresetsFor(d.id)){
             if(bank=="reference" && !preset.name.endsWith("Ref"))continue;
             if(bank=="studio" && !preset.name.endsWith("[Studio]"))continue;
+            if(bank=="stage" && !preset.name.endsWith("[Stage]"))continue;
             if(bank=="smoke" && (!preset.name.endsWith("[Studio]") || preset.category!=(d.id=="continuum"?"Pad":"Arp")))continue;
+            ++rendered;
             std::vector<float> values;for(const auto& spec:d.params)values.push_back(spec.def);
             for(const auto& v:preset.values){int i=d.indexOf(v.first.toStdString());if(i>=0)values[i]=v.second;}
             e->clearPatchCables();e->resetMatrix();e->setMorphAmount(0);
@@ -78,9 +87,10 @@ int main(int argc,char** argv){
             double rms=std::sqrt(energy/(2*total));
             report<<d.id<<",\""<<preset.name<<"\","<<peak<<","<<rms<<","<<dc/total<<","<<std::sqrt(derivative/total)<<"\n";
             if(rms<.00001||peak>=1.0f)++failures;
-            std::string name=d.id+"-"+preset.name.toStdString();for(auto& c:name)if(c=='/'||c==':'||c=='\\')c='_';wav(folder/(name+".wav"),left,right);
+            std::string name=d.id+"-"+preset.name.toStdString();for(auto& c:name)if(c=='/'||c==':'||c=='\\')c='_';if(!auditOnly)wav(folder/(name+".wav"),left,right);
             if(bank=="smoke")break;
         }
     }
-    std::cout<<"Preset audition renders complete; numerical failures: "<<failures<<"\n";return failures?1:0;
+    if(rendered==0){std::cerr<<"No presets matched the requested bank/instrument.\n";return 2;}
+    std::cout<<"Preset audition renders complete; count: "<<rendered<<"; numerical failures: "<<failures<<"\n";return failures?1:0;
 }

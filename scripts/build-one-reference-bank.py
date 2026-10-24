@@ -68,7 +68,7 @@ def adapt(d):
             put('svf.cutoff',out[own+'ladder.cutoff'])
             put('svf.envAmt',out[own+'ladder.envAmt'])
 
-        for hardware,ours in [(1,2),(2,1),(3,3)]:
+        for hardware,ours in [(1,1),(1,2),(2,3)]:
             for a,b,default in [('delay','delay',0),('a','attack',.005),('h','hold',0),('d','decay',.5),('s','sustain',.7),('r','release',.3),('velmod','velocity',.2)]:
                 val=get(f'e{hardware}/{a}',default)
                 lo,hi=(.001,20) if a in ('a','d','r') else (0,1) if a in ('s','velmod') else (0,2)
