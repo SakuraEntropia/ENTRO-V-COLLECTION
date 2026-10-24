@@ -5,6 +5,7 @@
 #include "ui/LookAndFeel.h"
 #include "ui/Panels.h"
 #include "ui/PresetBrowser.h"
+#include "ui/SequencerPanel.h"
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
@@ -42,11 +43,13 @@ private:
         void paint (juce::Graphics&) override;
     };
 
+    void openSequencer();
     void openPresetBrowser();
     void closePresetBrowser();
 
     std::unique_ptr<PanelBase> panel_;
     std::unique_ptr<PresetBrowser> presetBrowser_;
+    std::unique_ptr<SequencerPanel> sequencerPanel_;
     Backdrop browserBackdrop_;
     juce::Viewport viewport_;
     juce::Component canvas_;

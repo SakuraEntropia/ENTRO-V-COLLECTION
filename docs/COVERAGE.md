@@ -1,6 +1,6 @@
 # Coverage and honest status
 
-Updated 2026-10-20. This table is the source of truth for what exists in code, what automated tests exercise, and what remains unverified.
+Updated 2026-10-24. This table is the source of truth for what exists in code, what automated tests exercise, and what remains unverified.
 
 Legend:
 
@@ -14,10 +14,10 @@ Legend:
 
 | Instrument | Parameters | Patch points | Factory presets | MIDI handling |
 |---|---:|---:|---:|---|
-| MATRIARCH V | 64 | 79 | 15 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
-| POLYBRUTE V | 117 | 0 | 17 | same |
-| ONE V | 408 (3 × 133 + 9 master) | 0 | 15 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
-| CONTINUUM V | 128 | 0 (16×16 matrix) | 613 | MPE per-note pitch bend / CC74 / pressure; internal 3D surface |
+| MATRIARCH V | 65 | 79 | 19 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
+| POLYBRUTE V | 286 | 0 | 23 | same |
+| ONE V | 427 | 0 | 27 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
+| CONTINUUM V | 204 | 0 (16×16 matrix) | 613 | MPE per-note pitch bend / CC74 / pressure; internal 3D surface |
 
 All parameters have stable string IDs, natural-unit ranges and group metadata. All are saved in the APVTS tree and exposed to host automation.
 
@@ -29,7 +29,7 @@ All parameters have stable string IDs, natural-unit ranges and group metadata. A
 | Parameter metadata | Implemented, tested | unique-ID and default-range checks in `EngineTests` |
 | Audio engine contract | Implemented, tested | prepare/reset/setParameters/processMidi/render; finite audio at 44.1/48/96 kHz |
 | Real-time discipline | Implemented | no allocation in render/MIDI paths; subagent tests instrumented `new` |
-| Voice allocation | Implemented | PolyBrute 6 voices; One shared 8-voice pool; Matriarch 1/2/4-note paraphony |
+| Voice allocation | Implemented | PolyBrute 6 voices; One selectable shared 8/16-voice pool; Matriarch 1/2/4-note paraphony |
 | Global output trim | Implemented | Header `OUT` -60..+12 dB on all four instruments; applies after the engine and is stored in project state, independent of presets |
 | Sustain / overlap / panic | Implemented, tested | engine contract test and pluginval MIDI tests |
 | State persistence | Implemented, tested | APVTS + cables + Morph B + sequencer; pluginval state round-trip |
@@ -37,9 +37,9 @@ All parameters have stable string IDs, natural-unit ranges and group metadata. A
 | MIDI event offsets | Implemented | render is split at event sample offsets |
 | Keyboard UI | Implemented | Matriarch F1–F5; PolyBrute/One 61 keys C2–C7; wheels send bend/CC1 |
 | Panel layout | Implemented, documented | Matriarch single-row manual order; PolyBrute three-row synth block; One left/centre/right sections (see `docs/LAYOUT.md`) |
-| Presets | Implemented, tested | 4 per instrument; all IDs/ranges validated by `triad_preset_tests` |
+| Presets | Implemented, tested | 19 / 23 / 27 / 613 presets; all IDs/ranges validated by `triad_preset_tests` |
 | Patch cables | Implemented (Matriarch) | click output → input, right-click clears; saved in state |
-| Sequencer/arpeggiator | Partial | one shared 16-step arp/step engine per instance, driven by the host wrapper |
+| Sequencer/arpeggiator | Partial | banked poly step editor via SEQ: Matriarch 12 × 256 × 4 notes; PolyBrute/One 64 × 6 notes. Ties, velocity, gate, host transport. No hardware recording/ratchets/Motion automation |
 
 ## MATRIARCH V
 
@@ -57,8 +57,8 @@ Reference: 2023-01 manual + firmware 1.3.0 (not re-verified page by page).
 | Modulation | Implemented, partial | LFO 1 (six waveforms; staircase approximated by sample-and-hold), pitch/cutoff/PWM amounts, pitch assignment, LFO 2, three bipolar attenuators, two mults |
 | Patch points | Implemented, partial | 79 of the documented 90 jacks; one cable per destination; mults and attenuation work; clock/step jacks are generated but the sequencer runs in the host wrapper |
 | Patching state | Implemented | atomic connection masks; cables restored from project state |
-| Arp / sequencer | Partial | 16-step host sequencer/arp, not the 12 × 256-step hardware sequencer; no pattern editing UI |
-| External audio input | Not implemented | rear-panel instrument input has no host bus |
+| Arp / sequencer | Partial | 12 × 256 steps with up to 4 notes; bank/page editor, ties and velocity. Hardware recording and patch-clock control are incomplete |
+| External audio input | Implemented, tested | optional mono/stereo Instrument In bus, mono mix through HOST INPUT mixer control |
 | Tap tempo | Not implemented | tempo follows the host; SYNC/TAP button exists as a parameter |
 | Analog calibration | Not implemented | no drift/tolerance calibration against a real unit |
 
@@ -72,12 +72,12 @@ Reference: original 6-voice PolyBrute, manual 3.0.1; firmware 3.1.1 differences 
 | Oscillators | Implemented | VCO A/B octave, tune, continuous saw↔triangle, pulse width/level, Metalizer, sub, soft→hard sync, B→A FM |
 | Filters | Implemented, partial | Steiner 12 dB continuous LP→Notch→HP→BP with env/FM/key track; ladder 24 dB with Brute Factor; serial/parallel/split; both self-oscillate; no circuit-level model |
 | Envelopes / LFOs | Implemented | three ADSRs with velocity; three per-voice LFOs with sync, retrigger, fade, hardwired pitch/PWM/cutoff |
-| Mod matrix | Partial | 8 slots; hardware provides 12 sources / 32 target slots / up to 64 connections |
+| Mod matrix | Partial | 64 connections, paged eight at a time, 15 non-null software sources and 32 destinations; source arrangement differs from hardware 12 × 32 |
 | Morph A/B | Implemented, partial | all continuous parameters interpolate; discrete choices switch at 0.5; B is captured from the panel (no independent B editing workflow) |
 | Effects | Implemented, partial | distortion (4 types), chorus, stereo delay with sync/ping-pong, FDN reverb; not the proprietary algorithms or the full v3 effect list |
 | Morph performance pad | Implemented, M1 | lower-left 2D pad: X = morph A/B, Y = spread, Z = touch pressure/aftertouch; vertical pressure slider and mouse wheel are the non-touchpad fallback |
-| Sequencer / Motion | Not implemented | host-wrapper arp only; no 64-step sequencer or Motion recorder |
-| Factory presets | Implemented, categorized | 17 presets in Bass / Lead / Brass / Pad / Pluck / Keys / Organ / Arp / FX, incl. Reese, Acid, Supersaw and Hoover; not hardware preset data |
+| Sequencer / Motion | Partial | 64-step six-note editor with ties/velocity; no Motion recorder |
+| Factory presets | Implemented, categorized | 23 presets (including six documented Ref studies) in Bass / Lead / Brass / Pad / Pluck / Keys / Organ / Arp / FX, incl. Reese, Acid, Supersaw and Hoover; not hardware preset data |
 | Oversampling | Not implemented | PolyBLEP oscillators and host-rate nonlinear stages; hard sync is a phase reset without BLEP |
 
 ## ONE V
@@ -86,18 +86,18 @@ Reference: 2019 manual + 1.8.2 release notes; later firmware not audited page by
 
 | Subsystem | Status | Notes |
 |---|---|---|
-| Three parts, shared pool | Implemented, tested | one 8-voice oldest-first pool; per-part enable/range/channel/level/pan; channel routing + split/layer |
+| Three parts, shared pool | Implemented, tested | one selectable 8/16-voice oldest-first pool; per-part enable/range/channel/level/pan; channel routing + split/layer |
 | Oscillators | Implemented | three VCOs, waved angle/shape, octave, tune, PW, level; VCO2/3 hard sync; VCO3→VCO1 linear FM |
-| Mixer | Implemented, partial | oscillator/noise/ring levels; external input parameter exists but no host side-input bus is wired |
+| Mixer | Implemented, partial | oscillator/noise/ring levels; optional mono/stereo host input bus feeds the external mixer |
 | Filters | Implemented, partial | dual SVF (LP/HP/BP/Notch; 6/12/24 dB approximated) + ladder (6/12/18/24 taps, drive, resonance); series/parallel + mix |
 | Envelopes | Implemented | three DAHDSR with velocity and loop options |
 | LFOs | Implemented | four per part, seven waves, sync/retrigger/fade; hardwired pitch/PWM/cutoff |
 | Mod matrix | Partial | 8 slots per part; the hardware matrix and transforms are deeper |
 | Effects | Implemented, partial | per-part distortion/chorus/delay/send + master FDN reverb; **not** an Eventide algorithm or equivalent claim |
-| Performance | Implemented, partial | pitch bend, wheels, aftertouch, sustain, glide, drift; no chord memory or unison |
-| Arpeggiator / sequencer | Partial | host-wrapper arp uses part 1's arp parameters; no per-part 64-step poly sequencer |
-| Factory presets | Implemented, categorized | 15 presets in Bass / Lead / Brass / Pad / Pluck / Keys / Organ / Arp / Split / FX, incl. Reese, Acid and Supersaw; not hardware preset data |
-| External audio | Not implemented | engine has a setter; plugin exposes no input bus |
+| Performance | Implemented, partial | pitch bend, wheels, aftertouch, sustain, glide, drift; per-part Poly/Mono/Unison, last-note priority, stack size and detune; no chord memory |
+| Arpeggiator / sequencer | Partial | host-wrapper arp uses part 1's arp parameters; one shared 64-step six-note sequencer; no independent per-part sequencers |
+| Factory presets | Implemented, categorized | 27 presets (including 12 official-parameter Ref adaptations) in Bass / Lead / Brass / Pad / Pluck / Keys / Organ / Arp / Split / FX, incl. Reese, Acid and Supersaw; not hardware preset data |
+| External audio | Implemented | optional Instrument In bus, per-part external mixer level |
 
 ## Platform and delivery
 
@@ -106,20 +106,20 @@ Reference: 2019 manual + 1.8.2 release notes; later firmware not audited page by
 | macOS arm64 VST3 | Built, tested | pluginval 1.0.4 strictness 5, including GUI tests |
 | macOS AUv2 | Built, tested | `auval` passes for all four |
 | macOS standalone | Built, tested | launches; used for screenshots; audio device selection is JUCE's panel |
-| Windows x64 | Configured, **not run** | CI workflow written; no Windows runner result yet |
+| Windows x64 | Previous revision built in CI | main 309ea79 passed both platform jobs; this revision must be checked separately |
 | Universal binary | Supported, **not built** | `-DTRIAD_UNIVERSAL=ON`; only arm64 artifacts inspected |
 | Code signing | Ad-hoc only | no Developer ID; no notarisation |
 | DAW host test | **Not run** | pluginval and auval only; no Logic/Ableton/Reaper session recorded |
-| GitHub push | **Not done** | depends on available credentials |
+| GitHub remote | Established | SakuraEntropia/ENTRO-V-COLLECTION; current revision validation is recorded separately |
 | Hardware A/B | **Not done** | no measurements or recordings; no “100% emulation” claim |
 
 ## Known gaps that matter most
 
 1. No hardware reference recordings, so oscillator/filter/envelope timbre is uncalibrated.
 2. Matriarch has 79 of the documented 90 patch points and a reduced sequencer.
-3. PolyBrute's Morphée, ribbon, 64-step sequencer and full 12×32 modulation matrix are missing.
-4. Moog One's arpeggiator is shared rather than per-part; external audio and chord memory are absent.
-5. Windows artifacts and real-DAW loading remain unverified.
+3. PolyBrute ribbon/Morphée CC sources, 64-step editor and 64 connections exist; Motion, full hardware source layout and calibration remain incomplete.
+4. Moog One's arpeggiator/sequencer remains shared across parts; chord memory is absent.
+5. This revision needs Windows CI verification; real-DAW loading remains unverified.
 6. No VST2, AAX, AUv3 or Linux builds.
 
 
@@ -138,7 +138,11 @@ Reference: [Haken Continuum / EaganMatrix public documentation](https://www.hake
 | Delays | Implemented | two delay modules + master delay |
 | Shape generators | Implemented | five generators, eight shapes including S&H |
 | FDN / reverb | Implemented, approximate | four-line FDN reverb plus chorus, phaser, modulated echo, separate summed/micro delay banks, two generated-IR convolution stages, a six-mode Recirculator selector and six vertical Delay-LPF trapezoid faders (LPF/Offset/PingPong/Feedback/Full/Time); not the original EaganMatrix IR library |
-| Panel control coverage | Implemented | All 128 engine parameters have panel controls, including Envelope 1/2, noise colour/level, reverb size and delay time/feedback added in the 2026-10 pass |
+| Panel control coverage | Implemented | All 204 engine parameters have panel controls, including Envelope 1/2, noise colour/level, reverb size and delay time/feedback added in the 2026-10 pass |
 | Formula language | Implemented | 12 built-in formulas plus an editable user formula VM (`s/x/y/z`, arithmetic, sin/cos/tan/abs/sqrt/exp/log); compiled to a fixed RPN buffer for the audio thread |
 | CVC output | Implemented (MIDI proxy) | Four CVC controls emit MIDI CC 20–23 on channel 1; this is the software equivalent for hosts, not a DC-coupled hardware CV jack |
 | CVC | Not implemented | no hardware CVC output |
+
+## Reference-bank update
+
+22 new Ref studies are documented in [PRESET-REFERENCES.md](PRESET-REFERENCES.md). Seven local test suites pass. Standalone audition renders check finite, non-silent, unclipped output; they do not establish hardware fidelity. Ribbon CC9 and Morphée CC114/115/89 are available as modulation sources.

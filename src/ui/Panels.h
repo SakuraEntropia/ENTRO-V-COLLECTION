@@ -24,6 +24,8 @@ public:
 
 private:
     std::unique_ptr<juce::Component> wheels_;
+    std::array<std::vector<juce::Component*>, 8> matrixPages_;
+    void showMatrixPage (int page);
 };
 
 class OnePanel final : public PanelBase

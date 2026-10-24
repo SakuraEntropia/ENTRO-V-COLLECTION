@@ -120,7 +120,7 @@ fi
 if [[ ${DO_ZIP} -eq 1 ]]; then
     archive="${STAGE}/ENTRO-V-COLLECTION-macOS-$(date +%Y%m%d).zip"
     rm -f "${archive}"
-    (cd "${STAGE}" && zip -qry "${archive}" ./*.vst3 ./*.component ./*.app 2>/dev/null) || true
+    (cd "${STAGE}" && zip -qry "${archive}" ./*.vst3 ./*.component ./*.app 2>/dev/null)
     echo "wrote ${archive}"
 fi
 

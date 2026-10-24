@@ -141,6 +141,7 @@ MatriarchPanel::MatriarchPanel (EditorHost& editorHost)
     const char* keyboardOutputs[] = { "pitch", "gate", "velocity", "aftertouch", "mod" };
     for (int i = 0; i < 5; ++i)
         addJack ("mat.patch.kb." + juce::String (keyboardOutputs[i]), { 1340 + i * 75, 445 }, 18);
+    knob ("mat.mix.ext", "HOST INPUT", 1140, 443, 28);
     onPatchChanged = [this] { refreshPatchCables(); };
 }
 } // namespace triad::ui

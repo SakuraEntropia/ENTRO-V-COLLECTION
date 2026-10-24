@@ -17,7 +17,7 @@ namespace triad
     Metalizer) + VCO B (same waveform controls, sub sine, hard sync and linear
     FM) + noise -> mixer -> Steiner 12 dB multimode filter and Moog-style
     24 dB ladder (serial / parallel / split) -> stereo pan -> VCA.
-    Three envelopes, three per-voice LFOs, an eight-slot modulation matrix,
+    Three envelopes, three per-voice LFOs, a 64-connection modulation matrix,
     and a global distortion / chorus / delay / reverb chain.
 
     All parameter values are natural units and are indexed in definition()
@@ -46,7 +46,8 @@ public:
 private:
     static constexpr int kNumVoices = 6;
     static constexpr int kMaxHeldNotes = 16;
-    static constexpr int kNumModSlots = 8;
+    static constexpr int kLegacyModSlots = 8;
+    static constexpr int kNumModSlots = 64;
     static constexpr int kNumLfos = 3;
     static constexpr int kNumEnvelopes = 3;
 
@@ -97,6 +98,10 @@ private:
 
         PArpEnabled, PArpMode, PArpRate, PArpOctaves, PArpHold, PArpLength,
 
+        // New connections are appended after the entire legacy parameter
+        // prefix, so old state arrays and host parameter indices keep working.
+        PExtraMod1Source,
+        PMasterVolume = PExtraMod1Source + (kNumModSlots - kLegacyModSlots) * 3,
         PParamCount
     };
 
@@ -104,6 +109,7 @@ private:
     {
         SrcNone = 0, SrcLfo1, SrcLfo2, SrcLfo3, SrcEnv1, SrcEnv2, SrcEnv3,
         SrcVelocity, SrcAftertouch, SrcModWheel, SrcKeyTrack, SrcRandom,
+        SrcRibbon, SrcMorpheeX, SrcMorpheeY, SrcMorpheeZ,
         SrcCount
     };
 
@@ -114,6 +120,9 @@ private:
         DestSteinerCutoff, DestLadderCutoff, DestSteinerResonance,
         DestLadderResonance, DestFilterALevel, DestFilterBLevel, DestPan,
         DestLfoRates, DestVolume,
+        DestVcoAWave, DestVcoBWave, DestVcoAPulse, DestVcoBPulse, DestVcoBSub,
+        DestSync, DestFm, DestSteinerMode, DestSteinerFm, DestLadderDrive,
+        DestFilterBalance, DestLfo1Rate, DestLfo2Rate, DestLfo3Rate, DestGlobalPitch,
         DestCount
     };
 
@@ -171,6 +180,12 @@ private:
     void clampEffectiveValues();
     void reconcileVoiceMode (int mode, int maxVoices);
 
+    static constexpr int modParamBase (int slot) noexcept
+    {
+        return slot < kLegacyModSlots ? PMod1Source + slot * 3
+                                     : PExtraMod1Source + (slot - kLegacyModSlots) * 3;
+    }
+
     void startVoice (int index, int note, float velocity, bool forceReset,
                      int unisonIndex, int unisonCount);
     void retargetVoice (Voice& voice, int note, float velocity, bool retrigger,
@@ -215,6 +230,7 @@ private:
 
     std::array<Voice, kNumVoices> voices_ {};
     std::array<ModSlot, kNumModSlots> modSlots_ {};
+    int activeModCount_ = 0;
 
     std::array<int, kMaxHeldNotes> heldNotes_ {};
     std::array<float, kMaxHeldNotes> heldVelocities_ {};
@@ -227,6 +243,8 @@ private:
     float pitchBend_ = 0.0f;   // -1..1
     float modWheel_ = 0.0f;    // 0..1
     float aftertouch_ = 0.0f;  // 0..1
+    float ribbon_ = 0.0f;     // CC 9, 0..1
+    std::array<float, 3> morphee_ {}; // CC 114 / 115 / 89, 0..1
     float lastPlayedNote_ = -1.0f;
     uint64_t ageCounter_ = 0;
     int lastMode_ = -1;
@@ -237,6 +255,7 @@ private:
     StereoDelay delay_;
     ReverbEffect reverb_;
     DCBlocker dcLeft_, dcRight_;
+    Smoother masterGain_;
     float meter_ = 0.0f;
 };
 

@@ -202,6 +202,10 @@ public:
     virtual void processMidi (const MidiEvent&) = 0;
     virtual void render (float* left, float* right, int numSamples) = 0;
 
+    /** Optional mono host input, valid for the next render segment only.
+        A null pointer disconnects the input. No ownership is transferred. */
+    virtual void setExternalInput (const float*, int) noexcept {}
+
     virtual int activeVoiceCount() const = 0;
     virtual float outputLevel() const { return 0.0f; }
 

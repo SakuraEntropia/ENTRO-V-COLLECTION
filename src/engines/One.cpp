@@ -123,6 +123,35 @@ void OneEngine::buildDefinition()
             partIndex_[(size_t) part][(size_t) (PVco1BeatHz + osc)] = definition_.addParam (std::move (spec));
         }
 
+    // New allocation controls are appended after all 417 existing parameters.
+    // In particular, inserting MVoices in addMasterDefinition would renumber
+    // host automation for the original arpeggiator and beat-frequency controls.
+    ParamSpec budget;
+    budget.id = "one.master.voices"; budget.name = "SHARED VOICE BUDGET";
+    budget.group = "Master"; budget.min = 0; budget.max = 1; budget.def = 0;
+    budget.curve = ParamCurve::Discrete; budget.choices = choicesOf ({ "8", "16" });
+    masterIndex_[MVoices] = definition_.addParam (std::move (budget));
+    for (int part = 0; part < kPartCount; ++part)
+    {
+        const auto prefix = "one.p" + std::to_string (part + 1) + ".voice.";
+        const auto group = "Part " + std::to_string (part + 1);
+        auto add = [this, part, &prefix, &group] (PartParam id, const char* suffix,
+                                                 const char* name, float min, float max,
+                                                 float def, std::vector<std::string> choices = {})
+        {
+            ParamSpec spec;
+            spec.id = prefix + suffix; spec.name = name; spec.group = group;
+            spec.min = min; spec.max = max; spec.def = def;
+            spec.curve = choices.empty() ? ParamCurve::Linear : ParamCurve::Discrete;
+            spec.choices = std::move (choices);
+            partIndex_[(size_t) part][(size_t) id] = definition_.addParam (std::move (spec));
+        };
+        add (PVoiceMode, "mode", "VOICE MODE", 0, 2, 0, choicesOf ({ "Poly", "Mono", "Unison" }));
+        // A natural integer count, matching arp.length's existing convention.
+        add (PUnisonVoices, "unisonVoices", "UNISON VOICES", 2, 16, 2);
+        add (PUnisonDetune, "unisonDetune", "UNISON DETUNE", 0, 1, .15f);
+    }
+
     struct NamedItem
     {
         const char* id;
@@ -158,8 +187,7 @@ void OneEngine::buildDefinition()
             assert (partIndex_[(size_t) part][(size_t) param] >= 0);
 
     for (int param = 0; param < (int) MParamCount; ++param)
-        if (param != (int) MVoices)
-            assert (masterIndex_[(size_t) param] >= 0);
+        assert (masterIndex_[(size_t) param] >= 0);
 }
 
 void OneEngine::addPartDefinition (int part)
@@ -414,8 +442,8 @@ void OneEngine::addArpeggiatorDefinition (int part)
 
     addArp (PArpEnabled, "arp.enabled", "ARP ENABLE", 0.0f, 1.0f, 0.0f,
             ParamCurve::Discrete, choicesOf ({ "Off", "On" }));
-    addArp (PArpMode, "arp.mode", "ARP MODE", 0.0f, 4.0f, 0.0f, ParamCurve::Discrete,
-            choicesOf ({ "Up", "Down", "Up/Down", "Random", "Order" }));
+    addArp (PArpMode, "arp.mode", "ARP MODE", 0.0f, 5.0f, 0.0f, ParamCurve::Discrete,
+            choicesOf ({ "Up", "Down", "Up/Down", "Random", "Order", "Step" }));
     addArp (PArpRate, "arp.rate", "ARP RATE", 0.0f, 5.0f, 3.0f, ParamCurve::Discrete,
             choicesOf ({ "1/4", "1/8", "1/8T", "1/16", "1/16T", "1/32" }));
     addArp (PArpOctaves, "arp.octaves", "ARP OCTAVES", 0.0f, 3.0f, 0.0f, ParamCurve::Discrete,
@@ -550,11 +578,12 @@ void OneEngine::prepare (double sampleRate, int maxBlockSize)
 void OneEngine::reset()
 {
     heldCount_ = 0;
-    sustainPedal_ = false;
+    sustainPedal_.fill (false);
     pitchBend_ = 0.0f;
     modWheel_ = 0.0f;
     aftertouch_ = 0.0f;
     activeVoices_ = 0;
+    voiceBudget_ = choiceOf (masterValue (MVoices), 1) == 0 ? 8 : 16;
     voiceSerial_ = 0;
     meter_ = 0.0f;
     externalInput_ = nullptr;
@@ -576,6 +605,8 @@ void OneEngine::reset()
         voice.driftCountdown = 0;
         voice.randomValue = 0.0f;
         voice.fmSample = 0.0f;
+        voice.unisonPosition = 0.0f;
+        voice.unisonGain = 1.0f;
         voice.lastEnv.fill (0.0f);
 
         for (auto& oscillator : voice.oscillators)
@@ -643,6 +674,13 @@ void OneEngine::setParameters (const float* values, int count)
     if (values == nullptr || count <= 0)
         return;
 
+    std::array<int, kPartCount> previousMode {}, previousUnison {};
+    for (int part = 0; part < kPartCount; ++part)
+    {
+        previousMode[(size_t) part] = voiceMode (part);
+        previousUnison[(size_t) part] = choiceOf (value (part, PUnisonVoices), 16);
+    }
+    const auto previousBudget = voiceBudget_;
     const auto n = std::min (count, (int) values_.size());
 
     for (int index = 0; index < n; ++index)
@@ -652,6 +690,16 @@ void OneEngine::setParameters (const float* values, int count)
         values_[(size_t) index] = std::isfinite (incoming)
                                     ? clampf (incoming, spec.min, spec.max)
                                     : spec.def;
+    }
+    voiceBudget_ = choiceOf (masterValue (MVoices), 1) == 0 ? 8 : 16;
+    enforceVoiceBudget();
+    for (int part = 0; part < kPartCount; ++part)
+    {
+        const auto mode = voiceMode (part);
+        if (mode != previousMode[(size_t) part]
+            || (mode == 2 && (previousBudget != voiceBudget_
+                || previousUnison[(size_t) part] != choiceOf (value (part, PUnisonVoices), 16))))
+            rebuildPartVoices (part);
     }
 }
 
@@ -726,7 +774,7 @@ int OneEngine::targetParts (int channel, int note, int* outParts) const
     return count;
 }
 
-void OneEngine::addHeldNote (int channel, int note, float velocity)
+void OneEngine::addHeldNote (int channel, int note, float velocity, unsigned int partMask)
 {
     if (heldCount_ >= kMaxHeldNotes)
     {
@@ -736,7 +784,7 @@ void OneEngine::addHeldNote (int channel, int note, float velocity)
         --heldCount_;
     }
 
-    held_[(size_t) heldCount_] = HeldNote { channel, note, velocity, false };
+    held_[(size_t) heldCount_] = HeldNote { channel, note, velocity, false, partMask };
     ++heldCount_;
 }
 
@@ -800,172 +848,101 @@ void OneEngine::killAllVoices()
     activeVoices_ = 0;
 }
 
-void OneEngine::noteOffInternal (int channel, int note)
-{
-    for (int index = 0; index < heldCount_; ++index)
-    {
-        if (held_[(size_t) index].channel != channel || held_[(size_t) index].note != note)
-            continue;
-
-        if (sustainPedal_)
-        {
-            held_[(size_t) index].sustained = true;
-        }
-        else
-        {
-            releaseVoicesFor (channel, note);
-            removeHeldNote (index);
-            --index;
-        }
-    }
-
-    if (! sustainPedal_)
-        releaseVoicesFor (channel, note);
+int OneEngine::voiceMode (int part) const { return choiceOf (value (part, PVoiceMode), 2); }
+int OneEngine::lastHeldForPart (int part) const {
+    for (int i = heldCount_ - 1; i >= 0; --i)
+        if ((held_[i].partMask & (1u << part)) != 0) return i;
+    return -1;
 }
-
-void OneEngine::processMidi (const MidiEvent& event)
-{
-    switch (event.type)
-    {
-        case MidiEventType::NoteOn:
-        {
-            const auto note = std::clamp (event.note, 0, 127);
-            const auto velocity = clampf (event.value, 0.0f, 1.0f);
-            const auto channel = normalizeChannel (event.channel);
-
-            // MIDI convention: note-on with zero velocity is a note-off.
-            if (velocity <= 0.0f)
-            {
-                noteOffInternal (channel, note);
-                break;
-            }
-
-            // Retriggering a held note releases the previous voice first.
-            releaseVoicesFor (channel, note);
-
-            for (int index = 0; index < heldCount_; ++index)
-            {
-                if (held_[(size_t) index].channel == channel && held_[(size_t) index].note == note)
-                {
-                    removeHeldNote (index);
-                    --index;
-                }
-            }
-
-            addHeldNote (channel, note, velocity);
-
-            int targets[kPartCount] = { 0, 0, 0 };
-            const auto targetCount = targetParts (channel, note, targets);
-
-            for (int index = 0; index < targetCount; ++index)
-                startVoice (targets[index], note, velocity, channel);
-
+void OneEngine::killVoice (Voice& voice) {
+    if (!voice.active) return;
+    voice.active = voice.gated = false;
+    for (auto& env : voice.envelopes) env.reset();
+    activeVoices_ = std::max (0, activeVoices_ - 1);
+}
+void OneEngine::killPartVoices (int part) {
+    for (auto& voice : voices_) if (voice.part == part) killVoice(voice);
+}
+void OneEngine::enforceVoiceBudget() {
+    for (int i = voiceBudget_; i < kMaxVoices; ++i) killVoice(voices_[i]);
+}
+void OneEngine::startPartNote (int part, int note, float velocity, int channel) {
+    const int mode = voiceMode(part);
+    if (mode != 0) killPartVoices(part);
+    const int count = mode == 2 ? std::clamp((int)std::lround(value(part,PUnisonVoices)),2,voiceBudget_) : 1;
+    for (int i = 0; i < count; ++i)
+        startVoice(part,note,velocity,channel,count > 1 ? (2.0f*i/(count-1)-1.0f) : 0.0f,
+                   1.0f/std::sqrt((float)count));
+}
+void OneEngine::updateMonoPart (int part) {
+    const int index=lastHeldForPart(part);
+    if (index < 0) {
+        for (auto& v : voices_) if (v.part==part && v.gated) releaseVoice(v);
+        return;
+    }
+    const auto& held=held_[index];
+    for (auto& v : voices_) if (v.active && v.gated && v.part==part
+                               && v.note==held.note && v.channel==held.channel) return;
+    startPartNote(part,held.note,held.velocity,held.channel);
+}
+void OneEngine::rebuildPartVoices (int part) {
+    killPartVoices(part);
+    if (voiceMode(part)!=0) { updateMonoPart(part); return; }
+    for (int i=0;i<heldCount_;++i) if ((held_[i].partMask & (1u<<part))!=0)
+        startPartNote(part,held_[i].note,held_[i].velocity,held_[i].channel);
+}
+void OneEngine::noteOffInternal (int channel, int note) {
+    for(int i=heldCount_-1;i>=0;--i) {
+        if(held_[i].channel!=channel || held_[i].note!=note) continue;
+        if(sustainPedal_[channel]) held_[i].sustained=true;
+        else removeHeldNote(i);
+    }
+    if(sustainPedal_[channel]) return;
+    for(auto& v:voices_) if(v.active && v.gated && v.channel==channel && v.note==note && voiceMode(v.part)==0) releaseVoice(v);
+    for(int part=0;part<kPartCount;++part) if(voiceMode(part)!=0) updateMonoPart(part);
+}
+void OneEngine::setSustain (int channel, bool down) {
+    channel=normalizeChannel(channel);
+    const bool was=sustainPedal_[channel]; sustainPedal_[channel]=down;
+    if(!was || down) return;
+    for(int i=heldCount_-1;i>=0;--i) if(held_[i].channel==channel && held_[i].sustained) {
+        const int note=held_[i].note;
+        for(auto& v:voices_) if(v.active && v.gated && v.channel==channel && v.note==note && voiceMode(v.part)==0) releaseVoice(v);
+        removeHeldNote(i);
+    }
+    for(int part=0;part<kPartCount;++part) if(voiceMode(part)!=0) updateMonoPart(part);
+}
+void OneEngine::processMidi (const MidiEvent& event) {
+    const int channel=normalizeChannel(event.channel);
+    switch(event.type) {
+        case MidiEventType::NoteOn: {
+            const int note=std::clamp(event.note,0,127);
+            if(event.value<=0) { noteOffInternal(channel,note); break; }
+            releaseVoicesFor(channel,note);
+            for(int i=heldCount_-1;i>=0;--i) if(held_[i].channel==channel && held_[i].note==note) removeHeldNote(i);
+            int targets[kPartCount]{}; const int count=targetParts(channel,note,targets);
+            unsigned int mask=0; for(int i=0;i<count;++i) mask|=1u<<targets[i];
+            addHeldNote(channel,note,clampf(event.value,0,1),mask);
+            for(int i=0;i<count;++i) startPartNote(targets[i],note,event.value,channel);
             break;
         }
-
-        case MidiEventType::NoteOff:
-            noteOffInternal (normalizeChannel (event.channel), std::clamp (event.note, 0, 127));
-            break;
-
-        case MidiEventType::AllNotesOff:
-            releaseAllGatedVoices();
-            heldCount_ = 0;
-            break;
-
+        case MidiEventType::NoteOff: noteOffInternal(channel,std::clamp(event.note,0,127)); break;
+        case MidiEventType::AllNotesOff: releaseAllGatedVoices(); heldCount_=0; sustainPedal_.fill(false); break;
         case MidiEventType::AllSoundOff:
-            killAllVoices();
-            heldCount_ = 0;
-
-            for (auto& runtime : parts_)
-            {
-                runtime.delay.reset();
-                runtime.chorus.reset();
-            }
-
-            reverb_.reset();
-            dcLeft_.reset();
-            dcRight_.reset();
-            break;
-
-        case MidiEventType::PitchBend:
-            pitchBend_ = clampf (event.value, -1.0f, 1.0f);
-            break;
-
-        case MidiEventType::ModWheel:
-            modWheel_ = clampf (event.value, 0.0f, 1.0f);
-            break;
-
-        case MidiEventType::ChannelPressure:
-            aftertouch_ = clampf (event.value, 0.0f, 1.0f);
-            break;
-
-        case MidiEventType::SustainPedal:
-        {
-            const bool down = event.value > 0.5f;
-
-            if (! down && sustainPedal_)
-            {
-                for (int index = 0; index < heldCount_; ++index)
-                {
-                    if (! held_[(size_t) index].sustained)
-                        continue;
-
-                    const auto channel = held_[(size_t) index].channel;
-                    const auto note = held_[(size_t) index].note;
-                    releaseVoicesFor (channel, note);
-                    removeHeldNote (index);
-                    --index;
-                }
-            }
-
-            sustainPedal_ = down;
-            break;
-        }
-
+            killAllVoices(); heldCount_=0; sustainPedal_.fill(false);
+            for(auto& r:parts_) { r.delay.reset(); r.chorus.reset(); }
+            reverb_.reset(); dcLeft_.reset(); dcRight_.reset(); break;
+        case MidiEventType::PitchBend: pitchBend_=clampf(event.value,-1,1); break;
+        case MidiEventType::ModWheel: modWheel_=clampf(event.value,0,1); break;
+        case MidiEventType::ChannelPressure: aftertouch_=clampf(event.value,0,1); break;
+        case MidiEventType::SustainPedal: setSustain(channel,event.value>0.5f); break;
         case MidiEventType::ControlChange:
-            switch (event.controller)
-            {
-                case 1:
-                    modWheel_ = clampf (event.value, 0.0f, 1.0f);
-                    break;
-
-                case 64:
-                {
-                    const bool down = event.value > 0.5f;
-
-                    if (! down && sustainPedal_)
-                    {
-                        for (int index = 0; index < heldCount_; ++index)
-                        {
-                            if (! held_[(size_t) index].sustained)
-                                continue;
-
-                            const auto channel = held_[(size_t) index].channel;
-                            const auto note = held_[(size_t) index].note;
-                            releaseVoicesFor (channel, note);
-                            removeHeldNote (index);
-                            --index;
-                        }
-                    }
-
-                    sustainPedal_ = down;
-                    break;
-                }
-
-                case 123:
-                    releaseAllGatedVoices();
-                    heldCount_ = 0;
-                    break;
-
-                case 120:
-                    killAllVoices();
-                    heldCount_ = 0;
-                    break;
-
-                default:
-                    break;
-            }
+            if(event.controller==64) setSustain(channel,event.value>0.5f);
+            else if(event.controller==1) modWheel_=clampf(event.value,0,1);
+            else if(event.controller==123) { releaseAllGatedVoices(); heldCount_=0; }
+            else if(event.controller==120) { killAllVoices(); heldCount_=0; }
             break;
+        case MidiEventType::NoteExpression: break;
     }
 }
 
@@ -973,22 +950,15 @@ void OneEngine::processMidi (const MidiEvent& event)
 // Voice allocation
 // ---------------------------------------------------------------------------
 
-int OneEngine::allocateVoiceSlot()
-{
-    for (int index = 0; index < kMaxVoices; ++index)
-        if (! voices_[(size_t) index].active)
-            return index;
-
-    int oldest = 0;
-
-    for (int index = 1; index < kMaxVoices; ++index)
-        if (voices_[(size_t) index].serial < voices_[(size_t) oldest].serial)
-            oldest = index;
-
+int OneEngine::allocateVoiceSlot() {
+    for(int i=0;i<voiceBudget_;++i) if(!voices_[i].active) return i;
+    int oldest=0;
+    for(int i=1;i<voiceBudget_;++i) if(voices_[i].serial<voices_[oldest].serial) oldest=i;
     return oldest;
 }
 
-void OneEngine::startVoice (int part, int note, float velocity, int channel)
+void OneEngine::startVoice (int part, int note, float velocity, int channel,
+                            float unisonPosition, float unisonGain)
 {
     const auto slot = allocateVoiceSlot();
     auto& voice = voices_[(size_t) slot];
@@ -1002,6 +972,8 @@ void OneEngine::startVoice (int part, int note, float velocity, int channel)
     voice.note = note;
     voice.channel = channel;
     voice.velocity = clampf (velocity, 0.0f, 1.0f);
+    voice.unisonPosition = unisonPosition;
+    voice.unisonGain = unisonGain;
     voice.serial = ++voiceSerial_;
     voice.targetPitch = (double) note;
 
@@ -1469,6 +1441,7 @@ StereoSample OneEngine::renderVoice (Voice& voice, int sampleIndex)
 
     // --- Oscillator frequencies -------------------------------------------
     auto baseSemitones = (float) voice.pitch
+                       + voice.unisonPosition * praw(part, PUnisonDetune) * 0.5f
                        + voice.drift * driftAmount_ * 0.12f
                        + pitchBend_ * bendSemitones_
                        + lfoNow_[(size_t) part][0] * praw (part, PLfo1PitchAmt) * 12.0f;
@@ -1640,8 +1613,8 @@ StereoSample OneEngine::renderVoice (Voice& voice, int sampleIndex)
     const auto gainRight = std::sqrt (0.5f * (1.0f + pan));
 
     StereoSample output;
-    output.left = finiteOrZero (filtered * vca * gainLeft);
-    output.right = finiteOrZero (filtered * vca * gainRight);
+    output.left = finiteOrZero (filtered * vca * voice.unisonGain * gainLeft);
+    output.right = finiteOrZero (filtered * vca * voice.unisonGain * gainRight);
     return output;
 }
 

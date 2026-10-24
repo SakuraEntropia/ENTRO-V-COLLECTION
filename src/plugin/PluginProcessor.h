@@ -18,7 +18,7 @@ namespace triad
 {
 
 class TriadAudioProcessor final : public juce::AudioProcessor,
-                                  public EditorHost
+                                  public EditorHost, private juce::MidiKeyboardState::Listener
 {
 public:
     TriadAudioProcessor();
@@ -29,6 +29,7 @@ public:
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
     juce::AudioProcessorEditor* createEditor() override;
+    bool isBusesLayoutSupported (const BusesLayout&) const override;
     bool hasEditor() const override { return true; }
 
     const juce::String getName() const override;
@@ -94,12 +95,17 @@ public:
     float continuumExpression (int note, int axis) const override;
 
 private:
+    void handleNoteOn (juce::MidiKeyboardState*, int, int, float) override;
+    void handleNoteOff (juce::MidiKeyboardState*, int, int, float) override;
+    void enqueueKeyboardEvent (MidiEvent);
+
     struct ScheduledEvent
     {
         int offset = 0;
         MidiEvent event;
     };
 
+    static BusesProperties instrumentBuses();
     static juce::AudioProcessorValueTreeState::ParameterLayout createLayout (const ModelDefinition&);
     static bool toMidiEvent (const juce::MidiMessage& message, MidiEvent& out);
 
@@ -136,7 +142,10 @@ private:
     std::array<ScheduledEvent, 1024> scheduled_ {};
     int scheduledCount_ = 0;
 
-    std::vector<float> dummyRight_;
+    std::vector<float> dummyRight_, inputScratch_;
+    juce::AbstractFifo keyboardFifo_ { 512 };
+    std::array<MidiEvent, 512> keyboardEvents_ {};
+    std::atomic<bool> keyboardOverflow_ { false };
     float lastPitchBendSent_ = 0.0f;
     float lastModWheelSent_ = -1.0f;
     bool lastSequencerEnabled_ = false;

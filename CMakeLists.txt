@@ -63,6 +63,7 @@ add_library(triad_ui STATIC
     src/ui/Logo.cpp
     src/ui/Widgets.cpp
     src/ui/PanelBase.cpp
+    src/ui/SequencerPanel.cpp
     src/ui/PresetBrowser.cpp
     src/ui/KeyboardPanel.cpp
     src/ui/MatriarchPanel.cpp
@@ -71,6 +72,8 @@ add_library(triad_ui STATIC
     src/ui/ContinuumPanel.cpp
     src/ui/Editor.cpp
     src/plugin/Presets.cpp
+    src/plugin/OneReferencePresets.cpp
+    src/plugin/AnalogReferencePresets.cpp
 )
 target_link_libraries(triad_ui
     PUBLIC
@@ -185,7 +188,7 @@ if (TRIAD_BUILD_TESTS)
     target_compile_features(triad_tests PRIVATE cxx_std_20)
     add_test(NAME triad_engine_contracts COMMAND triad_tests)
 
-    add_executable(triad_preset_tests tests/PresetTests.cpp src/plugin/Presets.cpp)
+    add_executable(triad_preset_tests tests/PresetTests.cpp src/plugin/Presets.cpp src/plugin/OneReferencePresets.cpp src/plugin/AnalogReferencePresets.cpp)
     target_include_directories(triad_preset_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
     target_link_libraries(triad_preset_tests PRIVATE triad_engines juce::juce_core)
     target_compile_features(triad_preset_tests PRIVATE cxx_std_20)
@@ -200,3 +203,21 @@ if (TRIAD_BUILD_TESTS)
     target_link_libraries(triad_panel_tests PRIVATE triad_ui)
     add_test(NAME triad_panel_bindings COMMAND triad_panel_tests)
 endif()
+
+if(TRIAD_BUILD_TESTS)
+    foreach(test_name IN ITEMS OneVoice Sequencer PolyBruteMod)
+        string(TOLOWER "${test_name}" test_slug)
+        add_executable(triad_${test_slug}_tests tests/${test_name}Tests.cpp)
+        target_link_libraries(triad_${test_slug}_tests PRIVATE triad_engines triad_core)
+        add_test(NAME triad_${test_slug} COMMAND triad_${test_slug}_tests)
+    endforeach()
+endif()
+if(TRIAD_BUILD_TESTS)
+    add_executable(triad_host_tests tests/HostTests.cpp)
+    target_include_directories(triad_host_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src" "${TRIAD_JUCE_PATH}/modules")
+    target_compile_definitions(triad_host_tests PRIVATE JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1)
+    target_link_libraries(triad_host_tests PRIVATE Matriarch)
+    add_test(NAME triad_host_contracts COMMAND triad_host_tests)
+endif()
+add_executable(triad_render_presets src/tools/RenderPresets.cpp src/plugin/Presets.cpp src/plugin/OneReferencePresets.cpp src/plugin/AnalogReferencePresets.cpp)
+target_link_libraries(triad_render_presets PRIVATE triad_engines juce::juce_core)

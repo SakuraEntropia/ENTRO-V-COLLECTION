@@ -87,7 +87,7 @@ void OnePanel::rebuildForPart()
     const int consoleStart = getNumChildComponents();
     auto& lcd = addLcd ({ 918, 104, 290, 108 });
     lcd.setText ("ONE V   /   PART " + juce::String (part),
-                 "TIMBRE " + juce::String (part) + "    MIDI CH " + juce::String (part), "SHARED 8-VOICE POOL");
+                 "TIMBRE " + juce::String (part) + "    MIDI CH " + juce::String (part), "SHARED 8 / 16 VOICE POOL");
     addLed (prefix + "enabled", "PART ENABLE", { 918, 228, 134, 24 });
     knob ("one.master.volume", "MASTER", 1134, 257, 56);
     knob (prefix + "level", "PART LEVEL", 963, 310, 48);
@@ -102,6 +102,11 @@ void OnePanel::rebuildForPart()
     knob ("one.master.glide", "GLIDE", 960, 594, 40);
     knob ("one.master.aftertouch", "AFTERTOUCH", 1063, 594, 40);
     knob ("one.master.pitchBendRange", "BEND RANGE", 1166, 594, 40);
+
+    addChoice ("one.master.voices", "VOICE BUDGET", { 30, 661, 140, 30 });
+    addChoice (prefix + "voice.mode", "VOICE MODE", { 190, 661, 144, 30 });
+    addNumber (prefix + "voice.unisonVoices", "UNISON VOICES", { 360, 661, 110, 30 });
+    addNumber (prefix + "voice.unisonDetune", "DETUNE", { 500, 661, 110, 30 });
 
     for (int i = consoleStart; i < getNumChildComponents(); ++i)
         consoleControls_.push_back (getChildComponent (i));

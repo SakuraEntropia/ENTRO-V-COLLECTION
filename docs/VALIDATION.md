@@ -1,3 +1,17 @@
+# Current validation update: 2026-10-24
+
+The historical log below describes earlier builds and is not evidence for every later revision.
+
+- Seven local suites pass: engine contracts, factory presets, panel bindings, One voice modes, sequencer, PolyBrute modulation, host contracts.
+- Factory banks: Matriarch 19, PolyBrute 23, One 27, Continuum 613. Reference additions: 4 / 6 / 12; original banks retained.
+- Host tests exercise optional external audio, a 20,000-sample block, long SysEx, zero tracked `new` calls inside tested callbacks, keyboard MIDI FIFO and two state round-trips through bank 12 / step 256 / fourth note lane.
+- Sequencer tests cover chord/tie playback, bank limits and arp ordering. PolyBrute tests exercise connection 64 and expression destinations; One tests cover 8/16 budget, mono fallback and unison.
+- `triad_render_presets` exports all 22 Ref patches at 48 kHz / 16 bit stereo, with a numerical audit. This is offline synthesis, not hardware listening calibration or host arpeggiator validation.
+- Previous main `309ea79` passed GitHub Actions macOS and Windows jobs: https://github.com/SakuraEntropia/ENTRO-V-COLLECTION/actions/runs/39747181936.
+- Full-bundle rebuild and external VST3 validation for this revision are recorded below when finished. Historical AU validation does not certify the changed build.
+
+---
+
 # Validation log
 
 ## Environment

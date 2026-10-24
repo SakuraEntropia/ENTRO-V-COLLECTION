@@ -195,9 +195,9 @@ void verifyPanel (PanelHost& host, PanelBase& panel)
         }
         if (auto* matrix = dynamic_cast<SourceMatrix*> (c))
         {
-            for (int i = 1; i <= 8; ++i) bound.insert ("poly.mod.slot" + std::to_string (i) + ".source");
+            for (const auto& sourceId : matrix->parameterIds()) bound.insert(sourceId.toStdString());
             matrix->mouseDown (eventAt (*matrix, 4, 1));
-            require (host.apvts().getRawParameterValue ("poly.mod.slot1.source")->load() == 0, "Source matrix assignment");
+            require (host.apvts().getRawParameterValue (matrix->parameterIds().front())->load() == 0, "Source matrix assignment");
         }
         if (id == "Delay-LPF R1-R6")
         {

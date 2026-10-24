@@ -25,288 +25,125 @@ double TapTempo::tap (double milliseconds)
     return 60000.0 * count_ / total;
 }
 
-PatternSequencer::PatternSequencer()
-{
-    for (int i = 0; i < maxSteps; ++i)
-    {
-        stepActive_[(size_t) i].store (i % 2 == 0);
-        stepNote_[(size_t) i].store (48 + (i % 4) * 3);
-        stepVelocity_[(size_t) i].store (i % 4 == 0 ? 110 : 84);
-    }
-}
-
-void PatternSequencer::prepare (double sampleRate)
-{
-    sampleRate_ = std::max (8000.0, sampleRate);
-    reset();
-}
-
-void PatternSequencer::reset()
-{
-    heldCount_ = 0;
-    orderIndex_ = 0;
-    arpDescending_ = false;
-    sampleAccumulator_ = 0.0;
-    gateCountdown_ = 0;
-    activeNote_ = -1;
-    patternIndex_ = 0;
-    lastStep_ = -1;
-    activeStep_.store (-1);
-    currentNote_.store (-1);
-}
-
-void PatternSequencer::setStepActive (int step, bool active)
-{
-    if (step >= 0 && step < maxSteps)
-        stepActive_[(size_t) step].store (active);
-}
-
-void PatternSequencer::setStepNote (int step, int note)
-{
-    if (step >= 0 && step < maxSteps)
-        stepNote_[(size_t) step].store (std::clamp (note, 0, 127));
-}
-
-void PatternSequencer::setStepVelocity (int step, int velocity)
-{
-    if (step >= 0 && step < maxSteps)
-        stepVelocity_[(size_t) step].store (std::clamp (velocity, 1, 127));
-}
-
-bool PatternSequencer::isStepActive (int step) const
-{
-    return step >= 0 && step < maxSteps && stepActive_[(size_t) step].load();
-}
-
-int PatternSequencer::stepNote (int step) const
-{
-    return step >= 0 && step < maxSteps ? stepNote_[(size_t) step].load() : 60;
-}
-
-int PatternSequencer::stepVelocity (int step) const
-{
-    return step >= 0 && step < maxSteps ? stepVelocity_[(size_t) step].load() : 100;
-}
-
-void PatternSequencer::noteOn (int note, float velocity)
-{
-    for (int i = 0; i < heldCount_; ++i)
-        if (heldNotes_[(size_t) i] == note)
-            return;
-
-    if (heldCount_ >= maxHeldNotes)
-    {
-        for (int i = 1; i < heldCount_; ++i)
-        {
-            heldNotes_[(size_t) (i - 1)] = heldNotes_[(size_t) i];
-            heldVelocity_[(size_t) (i - 1)] = heldVelocity_[(size_t) i];
-        }
-        --heldCount_;
-    }
-
-    heldNotes_[(size_t) heldCount_] = note;
-    heldVelocity_[(size_t) heldCount_] = std::clamp (velocity, 0.01f, 1.0f);
-    ++heldCount_;
-}
-
-void PatternSequencer::noteOff (int note)
-{
-    if (hold_.load())
-        return;
-
-    for (int i = 0; i < heldCount_; ++i)
-    {
-        if (heldNotes_[(size_t) i] == note)
-        {
-            for (int j = i; j < heldCount_ - 1; ++j)
-            {
-                heldNotes_[(size_t) j] = heldNotes_[(size_t) (j + 1)];
-                heldVelocity_[(size_t) j] = heldVelocity_[(size_t) (j + 1)];
-            }
-            --heldCount_;
-            return;
+PatternSequencer::PatternSequencer() {
+    for (int p = 0; p < maxPatterns; ++p) {
+        lengths_[p].store (16);
+        for (int s = 0; s < maxSteps; ++s) {
+            auto& step = patterns_[p][s];
+            for (auto& note : step.notes) note.store (-1);
+            step.notes[0].store (48 + (s % 4) * 3);
+            step.active.store (s < 16 && s % 2 == 0);
+            step.velocity.store (s % 4 == 0 ? 110 : 84);
         }
     }
+    sounding_.fill (-1);
 }
-
-void PatternSequencer::allNotesOff()
-{
-    heldCount_ = 0;
-    gateCountdown_ = 1;
-    activeStep_.store (-1);
+void PatternSequencer::setLimits (int steps, int notes, int patterns) {
+    limitSteps_ = std::clamp (steps, 1, maxSteps);
+    limitNotes_ = std::clamp (notes, 1, maxPolyphony);
+    limitPatterns_ = std::clamp (patterns, 1, maxPatterns);
+    selectPattern (selectedPattern());
 }
-
-void PatternSequencer::setHoldActive (bool active)
-{
-    if (! active)
-        heldCount_ = 0;
+void PatternSequencer::prepare (double sr) { sampleRate_ = std::isfinite(sr) ? std::clamp(sr,8000.0,384000.0) : 48000.0; reset(); }
+void PatternSequencer::reset() {
+    heldCount_ = orderIndex_ = patternIndex_ = gateCountdown_ = soundingCount_ = 0;
+    sampleAccumulator_ = 0.0; lastPattern_ = -1; previousTie_ = false;
+    sounding_.fill (-1); activeNote_.store (-1); activeStep_.store (-1);
 }
-
-void PatternSequencer::clearHeld()
-{
-    heldCount_ = 0;
+bool PatternSequencer::valid (int p, int s) const { return p >= 0 && p < limitPatterns_ && s >= 0 && s < limitSteps_; }
+void PatternSequencer::selectPattern (int p) { selectedPattern_.store (std::clamp (p,0,limitPatterns_-1)); }
+void PatternSequencer::setStepCount (int count) { setPatternLength (selectedPattern(), count); }
+int PatternSequencer::stepCount() const { return patternLength(selectedPattern()); }
+void PatternSequencer::setPatternLength (int p, int count) { if(p>=0 && p<limitPatterns_) lengths_[p].store(std::clamp(count,1,limitSteps_)); }
+int PatternSequencer::patternLength (int p) const { return p>=0 && p<limitPatterns_ ? std::clamp(lengths_[p].load(),1,limitSteps_) : 16; }
+void PatternSequencer::setPatternNote (int p,int s,int slot,int note) { if(valid(p,s) && slot>=0 && slot<limitNotes_) patterns_[p][s].notes[slot].store(std::clamp(note,-1,127)); }
+int PatternSequencer::patternNote (int p,int s,int slot) const { return valid(p,s) && slot>=0 && slot<limitNotes_ ? patterns_[p][s].notes[slot].load() : -1; }
+void PatternSequencer::setPatternActive (int p,int s,bool a) { if(valid(p,s)) patterns_[p][s].active.store(a); }
+bool PatternSequencer::patternActive (int p,int s) const { return valid(p,s) && patterns_[p][s].active.load(); }
+void PatternSequencer::setPatternVelocity (int p,int s,int v) { if(valid(p,s)) patterns_[p][s].velocity.store(std::clamp(v,1,127)); }
+int PatternSequencer::patternVelocity (int p,int s) const { return valid(p,s) ? patterns_[p][s].velocity.load() : 100; }
+void PatternSequencer::setPatternTie (int p,int s,bool t) { if(valid(p,s)) patterns_[p][s].tie.store(t); }
+bool PatternSequencer::patternTie (int p,int s) const { return valid(p,s) && patterns_[p][s].tie.load(); }
+void PatternSequencer::clearPattern (int p) {
+    if(p<0 || p>=limitPatterns_) return;
+    for(int s=0;s<limitSteps_;++s) { setPatternActive(p,s,false); setPatternTie(p,s,false); for(int n=0;n<limitNotes_;++n) setPatternNote(p,s,n,-1); }
 }
-
-int PatternSequencer::pickArpNote()
-{
-    if (heldCount_ == 0)
-        return -1;
-
-    std::array<int, maxHeldNotes> notes {};
-    for (int i = 0; i < heldCount_; ++i)
-        notes[(size_t) i] = heldNotes_[(size_t) i];
-
-    std::sort (notes.begin(), notes.begin() + heldCount_);
-
-    const auto mode = (Mode) std::clamp (mode_.load(), 0, 6);
-    const auto octaveCount = std::clamp (octaves_.load(), 1, 4);
-    const auto noteCount = heldCount_;
-
-    int index = 0;
-
-    switch (mode)
-    {
-        case Mode::Down:
-            index = (noteCount - 1) - (orderIndex_ % noteCount);
-            break;
-
-        case Mode::UpDown:
-        {
-            const auto cycle = std::max (1, noteCount * 2 - 2);
-            const auto position = orderIndex_ % cycle;
-            index = position < noteCount ? position : cycle - position;
-            break;
-        }
-
-        case Mode::Random:
-            randomState_ ^= randomState_ << 13;
-            randomState_ ^= randomState_ >> 17;
-            randomState_ ^= randomState_ << 5;
-            index = (int) (randomState_ % (uint32_t) noteCount);
-            break;
-
-        case Mode::Order:
-            index = orderIndex_ % noteCount;
-            break;
-
-        case Mode::Up:
-        default:
-            index = orderIndex_ % noteCount;
-            break;
+void PatternSequencer::setStepActive(int s,bool a) { setPatternActive(selectedPattern(),s,a); }
+void PatternSequencer::setStepNote(int s,int n) { setPatternNote(selectedPattern(),s,0,n); }
+void PatternSequencer::setStepVelocity(int s,int v) { setPatternVelocity(selectedPattern(),s,v); }
+bool PatternSequencer::isStepActive(int s) const { return patternActive(selectedPattern(),s); }
+int PatternSequencer::stepNote(int s) const { return patternNote(selectedPattern(),s,0); }
+int PatternSequencer::stepVelocity(int s) const { return patternVelocity(selectedPattern(),s); }
+void PatternSequencer::noteOn(int note,float velocity) {
+    if(note<0 || note>127) return;
+    for(int i=0;i<heldCount_;++i) if(heldNotes_[i]==note) return;
+    if(heldCount_==maxHeldNotes) { for(int i=1;i<heldCount_;++i) { heldNotes_[i-1]=heldNotes_[i]; heldVelocity_[i-1]=heldVelocity_[i]; } --heldCount_; }
+    heldNotes_[heldCount_]=note; heldVelocity_[heldCount_++]=std::clamp(velocity,0.01f,1.0f);
+}
+void PatternSequencer::noteOff(int note) {
+    if(hold_.load()) return;
+    for(int i=0;i<heldCount_;++i) if(heldNotes_[i]==note) { for(int j=i+1;j<heldCount_;++j) { heldNotes_[j-1]=heldNotes_[j]; heldVelocity_[j-1]=heldVelocity_[j]; } --heldCount_; break; }
+}
+void PatternSequencer::allNotesOff() { heldCount_=0; gateCountdown_=1; previousTie_=false; activeStep_.store(-1); }
+void PatternSequencer::setHoldActive(bool active) { if(!active) clearHeld(); }
+void PatternSequencer::clearHeld() { heldCount_=0; }
+int PatternSequencer::pickArpNote() {
+    if(!heldCount_) return -1;
+    std::array<int,maxHeldNotes> sorted {};
+    std::copy_n(heldNotes_.begin(),heldCount_,sorted.begin()); std::sort(sorted.begin(),sorted.begin()+heldCount_);
+    int octaves=std::clamp(octaves_.load(),1,4), count=heldCount_*octaves;
+    int index=orderIndex_%count;
+    switch((Mode)mode_.load()) {
+        case Mode::Down: index=count-1-index; break;
+        case Mode::UpDown: { int cycle=std::max(1,count*2-2), pos=orderIndex_%cycle; index=pos<count?pos:cycle-pos; break; }
+        case Mode::Random: randomState_^=randomState_<<13; randomState_^=randomState_>>17; randomState_^=randomState_<<5; index=(int)(randomState_%count); break;
+        default: break;
     }
-
-    const auto octave = (orderIndex_ / noteCount) % octaveCount;
-    const auto orderedNote = mode == Mode::Order
-                                 ? heldNotes_[(size_t) (orderIndex_ % noteCount)]
-                                 : notes[(size_t) index];
     ++orderIndex_;
-
-    return std::clamp (orderedNote + 12 * octave, 0, 127);
+    const auto& notes=(Mode)mode_.load()==Mode::Order?heldNotes_:sorted;
+    return std::clamp(notes[index%heldCount_]+12*(index/heldCount_),0,127);
 }
-
-int PatternSequencer::process (int numSamples, Event* events, int maxEventCount)
-{
-    eventsWritten_ = 0;
-    if (events == nullptr || maxEventCount <= 0 || numSamples <= 0)
-        return 0;
-
-    const auto mode = (Mode) std::clamp (mode_.load(), 0, 6);
-
-    if (mode == Mode::Off || ! playing_.load())
-    {
-        if (activeNote_ >= 0 && eventsWritten_ < maxEventCount)
-        {
-            events[eventsWritten_++] = { 0, false, activeNote_, 0.0f };
-            activeNote_ = -1;
-            currentNote_.store (-1);
-            activeStep_.store (-1);
+int PatternSequencer::process(int samples,Event* events,int capacity) {
+    if(samples<=0 || !events || capacity<=0) return 0;
+    int written=0;
+    auto release=[&](int offset) {
+        if(capacity-written<soundingCount_) return false;
+        for(int i=0;i<soundingCount_;++i) events[written++]={offset,false,sounding_[i],0.0f};
+        soundingCount_=0; activeNote_.store(-1); previousTie_=false; return true;
+    };
+    Mode mode=(Mode)std::clamp(mode_.load(),0,6);
+    if(mode==Mode::Off || !playing_.load()) { release(0); sampleAccumulator_=0.0; gateCountdown_=0; activeStep_.store(-1); return written; }
+    double bpm=tempo_.load(); if(!std::isfinite(bpm)) bpm=120.0;
+    static constexpr double divisions[]={1,2,3,4,6,8};
+    double stepSamples=std::max(4.0,60.0/std::clamp(bpm,20.0,300.0)*sampleRate_/divisions[std::clamp(rateIndex_.load(),0,5)]);
+    int pattern=selectedPattern();
+    if(pattern!=lastPattern_) { if(!release(0)) return written; patternIndex_=0; sampleAccumulator_=0; lastPattern_=pattern; }
+    for(int offset=0;offset<samples;++offset) {
+        if(gateCountdown_>0 && --gateCountdown_==0) { if(!release(offset)) { gateCountdown_=1; } }
+        if(sampleAccumulator_<=0.0) {
+            // Reserve enough room for a whole chord transition, never drop its offs.
+            if(capacity-written<soundingCount_+limitNotes_) { sampleAccumulator_-=samples-offset; break; }
+            std::array<int,maxPolyphony> next {}; int count=0;
+            float velocity=heldCount_?heldVelocity_[0]:0.8f; bool tie=false;
+            int step=patternIndex_%patternLength(pattern);
+            if(mode==Mode::Step) {
+                if(patternActive(pattern,step)) {
+                    const int transpose=heldCount_?heldNotes_[0]-60:0;
+                    for(int n=0;n<limitNotes_;++n) { int note=patternNote(pattern,step,n); if(note<0) continue; note=std::clamp(note+transpose,0,127); bool duplicate=false; for(int j=0;j<count;++j) duplicate|=next[j]==note; if(!duplicate) next[count++]=note; }
+                    velocity=patternVelocity(pattern,step)/127.0f; tie=patternTie(pattern,step);
+                }
+            } else { int note=pickArpNote(); if(note>=0) next[count++]=note; }
+            bool same=previousTie_ && count==soundingCount_ && std::equal(next.begin(),next.begin()+count,sounding_.begin());
+            if(!same) { release(offset); for(int n=0;n<count;++n) events[written++]={offset,true,next[n],velocity}; }
+            sounding_=next; soundingCount_=count; previousTie_=tie;
+            activeNote_.store(count?next[0]:-1); activeStep_.store(step);
+            gateCountdown_=tie?0:std::max(1,(int)(stepSamples*std::clamp(gate_.load(),0.05f,1.0f)));
+            double swing=std::clamp(swing_.load(),0.0f,0.6f);
+            sampleAccumulator_+=stepSamples*(patternIndex_%2==0?1.0+swing:1.0-swing);
+            ++patternIndex_;
         }
-
-        sampleAccumulator_ = 0.0;
-        return eventsWritten_;
+        sampleAccumulator_-=1.0;
     }
-
-    const auto bpm = std::max (20.0, tempo_.load());
-    static const double stepsPerBeat[6] = { 1.0, 2.0, 3.0, 4.0, 6.0, 8.0 };
-    const auto rate = std::clamp (rateIndex_.load(), 0, 5);
-    const auto beatsPerStep = 1.0 / stepsPerBeat[rate];
-    samplesPerStep_ = std::max (4.0, (60.0 / bpm) * sampleRate_ * beatsPerStep);
-
-    const auto gate = std::clamp (gate_.load(), 0.05f, 1.0f);
-    gateSamples_ = std::max (1.0, samplesPerStep_ * (double) gate);
-
-    for (int sample = 0; sample < numSamples; ++sample)
-    {
-        if (gateCountdown_ > 0)
-        {
-            --gateCountdown_;
-            if (gateCountdown_ == 0 && activeNote_ >= 0 && eventsWritten_ < maxEventCount)
-            {
-                events[eventsWritten_++] = { sample, false, activeNote_, 0.0f };
-                activeNote_ = -1;
-                currentNote_.store (-1);
-            }
-        }
-
-        if (sampleAccumulator_ <= 0.0)
-        {
-            int note = -1;
-            float velocity = 0.8f;
-
-            if (mode == Mode::Step)
-            {
-                const auto count = std::clamp (stepCount_.load(), 1, maxSteps);
-                const auto step = patternIndex_ % count;
-                patternIndex_ = (patternIndex_ + 1) % count;
-                lastStep_ = step;
-                activeStep_.store (step);
-
-                if (stepActive_[(size_t) step].load())
-                {
-                    const auto root = heldCount_ > 0 ? heldNotes_[0] : 60;
-                    note = std::clamp (stepNote_[(size_t) step].load() + (root - 60), 0, 127);
-                    velocity = (float) stepVelocity_[(size_t) step].load() / 127.0f;
-                }
-            }
-            else
-            {
-                note = pickArpNote();
-                const auto step = (orderIndex_ / std::max (1, heldCount_)) % 16;
-                lastStep_ = step;
-                activeStep_.store (step);
-
-                if (note >= 0)
-                {
-                    velocity = heldCount_ > 0 ? heldVelocity_[0] : 0.8f;
-                }
-            }
-
-            if (note >= 0)
-            {
-                if (activeNote_ >= 0 && eventsWritten_ < maxEventCount)
-                {
-                    events[eventsWritten_++] = { sample, false, activeNote_, 0.0f };
-                    activeNote_ = -1;
-                }
-
-                if (eventsWritten_ < maxEventCount)
-                {
-                    events[eventsWritten_++] = { sample, true, note, velocity };
-                    activeNote_ = note;
-                    currentNote_.store (note);
-                    gateCountdown_ = (int) gateSamples_;
-                }
-            }
-
-            const auto swing = std::clamp (swing_.load(), 0.0f, 0.6f);
-            const auto swingScale = (patternIndex_ % 2 == 0) ? (1.0 + swing) : (1.0 - swing);
-            sampleAccumulator_ += samplesPerStep_ * swingScale;
-        }
-
-        sampleAccumulator_ -= 1.0;
-    }
-
-    return eventsWritten_;
+    return written;
 }
-
 } // namespace triad

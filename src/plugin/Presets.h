@@ -23,8 +23,12 @@ struct FactoryPreset
     juce::String category;
     std::vector<std::pair<juce::String, float>> values;
     std::vector<PresetMatrixCell> matrix;
+    std::vector<std::pair<juce::String, float>> morphB;
+    std::vector<std::pair<juce::String, juce::String>> cables;
 };
 
+std::vector<FactoryPreset> oneReferencePresets();
+std::vector<FactoryPreset> analogReferencePresets(const std::string&);
 std::vector<FactoryPreset> factoryPresetsFor (const std::string& instrumentId);
 
 } // namespace triad

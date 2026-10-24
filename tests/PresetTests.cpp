@@ -74,6 +74,16 @@ int main()
                        "preset matrix amount out of range", preset.name);
             }
 
+            for(const auto& entry:preset.morphB) {
+                const auto* spec=definition.find(entry.first.toStdString());
+                check(spec!=nullptr,"unknown B-side parameter",preset.name+" / "+entry.first);
+                if(spec)check(std::isfinite(entry.second) && entry.second>=spec->min && entry.second<=spec->max,"B-side value outside range",preset.name+" / "+entry.first);
+            }
+            for(const auto& cable:preset.cables) {
+                int from=definition.patchIndexOf(cable.first.toStdString()),to=definition.patchIndexOf(cable.second.toStdString());
+                check(from>=0 && to>=0,"unknown preset cable",preset.name);
+                if(from>=0 && to>=0)check(definition.patchPoints[from].isOutput && !definition.patchPoints[to].isOutput,"invalid preset cable direction",preset.name);
+            }
             for (const auto& entry : preset.values)
             {
                 const auto* spec = definition.find (entry.first.toStdString());
@@ -138,12 +148,19 @@ int main()
 
             renderEngine->reset();
             renderEngine->resetMatrix();
+            renderEngine->clearPatchCables();
             renderEngine->setParameters (values.data(), (int) values.size());
 
             for (const auto& cell : preset.matrix)
                 renderEngine->setMatrixCell (cell.source, cell.destination,
                                              cell.formula, cell.amount);
 
+            for(const auto& cable:preset.cables) renderEngine->setPatchCable(definition.patchIndexOf(cable.first.toStdString()),definition.patchIndexOf(cable.second.toStdString()),true);
+            if(!preset.morphB.empty()) {
+                auto b=values;
+                for(const auto& v:preset.morphB){int index=definition.indexOf(v.first.toStdString());if(index>=0)b[index]=v.second;}
+                renderEngine->setMorphSnapshot(b.data(),(int)b.size());renderEngine->setMorphAmount(.5f);
+            }
             triad::MidiEvent note;
             note.type = triad::MidiEventType::NoteOn;
             note.note = 60;

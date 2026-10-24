@@ -16,7 +16,7 @@
 
 CONTINUUM V 的演奏面按原机红黑条纹重绘；EIGEN MATRIX 是原创矩阵引擎，预设沿用 Continuum 的两字母系统类别（`ST`、`WI`、`VO`、`KY`、`CL`、`OT`、`PE`、`PT`、`PR`、`DO`、`MD`、`UT`），不包含 Haken 原厂预设数据。
 
-本项目是**独立实现的软件乐器**，不是 Arturia 或 Moog 的官方产品，也不包含原厂固件、预设或界面素材。"Inspired by Arturia V Collection" 只说明产品企划与音色组织上的参照，不表示任何隶属、授权或背书。面板按公开手册与产品照片重绘，音频引擎全部自行实现。手册只描述操作与信号路径，不提供电路容差、非线性元件或专有数字效果的算法；因此本项目不声称“逐电路”或“与实机完全相同”。详见 [COVERAGE.md](docs/COVERAGE.md)。
+本项目是**独立实现的软件乐器**，不是 Arturia 或 Moog 的官方产品，也不包含原厂固件、原始预设文件或界面素材。"Inspired by Arturia V Collection" 只说明产品企划与音色组织上的参照，不表示任何隶属、授权或背书。面板按公开手册与产品照片重绘，音频引擎全部自行实现。手册只描述操作与信号路径，不提供电路容差、非线性元件或专有数字效果的算法；因此本项目不声称“逐电路”或“与实机完全相同”。详见 [COVERAGE.md](docs/COVERAGE.md)。
 
 ## 当前状态
 
@@ -27,7 +27,7 @@ CONTINUUM V 的演奏面按原机红黑条纹重绘；EIGEN MATRIX 是原创矩�
 - 已完成：Matriarch 虚拟接线（79 个插孔）、PolyBrute Morph A/B 与 8 槽调制矩阵、Moog One 三部分共享声部池与每部分 8 槽矩阵。
 - 已完成：GitHub Actions 的 macOS / Windows 构建；预设浏览器与按类别分组的 factory bank；四款原创 logo 与 app 图标。
 - 已完成：CONTINUUM V 的连续曲面与 EIGEN MATRIX 核心（M1）；EaganMatrix 的完整专有 DSP、48 段 biquad 与用户公式 VM 仍属于 M2。
-- 未完成：实机音色校准、DAW 实测、Developer ID 签名/公证、M2 的 EaganMatrix 深度还原，以及覆盖表中列出的硬件细节（Matriarch 12×256 音序、PolyBrute Morphée/Ribbon/64 步音序、One 每部分独立琶音等）。
+- 未完成：实机音色校准、DAW 实测、Developer ID 签名/公证、M2 的 EaganMatrix 深度还原，以及覆盖表中列出的硬件细节（硬件实时录制与 Motion、One 每部分独立琶音等）。
 
 Matriarch 的键盘按原机 49 键 F1–F5 显示；音高以 A4 = 440 Hz 为基准，并有自动回归测试。
 
@@ -101,7 +101,7 @@ Windows 使用 GitHub Actions 的 Windows runner 构建，产物为 `.vst3` 与 
 
 ## 使用
 
-- 顶部栏有四个插件共用的 **OUT 全局输出音量**（-60..+12 dB，独立于预设保存）；选择预设、INIT、保存/载入 `.triadpreset` 文件；`BROWSE` 打开预设浏览器（分类筛选、搜索、列表/详情）；预设按 Bass / Lead / Brass / Pad / Strings / Winds / Vocal / Keyboard / Classic / Other / Percussion / Tuned Percussion / Processor / Drone / Midi / Pluck / Keys / Organ / Arp / Sequence / Split / Utility / FX 分类，名称带 `BA -`、`LD -` 等类型前缀；顶部 `BROWSE` 打开可搜索浏览器。四台琴分别内置 15、17、15、613 个预设（含 Reese、Acid、Supersaw、Warm Pad、Organ、Pluck 以及 Continuum 的 Strings/Winds/Vocal/Keyboard/Classic/Other 等原厂类别预设（含 Harp、Koto、Glass Harp，以及按真实乐器重做的 Piano/Violin/Flute/Guitar/Bell 等音色））。
+- 顶部栏有四个插件共用的 **OUT 全局输出音量**（-60..+12 dB，独立于预设保存）；选择预设、INIT、保存/载入 `.triadpreset` 文件；`BROWSE` 打开预设浏览器（分类筛选、搜索、列表/详情）；预设按 Bass / Lead / Brass / Pad / Strings / Winds / Vocal / Keyboard / Classic / Other / Percussion / Tuned Percussion / Processor / Drone / Midi / Pluck / Keys / Organ / Arp / Sequence / Split / Utility / FX 分类，名称带 `BA -`、`LD -` 等类型前缀；顶部 `BROWSE` 打开可搜索浏览器。四台琴分别内置 19、23、27、613 个预设（含 Reese、Acid、Supersaw、Warm Pad、Organ、Pluck 以及 Continuum 的 Strings/Winds/Vocal/Keyboard/Classic/Other 等原厂类别预设（含 Harp、Koto、Glass Harp，以及按真实乐器重做的 Piano/Violin/Flute/Guitar/Bell 等音色））。
 - 面板按官方手册与产品照片重排：Matriarch 单行模块顺序、PolyBrute 三段式合成区（VCO/滤波/包络/LFO 三行）、Moog One 左/中/右三块面板。资料页码与模块位置见 [docs/LAYOUT.md](docs/LAYOUT.md)。旋转拖动旋钮，双击回到默认值；硬件开关按档位点击。
 - 底部键盘可点击演奏；滚轮为 Pitch/Mod（Pitch 松手回中）。Matriarch 显示 49 键 F1–F5，PolyBrute 与 Moog One 显示 61 键 C2–C7。Moog One 的 `MIDI PART` 选择屏幕键盘发送到哪一部分。
 - Matriarch 插线：先点一个输出插孔，再点一个输入插孔建立连线；右键点击插孔清除与它相连的线缆。线缆随工程状态保存。
@@ -130,3 +130,5 @@ docs           覆盖表、验证记录、开发约定
 Haken 10.09 soundlist 对照：[docs/Haken-Soundlist-10-09.md](docs/Haken-Soundlist-10-09.md)。
 
 Logo 源文件：`assets/logos/*.svg`；应用图标：`assets/icons/*.icns` / `*.ico`。重新生成使用 `python3 scripts/generate-logo-assets.py`。
+
+本轮新增 22 个原版参考改编预设，来源、转换方法与限制见 [预设参考记录](docs/PRESET-REFERENCES.md)。三款模拟琴顶部 `SEQ` 打开步进编辑器；PolyBrute 调制连接支持 64 槽分页，One 支持共享 8/16 声部与每部分 Mono/Unison，Matriarch/One 可启用宿主音频输入。

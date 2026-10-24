@@ -148,8 +148,8 @@ void MatriarchEngine::buildDefinition()
 
     addParam ("mat.arp.enabled", "ARP / SEQ", "Arpeggiator", 0.0f, 1.0f, 0.0f,
               ParamCurve::Discrete, choices ({ "Off", "On" }));
-    addParam ("mat.arp.mode", "MODE", "Arpeggiator", 0.0f, 4.0f, 0.0f,
-              ParamCurve::Discrete, choices ({ "Up", "Down", "Up/Down", "Random", "Order" }));
+    addParam ("mat.arp.mode", "MODE", "Arpeggiator", 0.0f, 5.0f, 0.0f,
+              ParamCurve::Discrete, choices ({ "Up", "Down", "Up/Down", "Random", "Order", "Step" }));
     addParam ("mat.arp.rate", "RATE", "Arpeggiator", 0.0f, 5.0f, 3.0f,
               ParamCurve::Discrete, choices ({ "1/4", "1/8", "1/8T", "1/16", "1/16T", "1/32" }));
     addParam ("mat.arp.octaves", "OCTAVES", "Arpeggiator", 1.0f, 4.0f, 1.0f,
@@ -159,6 +159,7 @@ void MatriarchEngine::buildDefinition()
     // Appended for backward-compatible restoration of existing parameter IDs.
     addParam ("mat.performance.glide", "GLIDE", "Performance", 0.0f, 2.0f, 0.0f,
               ParamCurve::Linear, {}, "s");
+    addParam ("mat.mix.ext", "INSTRUMENT IN", "Mixer", 0.0f, 2.0f, 1.0f);
 
     auto addJack = [this] (const char* id, const char* name, const char* group,
                            bool isOutput, bool audio = false)
@@ -277,7 +278,7 @@ void MatriarchEngine::cacheIndices()
         "mat.lfo2.rate", "mat.lfo2.bipolar",
         "mat.att1", "mat.att2", "mat.att3",
         "mat.delay.time", "mat.delay.spacing", "mat.delay.feedback", "mat.delay.mix",
-        "mat.delay.sync", "mat.delay.pingPong", "mat.performance.glide"
+        "mat.delay.sync", "mat.delay.pingPong", "mat.performance.glide", "mat.mix.ext"
     };
 
     static const char* jackIds[JJackCount] = {
@@ -363,6 +364,8 @@ void MatriarchEngine::reset()
     filterGatePrev_ = false;
     retriggerPending_ = false;
     meter_ = 0.0f;
+    externalInput_ = nullptr;
+    externalInputSize_ = 0;
 
     for (auto& osc : oscillators_)
         osc.reset();
@@ -867,6 +870,8 @@ void MatriarchEngine::render (float* left, float* right, int numSamples)
         }
         const auto noiseLevel = param (PMixNoise);
         mix += readJack (JMixNoiseIn, noise_.white()) * noiseLevel;
+        if (externalInput_ != nullptr && sample < externalInputSize_)
+            mix += externalInput_[sample] * param (PExternalLevel);
         mix *= 0.45f;
         mix = std::tanh (mix * 1.25f);
         writeJack (JMixOut, mix);

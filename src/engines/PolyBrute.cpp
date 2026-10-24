@@ -221,18 +221,24 @@ void PolyBruteEngine::buildDefinition()
     // ---- Modulation matrix ----------------------------------------------
     const auto modSourceNames = choices ({ "None", "LFO 1", "LFO 2", "LFO 3", "Env 1",
                                            "Env 2", "Env 3", "Velocity", "Aftertouch",
-                                           "Mod Wheel", "Key Track", "Random" });
+                                           "Mod Wheel", "Key Track", "Random", "Ribbon (CC 9)",
+                                           "Morphee X (CC 114)", "Morphee Y (CC 115)",
+                                           "Morphee Z (CC 89)" });
     const auto modDestNames = choices ({ "None", "VCO A Pitch", "VCO B Pitch",
                                          "VCO A Pulse Width", "VCO B Pulse Width",
                                          "Metalizer", "VCO A Level", "VCO B Level",
                                          "Noise Level", "Steiner Cutoff", "Ladder Cutoff",
                                          "Steiner Resonance", "Ladder Resonance",
                                          "Filter A Level", "Filter B Level", "Pan",
-                                         "LFO Rates", "Volume" });
+                                         "LFO Rates", "Volume", "VCO A Wave", "VCO B Wave",
+                                         "VCO A Pulse Level", "VCO B Pulse Level", "VCO B Sub",
+                                         "Sync Amount", "VCO B > A FM", "Steiner Mode",
+                                         "Steiner FM", "Ladder Drive", "Filter Balance",
+                                         "LFO 1 Rate", "LFO 2 Rate", "LFO 3 Rate", "Global Pitch" });
 
-    for (int slot = 0; slot < kNumModSlots; ++slot)
+    auto addModSlot = [&] (int slot)
     {
-        const auto base = PMod1Source + slot * 3;
+        const auto base = modParamBase (slot);
         const auto prefix = std::string ("poly.mod.slot") + std::to_string (slot + 1);
 
         add ((ParamId) (base + 0), (prefix + ".source").c_str(), "SOURCE", "Mod Matrix",
@@ -241,7 +247,9 @@ void PolyBruteEngine::buildDefinition()
              0.0f, (float) (DestCount - 1), 0.0f, ParamCurve::Discrete, modDestNames);
         add ((ParamId) (base + 2), (prefix + ".amount").c_str(), "AMOUNT", "Mod Matrix",
              -1.0f, 1.0f, 0.0f);
-    }
+    };
+    for (int slot = 0; slot < kLegacyModSlots; ++slot)
+        addModSlot (slot);
 
     // ---- Effects ---------------------------------------------------------
     add (PFxDistType, "poly.fx.dist.type", "DISTORTION TYPE", "Effects", 0.0f, 3.0f, 0.0f,
@@ -293,6 +301,10 @@ void PolyBruteEngine::buildDefinition()
     add (PArpLength, "poly.arp.length", "LENGTH", "Arpeggiator", 1.0f, 16.0f, 16.0f,
          ParamCurve::Discrete, std::move (arpLengths));
 
+    for (int slot = kLegacyModSlots; slot < kNumModSlots; ++slot)
+        addModSlot (slot);
+
+    add(PMasterVolume,"poly.master.volume","MASTER VOLUME","Voice",0.0f,1.0f,1.0f);
     definition_.modSources.push_back ({ "none", "None" });
     definition_.modSources.push_back ({ "lfo1", "LFO 1" });
     definition_.modSources.push_back ({ "lfo2", "LFO 2" });
@@ -305,6 +317,10 @@ void PolyBruteEngine::buildDefinition()
     definition_.modSources.push_back ({ "modwheel", "Mod Wheel" });
     definition_.modSources.push_back ({ "keytrack", "Key Track" });
     definition_.modSources.push_back ({ "random", "Random" });
+    definition_.modSources.push_back ({ "ribbon", "Ribbon (CC 9)" });
+    definition_.modSources.push_back ({ "morpheeX", "Morphee X (CC 114)" });
+    definition_.modSources.push_back ({ "morpheeY", "Morphee Y (CC 115)" });
+    definition_.modSources.push_back ({ "morpheeZ", "Morphee Z (CC 89)" });
 
     definition_.modDestinations.push_back ({ "none", "None" });
     definition_.modDestinations.push_back ({ "vcoAPitch", "VCO A Pitch" });
@@ -324,6 +340,21 @@ void PolyBruteEngine::buildDefinition()
     definition_.modDestinations.push_back ({ "pan", "Pan" });
     definition_.modDestinations.push_back ({ "lfoRates", "LFO Rates" });
     definition_.modDestinations.push_back ({ "volume", "Volume" });
+    definition_.modDestinations.push_back ({ "vcoAWave", "VCO A Wave" });
+    definition_.modDestinations.push_back ({ "vcoBWave", "VCO B Wave" });
+    definition_.modDestinations.push_back ({ "vcoAPulse", "VCO A Pulse Level" });
+    definition_.modDestinations.push_back ({ "vcoBPulse", "VCO B Pulse Level" });
+    definition_.modDestinations.push_back ({ "vcoBSub", "VCO B Sub" });
+    definition_.modDestinations.push_back ({ "sync", "Sync Amount" });
+    definition_.modDestinations.push_back ({ "fm", "VCO B > A FM" });
+    definition_.modDestinations.push_back ({ "steinerMode", "Steiner Mode" });
+    definition_.modDestinations.push_back ({ "steinerFm", "Steiner FM" });
+    definition_.modDestinations.push_back ({ "ladderDrive", "Ladder Drive" });
+    definition_.modDestinations.push_back ({ "filterBalance", "Filter Balance" });
+    definition_.modDestinations.push_back ({ "lfo1Rate", "LFO 1 Rate" });
+    definition_.modDestinations.push_back ({ "lfo2Rate", "LFO 2 Rate" });
+    definition_.modDestinations.push_back ({ "lfo3Rate", "LFO 3 Rate" });
+    definition_.modDestinations.push_back ({ "globalPitch", "Global Pitch" });
 }
 
 void PolyBruteEngine::prepare (double sampleRate, int maxBlockSize)
@@ -336,6 +367,7 @@ void PolyBruteEngine::prepare (double sampleRate, int maxBlockSize)
     chorus_.prepare (sampleRate_);
     delay_.prepare (sampleRate_, 2.5f);
     reverb_.prepare (sampleRate_);
+    masterGain_.prepare(sampleRate_,12.0f);
     dcLeft_.prepare (sampleRate_);
     dcRight_.prepare (sampleRate_);
 
@@ -378,11 +410,15 @@ void PolyBruteEngine::reset()
     pitchBend_ = 0.0f;
     modWheel_ = 0.0f;
     aftertouch_ = 0.0f;
+    ribbon_ = 0.0f;
+    morphee_.fill (0.0f);
+    activeModCount_ = 0;
     lastPlayedNote_ = -1.0f;
     ageCounter_ = 0;
     lastMode_ = -1;
     lastMaxVoices_ = -1;
     meter_ = 0.0f;
+    masterGain_.snap(param(PMasterVolume));
 
     for (auto& v : voices_)
     {
@@ -532,15 +568,18 @@ void PolyBruteEngine::reconcileVoiceMode (int mode, int maxVoices)
 
 void PolyBruteEngine::updateModSlots()
 {
+    activeModCount_ = 0;
     for (int slot = 0; slot < kNumModSlots; ++slot)
     {
-        const auto base = PMod1Source + slot * 3;
-        auto& target = modSlots_[(size_t) slot];
+        const auto base = modParamBase (slot);
+        auto& target = modSlots_[(size_t) activeModCount_];
         target.source = std::clamp ((int) std::lround (param ((ParamId) (base + 0))),
                                     0, SrcCount - 1);
         target.dest = std::clamp ((int) std::lround (param ((ParamId) (base + 1))),
                                   0, DestCount - 1);
         target.amount = clampf (param ((ParamId) (base + 2)), -1.0f, 1.0f);
+        if (target.source != SrcNone && target.dest != DestNone && target.amount != 0.0f)
+            ++activeModCount_;
     }
 }
 
@@ -1200,10 +1239,21 @@ void PolyBruteEngine::processMidi (const MidiEvent& event)
                 handleSustain (event.value > 0.5f);
             else if (event.controller == 1)
                 modWheel_ = clampf (event.value, 0.0f, 1.0f);
+            else if (event.controller == 9)
+                ribbon_ = clampf (event.value, 0.0f, 1.0f);
+            else if (event.controller == 114)
+                morphee_[0] = clampf (event.value, 0.0f, 1.0f);
+            else if (event.controller == 115)
+                morphee_[1] = clampf (event.value, 0.0f, 1.0f);
+            else if (event.controller == 89)
+                morphee_[2] = clampf (event.value, 0.0f, 1.0f);
             else if (event.controller == 123)
                 allNotesOff (false);
             else if (event.controller == 120)
                 allSoundOff();
+            break;
+
+        case MidiEventType::NoteExpression:
             break;
     }
 }
@@ -1343,6 +1393,7 @@ void PolyBruteEngine::render (float* left, float* right, int numSamples)
     reverb_.setDamping (param (PFxReverbDamping));
     reverb_.setMix (param (PFxReverbMix));
 
+    masterGain_.setTarget(param(PMasterVolume));
     float peak = 0.0f;
 
     for (int sample = 0; sample < numSamples; ++sample)
@@ -1384,11 +1435,12 @@ void PolyBruteEngine::render (float* left, float* right, int numSamples)
             const auto env2 = v.env[1].process() * velocityScale2;
             const auto env3 = v.env[2].process() * velocityScale3;
 
-            // ---- Modulation matrix (all eight slots) --------------------
+            // ---- Modulation matrix (active connections) --------------------
             float modDest[DestCount] {};
 
-            for (const auto& slot : modSlots_)
+            for (int connection = 0; connection < activeModCount_; ++connection)
             {
+                const auto& slot = modSlots_[(size_t) connection];
                 if (slot.source == SrcNone || slot.dest == DestNone)
                     continue;
 
@@ -1409,6 +1461,10 @@ void PolyBruteEngine::render (float* left, float* right, int numSamples)
                         source = clampf (((float) v.note - 60.0f) / 24.0f, -1.0f, 1.0f);
                         break;
                     case SrcRandom: source = v.randomValue; break;
+                    case SrcRibbon: source = ribbon_; break;
+                    case SrcMorpheeX: source = morphee_[0]; break;
+                    case SrcMorpheeY: source = morphee_[1]; break;
+                    case SrcMorpheeZ: source = morphee_[2]; break;
                     default: break;
                 }
 
@@ -1421,7 +1477,7 @@ void PolyBruteEngine::render (float* left, float* right, int numSamples)
             for (int lfo = 0; lfo < kNumLfos; ++lfo)
             {
                 v.lfo[(size_t) lfo].setRateHz (clampf (v.lfoBaseRate[(size_t) lfo]
-                                                        * rateFactor, 0.01f, 100.0f));
+                                                        * rateFactor * std::exp2(clampf(modDest[DestLfo1Rate + lfo], -2.0f, 2.0f) * 2.0f), 0.01f, 100.0f));
             }
 
             // ---- Oscillators --------------------------------------------
@@ -1430,10 +1486,10 @@ void PolyBruteEngine::render (float* left, float* right, int numSamples)
 
             auto pitchA = v.glideNote + bendSemitones + v.detune
                         + v.driftPitchA * analog * 0.12f + lfoPitch
-                        + modDest[DestVcoAPitch] * 24.0f + semisA;
+                        + (modDest[DestVcoAPitch] + modDest[DestGlobalPitch]) * 24.0f + semisA;
             auto pitchB = v.glideNote + bendSemitones + v.detune
                         + v.driftPitchB * analog * 0.12f + lfoPitch
-                        + modDest[DestVcoBPitch] * 24.0f + semisB;
+                        + (modDest[DestVcoBPitch] + modDest[DestGlobalPitch]) * 24.0f + semisB;
 
             pitchA = clampf (pitchA, -96.0f, 180.0f);
             pitchB = clampf (pitchB, -96.0f, 180.0f);
@@ -1442,7 +1498,7 @@ void PolyBruteEngine::render (float* left, float* right, int numSamples)
             auto freqB = noteToHz (pitchB);
 
             // VCO B -> VCO A linear FM (one sample of B feedback).
-            freqA += v.lastVcoB * fmAmount * 1500.0f;
+            freqA += v.lastVcoB * clampf(fmAmount + modDest[DestFm],0.0f,1.0f) * 1500.0f;
             freqA = clampf (freqA, 1.0f, maxCutoff);
             freqB = clampf (freqB, 1.0f, maxCutoff);
 
@@ -1467,7 +1523,7 @@ void PolyBruteEngine::render (float* left, float* right, int numSamples)
             const auto pwB = clampf (pwBaseB + lfoPwm + modDest[DestVcoBPw] * 0.45f
                                       + v.driftPw * analog * 0.02f, 0.05f, 0.95f);
 
-            auto signalA = oscillatorSample (v.oscA, waveA, pwA, pulseA);
+            auto signalA = oscillatorSample (v.oscA, clampf(waveA + modDest[DestVcoAWave],0.0f,1.0f), pwA, clampf(pulseA + modDest[DestVcoAPulse],0.0f,1.0f));
             const auto metal = clampf (metalBase + modDest[DestMetalizer], 0.0f, 1.0f);
 
             if (metal > 0.0001f)
@@ -1477,10 +1533,10 @@ void PolyBruteEngine::render (float* left, float* right, int numSamples)
             // A-triggered reset oscillator are crossfaded. The reset itself is
             // a phase reset (no BLEP correction), which is intentional for the
             // aggressive sync character.
-            const auto freeB = oscillatorSample (v.oscBFree, waveB, pwB, pulseB);
-            const auto syncedB = oscillatorSample (v.oscBSync, waveB, pwB, pulseB);
-            auto signalB = lerpf (freeB, syncedB, clampf (syncBase, 0.0f, 1.0f));
-            signalB += v.subOsc.sample (Oscillator::Wave::Sine) * subBase;
+            const auto freeB = oscillatorSample (v.oscBFree, clampf(waveB + modDest[DestVcoBWave],0.0f,1.0f), pwB, clampf(pulseB + modDest[DestVcoBPulse],0.0f,1.0f));
+            const auto syncedB = oscillatorSample (v.oscBSync, clampf(waveB + modDest[DestVcoBWave],0.0f,1.0f), pwB, clampf(pulseB + modDest[DestVcoBPulse],0.0f,1.0f));
+            auto signalB = lerpf (freeB, syncedB, clampf (syncBase + modDest[DestSync], 0.0f, 1.0f));
+            signalB += v.subOsc.sample (Oscillator::Wave::Sine) * clampf(subBase + modDest[DestVcoBSub],0.0f,1.0f);
             signalB = clampf (signalB, -2.0f, 2.0f);
             v.lastVcoB = signalB;
 
@@ -1498,7 +1554,7 @@ void PolyBruteEngine::render (float* left, float* right, int numSamples)
                                 + aftertouch_ * 0.5f
                                 + modDest[DestSteinerCutoff] * 5.0f
                                 + v.driftCutoff * analog * 0.25f
-                                + steinerFm * v.lastVcoB * 2.0f;
+                                + clampf(steinerFm + modDest[DestSteinerFm],0.0f,1.0f) * v.lastVcoB * 2.0f;
             const auto steinerCutoff = clampf (steinerCutBase
                                                 * std::exp2 (clampf (steinerOctaves, -8.0f, 8.0f)),
                                                 20.0f, maxCutoff);
@@ -1530,7 +1586,7 @@ void PolyBruteEngine::render (float* left, float* right, int numSamples)
                 steinerInput = clampf (steinerInput, -8.0f, 8.0f);
             }
 
-            auto filterA = v.steiner.process (steinerInput, steinerMode) * steinerLevel;
+            auto filterA = v.steiner.process (steinerInput, clampf(steinerMode + modDest[DestSteinerMode] * 3.0f,0.0f,3.0f)) * steinerLevel;
             filterA = clampf (filterA, -8.0f, 8.0f);
 
             // ---- Ladder filter -----------------------------------------
@@ -1550,6 +1606,7 @@ void PolyBruteEngine::render (float* left, float* right, int numSamples)
 
             v.ladder.setCutoffHz (ladderCutoff);
             v.ladder.setResonance01 (ladderRes);
+            v.ladder.setDrive(clampf(ladderDrive + modDest[DestLadderDrive] * 9.0f,1.0f,10.0f));
 
             auto ladderInput = routing == 0 ? filterA : mixed;
 
@@ -1573,22 +1630,23 @@ void PolyBruteEngine::render (float* left, float* right, int numSamples)
             }
 
             // ---- Routing ------------------------------------------------
+            const auto modBalance = clampf(balance + modDest[DestFilterBalance],0.0f,1.0f);
             float voiceLeft = 0.0f;
             float voiceRight = 0.0f;
 
             if (routing == 0)
             {
-                voiceLeft = voiceRight = filterB + filterA * (1.0f - balance) * 0.5f;
+                voiceLeft = voiceRight = filterB + filterA * (1.0f - modBalance) * 0.5f;
             }
             else if (routing == 1)
             {
-                voiceLeft = voiceRight = (filterA * (1.0f - balance)
-                                          + filterB * balance) * 1.4f;
+                voiceLeft = voiceRight = (filterA * (1.0f - modBalance)
+                                          + filterB * modBalance) * 1.4f;
             }
             else
             {
-                voiceLeft = filterA * (1.0f - 0.5f * balance);
-                voiceRight = filterB * (0.5f + 0.5f * balance);
+                voiceLeft = filterA * (1.0f - 0.5f * modBalance);
+                voiceRight = filterB * (0.5f + 0.5f * modBalance);
             }
 
             // ---- VCA / pan ---------------------------------------------
@@ -1644,6 +1702,8 @@ void PolyBruteEngine::render (float* left, float* right, int numSamples)
         if (! std::isfinite (finalRight))
             finalRight = 0.0f;
 
+        const auto outputGain=masterGain_.next();
+        finalLeft*=outputGain;finalRight*=outputGain;
         peak = std::max (peak, std::max (std::abs (finalLeft), std::abs (finalRight)));
         left[sample] = finalLeft;
         right[sample] = finalRight;

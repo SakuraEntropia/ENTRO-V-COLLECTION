@@ -251,6 +251,7 @@ PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
     wheels_ = std::make_unique<PolyPerformanceWheels> (host());
     wheels_->setBounds (46, 151, 132, 220);
     addAndMakeVisible (*wheels_);
+    addNumber("poly.master.volume","MASTER",{38,492,148,25});
     knob ("poly.voice.morph", "MORPH A / B", 112, 450, 60);
     addChoice ("poly.voice.mode", "VOICE MODE", { 218, 52, 116, 36 });
     addChoice ("poly.voice.unison", "UNISON", { 218, 113, 116, 36 });
@@ -323,23 +324,31 @@ PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
     lfo (3, lfo3, "poly.lfo3.cutoffAmt", "CUTOFF");
 
     auto& lcd = addLcd ({ 1424, 44, 402, 70 });
-    lcd.setText ("POLYBRUTE V  /  MOD MATRIX", "SOURCE x SLOT", "MORPH A / B     6 VOICE     8 SLOTS");
-    std::vector<juce::String> sources;
-    for (int slot = 1; slot <= 8; ++slot)
-        sources.push_back ("poly.mod.slot" + juce::String (slot) + ".source");
-    addSourceMatrix (sources, 12, { 1490, 144, 184, 360 });
-    // Labels come from the actual source enumeration, including None.
-    if (const auto* spec = definition().find ("poly.mod.slot1.source"))
-        for (int i = 0; i < (int) spec->choices.size() && i < 12; ++i)
-            addCaption (spec->choices[(size_t) i], { 1418, 144 + i * 30, 68, 30 },
-                        juce::Justification::centredRight, 9.0f);
-    for (int slot = 1; slot <= 8; ++slot)
-    {
-        const auto y = 138 + (slot - 1) * 47;
-        const auto stem = "poly.mod.slot" + juce::String (slot) + ".";
-        addChoice (stem + "dest", "", { 1684, y + 4, 100, 26 });
-        knob (stem + "amount", "AMT", 1807, y + 19, 30);
+    lcd.setText ("POLYBRUTE V  /  MOD MATRIX", "SOURCE x CONNECTION", "64 CONNECTIONS / 32 DESTINATIONS");
+    const auto* sourceSpec = definition().find ("poly.mod.slot1.source");
+    const int rows = sourceSpec != nullptr ? (int)sourceSpec->choices.size() : 16;
+    if (sourceSpec != nullptr)
+        for (int row = 0; row < rows; ++row)
+            addCaption (sourceSpec->choices[(size_t)row], {1418, 144 + row * 360 / rows, 68, 360 / rows},
+                        juce::Justification::centredRight, 8.0f);
+    for (int page = 0; page < 8; ++page) {
+        const int first = getNumChildComponents();
+        std::vector<juce::String> sources;
+        for (int col = 0; col < 8; ++col)
+            sources.push_back ("poly.mod.slot" + juce::String(page * 8 + col + 1) + ".source");
+        addSourceMatrix (sources, rows, {1490, 144, 184, 360});
+        for (int col = 0; col < 8; ++col) {
+            const int slot = page * 8 + col + 1, y = 138 + col * 44;
+            const auto stem = "poly.mod.slot" + juce::String(slot) + ".";
+            addChoice (stem + "dest", "", {1684,y+4,100,26});
+            knob (stem + "amount", "AMT",1807,y+19,30);
+        }
+        for (int child = first; child < getNumChildComponents(); ++child)
+            matrixPages_[(size_t)page].push_back(getChildComponent(child));
+        addButton (juce::String(page*8+1) + "-" + juce::String(page*8+8),
+                   {1424+page*50,116,48,22},[this,page]{showMatrixPage(page);});
     }
+    showMatrixPage(0);
 
     // Right-hand effects block: rows of controls above the sequencer/arp.
     addChoice ("poly.fx.dist.type", "DISTORTION", { 1868, 54, 154, 35 });
@@ -369,4 +378,7 @@ PolyBrutePanel::PolyBrutePanel (EditorHost& editorHost)
 
 void PolyBrutePanel::paint (juce::Graphics& g) { PanelBase::paint (g); }
 PolyBrutePanel::~PolyBrutePanel() = default;
+void PolyBrutePanel::showMatrixPage (int page) {
+    for(int p=0;p<8;++p) for(auto* component : matrixPages_[(size_t)p]) component->setVisible(p==page);
+}
 } // namespace triad::ui

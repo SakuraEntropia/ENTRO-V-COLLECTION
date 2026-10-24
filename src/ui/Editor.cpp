@@ -124,6 +124,7 @@ public:
         };
         addAndMakeVisible (globalGain_);
 
+        if(!host_.isContinuum()) { sequenceButton_.setButtonText("SEQ");sequenceButton_.onClick=[this]{if(onSequence)onSequence();};addAndMakeVisible(sequenceButton_); }
         startTimerHz (6);
     }
 
@@ -175,6 +176,7 @@ public:
         browseButton_.setBounds (area.removeFromRight (68).reduced (2, 0));
         presetBox_.setBounds (area.removeFromRight (190).reduced (4, 0));
 
+        if(sequenceButton_.isVisible()) sequenceButton_.setBounds(area.removeFromRight(52).reduced(2,0));
         auto gainArea = area.removeFromRight (142).reduced (4, 0);
         gainLabel_.setBounds (gainArea.removeFromLeft (26));
         globalGain_.setBounds (gainArea);
@@ -220,7 +222,7 @@ public:
 
     std::function<void (int)> onZoomStep;
     std::function<void()> onFit;
-    std::function<void()> onBrowse;
+    std::function<void()> onBrowse, onSequence;
 
 private:
     void timerCallback() override
@@ -230,7 +232,7 @@ private:
 
     EditorHost& host_;
     juce::ComboBox presetBox_;
-    juce::TextButton initButton_, saveButton_, loadButton_, browseButton_;
+    juce::TextButton initButton_, saveButton_, loadButton_, browseButton_, sequenceButton_;
     juce::TextButton zoomOutButton_, fitButton_, zoomInButton_;
     juce::Slider globalGain_;
     juce::Label gainLabel_;
@@ -295,6 +297,7 @@ TriadEditor::TriadEditor (EditorHost& host)
     };
     header_->onFit = [this] { setZoom (0.0f); };
     header_->onBrowse = [this] { openPresetBrowser(); };
+    header_->onSequence = [this] { openSequencer(); };
 
     browserBackdrop_.setVisible (false);
     browserBackdrop_.setInterceptsMouseClicks (true, true);
@@ -463,6 +466,7 @@ void TriadEditor::resized()
                                    (getHeight() - height) / 2, width, height);
     }
 
+    if(sequencerPanel_)sequencerPanel_->setBounds(20,(getHeight()-400)/2,getWidth()-40,400);
     if (header_ != nullptr)
         header_->setZoomText (scale);
 
@@ -475,6 +479,12 @@ void TriadEditor::resized()
 void TriadEditor::Backdrop::paint (juce::Graphics& g)
 {
     g.fillAll (juce::Colours::black.withAlpha (0.58f));
+}
+
+void TriadEditor::openSequencer() {
+    if(sequencerPanel_)return;
+    sequencerPanel_=std::make_unique<SequencerPanel>(host_,[this]{sequencerPanel_.reset();});
+    addAndMakeVisible(*sequencerPanel_);resized();sequencerPanel_->toFront(true);
 }
 
 void TriadEditor::openPresetBrowser()

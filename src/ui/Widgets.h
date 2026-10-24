@@ -105,6 +105,8 @@ public:
     std::function<void (int column)> onColumnSelected;
     int selectedColumn() const { return selectedColumn_; }
 
+    const std::vector<juce::String>& parameterIds() const { return ids_; }
+
 private:
     void timerCallback() override;
     int rowAt (juce::Point<int> position) const;

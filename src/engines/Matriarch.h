@@ -26,6 +26,11 @@ public:
     void setTransport (const TransportInfo& transport) override;
     void processMidi (const MidiEvent& event) override;
     void render (float* left, float* right, int numSamples) override;
+    void setExternalInput (const float* samples, int count) noexcept override
+    {
+        externalInput_ = samples;
+        externalInputSize_ = samples != nullptr ? std::max (0, count) : 0;
+    }
 
     int activeVoiceCount() const override { return heldCount_ > 0 ? 1 : 0; }
     float outputLevel() const override { return meter_; }
@@ -52,7 +57,7 @@ private:
         PLfo2Rate, PLfo2Bipolar,
         PAtten1, PAtten2, PAtten3,
         PDelayTime, PDelaySpacing, PDelayFeedback, PDelayMix, PDelaySync, PDelayPingPong,
-        PGlide, PParamCount
+        PGlide, PExternalLevel, PParamCount
     };
 
     enum JackId
@@ -98,6 +103,8 @@ private:
 
     double sampleRate_ = 48000.0;
     int maxBlock_ = 512;
+    const float* externalInput_ = nullptr;
+    int externalInputSize_ = 0;
 
     // Patch matrix: for each input jack a bitmask of connected source jacks.
     std::array<std::atomic<uint64_t>, JJackCount> cableLow_ {};

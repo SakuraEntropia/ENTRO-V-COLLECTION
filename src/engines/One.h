@@ -13,7 +13,7 @@ namespace triad
 
 /** Moog One style polysynth.
 
-    Three independent parts share one pool of eight voices. A voice is allocated
+    Three independent parts share one selectable pool of eight or sixteen voices. A voice is allocated
     globally, oldest first, and renders with the parameter snapshot of the part
     that triggered it. Each part owns three VCOs (sync and linear FM), a noise /
     ring / external-input mixer, a dual state-variable filter plus a ladder filter,
@@ -30,17 +30,18 @@ namespace triad
     @note The arp.* parameters are metadata for the host arpeggiator; the engine
     does not run an arpeggiator. External audio is injected through
     setExternalInput() (the mixer's EXT level multiplies it; with no buffer it is
-    silence). Pitch-bend range is global. Unison and chord memory are not
+    silence). Pitch-bend range is global. Mono and unison use last-note priority;
+    unison consumes the same shared voice pool as poly mode. Chord memory is not
     implemented. The 6 dB SVF slope blends the 12 dB stage with its input. */
 class OneEngine final : public SynthEngine
 {
 public:
     static constexpr int kPartCount = 3;
-    static constexpr int kMaxVoices = 8;
+    static constexpr int kMaxVoices = 16;
     static constexpr int kLfoCount = 4;
     static constexpr int kEnvCount = 3;
     static constexpr int kModSlotCount = 8;
-    static constexpr int kMaxHeldNotes = 32;
+    static constexpr int kMaxHeldNotes = 128 * 16;
 
     OneEngine();
 
@@ -59,7 +60,7 @@ public:
     /** Optional mono external input for the mixer's EXT level.
         The pointer is read during the next render() call only; a null pointer
         (the default) is silence. */
-    void setExternalInput (const float* samples, int numSamples) noexcept
+    void setExternalInput (const float* samples, int numSamples) noexcept override
     {
         externalInput_ = samples;
         externalInputSize_ = samples != nullptr ? numSamples : 0;
@@ -118,6 +119,7 @@ private:
         PArpEnabled, PArpMode, PArpRate, PArpOctaves, PArpHold, PArpLength,
 
         PVco1BeatHz, PVco2BeatHz, PVco3BeatHz,
+        PVoiceMode, PUnisonVoices, PUnisonDetune,
         PParamCount
     };
 
@@ -162,6 +164,8 @@ private:
         int driftCountdown = 0;
         float randomValue = 0.0f;
         float fmSample = 0.0f;
+        float unisonPosition = 0.0f;
+        float unisonGain = 1.0f;
         std::array<float, kEnvCount> lastEnv {};
 
         std::array<Oscillator, 3> oscillators {};
@@ -199,6 +203,7 @@ private:
         int note = 60;
         float velocity = 0.8f;
         bool sustained = false;
+        unsigned int partMask = 0;
     };
 
     // Definition and cached parameter tables.
@@ -233,15 +238,25 @@ private:
     bool partNoteInRange (int part, int note) const;
     int targetParts (int channel, int note, int* outParts) const;
 
-    void addHeldNote (int channel, int note, float velocity);
+    void addHeldNote (int channel, int note, float velocity, unsigned int partMask);
     void removeHeldNote (int index);
     void releaseVoicesFor (int channel, int note);
     void releaseAllGatedVoices();
     void killAllVoices();
     void noteOffInternal (int channel, int note);
+    void setSustain (int channel, bool down);
 
     // Voice management.
-    void startVoice (int part, int note, float velocity, int channel);
+    void startVoice (int part, int note, float velocity, int channel,
+                     float unisonPosition = 0.0f, float unisonGain = 1.0f);
+    void startPartNote (int part, int note, float velocity, int channel);
+    void rebuildPartVoices (int part);
+    void updateMonoPart (int part);
+    void killVoice (Voice& voice);
+    void killPartVoices (int part);
+    int voiceMode (int part) const;
+    int lastHeldForPart (int part) const;
+    void enforceVoiceBudget();
     int allocateVoiceSlot();
     void releaseVoice (Voice& voice);
 
@@ -270,13 +285,14 @@ private:
     std::array<Voice, kMaxVoices> voices_ {};
     uint64_t voiceSerial_ = 0;
     int activeVoices_ = 0;
+    int voiceBudget_ = 8;
 
     std::array<PartRuntime, kPartCount> parts_ {};
     std::array<bool, kPartCount> enabledPrev_ {};
 
     std::array<HeldNote, kMaxHeldNotes> held_ {};
     int heldCount_ = 0;
-    bool sustainPedal_ = false;
+    std::array<bool, 16> sustainPedal_ {};
 
     float pitchBend_ = 0.0f;
     float modWheel_ = 0.0f;

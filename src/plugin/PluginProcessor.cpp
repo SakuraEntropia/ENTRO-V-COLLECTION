@@ -120,8 +120,15 @@ juce::AudioProcessorValueTreeState::ParameterLayout buildLayout (const ModelDefi
 }
 } // namespace
 
+juce::AudioProcessor::BusesProperties TriadAudioProcessor::instrumentBuses() {
+    juce::AudioProcessor::BusesProperties buses;
+    if (TRIAD_INSTRUMENT_KIND == 0 || TRIAD_INSTRUMENT_KIND == 2)
+        buses = buses.withInput("Instrument In",juce::AudioChannelSet::stereo(),false);
+    return buses.withOutput("Output",juce::AudioChannelSet::stereo(),true);
+}
+
 TriadAudioProcessor::TriadAudioProcessor()
-    : AudioProcessor (BusesProperties().withOutput ("Output", juce::AudioChannelSet::stereo(), true)),
+    : AudioProcessor (instrumentBuses()),
       kind_ ((InstrumentKind) TRIAD_INSTRUMENT_KIND),
       engine_ (makeEngine (kind_)),
       apvts_ (*this, nullptr, "PARAMETERS", buildLayout (engine_->definition()))
@@ -164,14 +171,38 @@ TriadAudioProcessor::TriadAudioProcessor()
     for (int i = 0; i < 4; ++i)
         cvcIndices_[(size_t) i] = findParameterBySuffix (".cvc." + juce::String (i + 1));
 
+    if(kind_ == InstrumentKind::Matriarch) sequencer_.setLimits(256,4,12);
+    else if(kind_ == InstrumentKind::PolyBrute) sequencer_.setLimits(64,6,1);
+    else sequencer_.setLimits(64,6,1);
+    keyboardState_.addListener(this);
     sequencer_.prepare (44100.0);
     setLatencySamples (0);
 }
 
 TriadAudioProcessor::~TriadAudioProcessor()
 {
+    keyboardState_.removeListener(this);
     if (aliveFlag_ != nullptr)
         aliveFlag_->store (false);
+}
+
+bool TriadAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const {
+    if(layouts.getMainOutputChannelSet()!=juce::AudioChannelSet::stereo()) return false;
+    const auto input=layouts.getMainInputChannelSet();
+    if(kind_!=InstrumentKind::Matriarch && kind_!=InstrumentKind::MoogOne) return input.isDisabled();
+    return input.isDisabled() || input==juce::AudioChannelSet::mono() || input==juce::AudioChannelSet::stereo();
+}
+void TriadAudioProcessor::enqueueKeyboardEvent(MidiEvent event) {
+    auto scope=keyboardFifo_.write(1);
+    if(scope.blockSize1>0) keyboardEvents_[(size_t)scope.startIndex1]=event;
+    else keyboardOverflow_.store(true);
+}
+void TriadAudioProcessor::handleNoteOn(juce::MidiKeyboardState*,int channel,int note,float velocity) {
+    enqueueKeyboardEvent({MidiEventType::NoteOn,channel-1,note,0,velocity});
+}
+void TriadAudioProcessor::handleNoteOff(juce::MidiKeyboardState*,int channel,int note,float) {
+    if(isContinuum()) pendingSurfaceOff_[(size_t)note].store(true);
+    else enqueueKeyboardEvent({MidiEventType::NoteOff,channel-1,note,0,0});
 }
 
 int TriadAudioProcessor::findParameterBySuffix (const juce::String& suffix) const
@@ -232,6 +263,8 @@ void TriadAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     keyboardState_.reset();
 
     dummyRight_.assign ((size_t) juce::jmax (8192, samplesPerBlock), 0.0f);
+    inputScratch_.assign(dummyRight_.size(),0.0f);
+    keyboardFifo_.reset();
     readParameters();
     engine_->setParameters (naturalValues_.data(), (int) naturalValues_.size());
 
@@ -413,7 +446,7 @@ void TriadAudioProcessor::updateSequencerFromParameters (const TransportInfo& tr
         sequencer_.setHold (hold);
         sequencer_.setPlaying (true);
 
-        if (arpLengthIndex_ >= 0)
+        if (arpLengthIndex_ >= 0 && mode != 5)
         {
             const auto isDiscrete = engine_->definition().params[(size_t) arpLengthIndex_].curve
                                     == ParamCurve::Discrete;
@@ -486,7 +519,6 @@ void TriadAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     engine_->setTransport (transport);
     updateSequencerFromParameters (transport);
 
-    keyboardState_.processNextMidiBuffer (midi, 0, numSamples, true);
 
     scheduledCount_ = 0;
 
@@ -534,10 +566,23 @@ void TriadAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         lastSequencerEnabled_ = sequencerEnabled;
     }
 
+    {
+        const int ready=keyboardFifo_.getNumReady(); auto scope=keyboardFifo_.read(ready);
+        auto consume=[&](int start,int count) { for(int i=0;i<count;++i) {
+            const auto event=keyboardEvents_[(size_t)(start+i)];
+            if(sequencerEnabled && event.type==MidiEventType::NoteOn) sequencer_.noteOn(event.note,event.value);
+            else if(sequencerEnabled && event.type==MidiEventType::NoteOff) sequencer_.noteOff(event.note);
+            else addScheduledEvent(0,event);
+        }};
+        consume(scope.startIndex1,scope.blockSize1); consume(scope.startIndex2,scope.blockSize2);
+        if(keyboardOverflow_.exchange(false)) addScheduledEvent(0,{MidiEventType::AllSoundOff});
+    }
+
     if (sequencerEnabled)
     {
         for (const auto metadata : midi)
         {
+            if(metadata.numBytes > 3) continue;
             const auto message = metadata.getMessage();
             MidiEvent event;
 
@@ -583,7 +628,7 @@ void TriadAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         for (const auto metadata : midi)
         {
             MidiEvent event;
-            if (toMidiEvent (metadata.getMessage(), event))
+            if (metadata.numBytes <= 3 && toMidiEvent (metadata.getMessage(), event))
                 addScheduledEvent (metadata.samplePosition, event);
         }
     }
@@ -627,17 +672,27 @@ void TriadAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         }
     }
 
-    std::stable_sort (scheduled_.begin(), scheduled_.begin() + scheduledCount_,
-                      [] (const ScheduledEvent& a, const ScheduledEvent& b)
-                      {
-                          return a.offset < b.offset;
-                      });
-
-    if ((size_t) numSamples > dummyRight_.size())
-        dummyRight_.resize ((size_t) numSamples);
-
-    auto* left = buffer.getWritePointer (0);
-    float* right = numChannels > 1 ? buffer.getWritePointer (1) : dummyRight_.data();
+    // Insertion sort preserves equal-offset ordering without stable_sort's temporary heap buffer.
+    for(int i=1;i<scheduledCount_;++i) {
+        auto event=scheduled_[(size_t)i]; int j=i;
+        while(j>0 && scheduled_[(size_t)(j-1)].offset>event.offset) {
+            scheduled_[(size_t)j]=scheduled_[(size_t)(j-1)]; --j;
+        }
+        scheduled_[(size_t)j]=event;
+    }
+    auto* left=buffer.getWritePointer(0);
+    float* right=numChannels>1?buffer.getWritePointer(1):nullptr;
+    auto renderSegment=[&](int start,int count) {
+        while(count>0) {
+            const int n=std::min(count,(int)inputScratch_.size());
+            const int inputs=getTotalNumInputChannels();
+            for(int i=0;i<n;++i) inputScratch_[(size_t)i]=inputs==0?0.0f:
+                (inputs>1 ? (buffer.getSample(0,start+i)+buffer.getSample(1,start+i))*0.5f : buffer.getSample(0,start+i));
+            engine_->setExternalInput(inputs>0?inputScratch_.data():nullptr,n);
+            engine_->render(left+start,right!=nullptr?right+start:dummyRight_.data(),n);
+            start+=n; count-=n;
+        }
+    };
 
     int position = 0;
 
@@ -647,7 +702,7 @@ void TriadAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
 
         if (offset > position)
         {
-            engine_->render (left + position, right + position, offset - position);
+            renderSegment(position,offset-position);
             position = offset;
         }
 
@@ -669,7 +724,7 @@ void TriadAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     }
 
     if (position < numSamples)
-        engine_->render (left + position, right + position, numSamples - position);
+        renderSegment(position,numSamples-position);
 
     if (isContinuum())
     {
@@ -873,6 +928,19 @@ void TriadAudioProcessor::loadFactoryPreset (int index)
 
     const auto& preset = factoryPresets_[(size_t) index];
     applyPresetValues (preset.values, preset.name, true);
+    if(hasMorph()) {
+        captureMorphB();
+        for(const auto& entry:preset.morphB) {
+            const int i=definition().indexOf(entry.first.toStdString());
+            if(i>=0)morphValues_[(size_t)i].store(entry.second);
+        }
+    }
+    for(const auto& cable:preset.cables) {
+        const int from=definition().patchIndexOf(cable.first.toStdString());
+        const int to=definition().patchIndexOf(cable.second.toStdString());
+        if(from>=0 && to>=0)setPatchCable(from,to,true);
+    }
+
 
     for (const auto& cell : preset.matrix)
         engine_->setMatrixCell (cell.source, cell.destination, cell.formula, cell.amount);
@@ -927,8 +995,13 @@ float TriadAudioProcessor::continuumExpression (int note, int axis) const
 
 void TriadAudioProcessor::encodeState (juce::ValueTree& state)
 {
+    // copyState() can contain decoded extension children from a previous load.
+    // Replace them rather than appending duplicates that stale readers select.
+    for(const char* name:{"MORPH_B","EIGEN_MATRIX","FORMULAS","SEQUENCER"})
+        while(state.getChildWithName(name).isValid()) state.removeChild(state.getChildWithName(name),nullptr);
+
     state.setProperty ("instrument", juce::String (engine_->definition().id), nullptr);
-    state.setProperty ("formatVersion", 2, nullptr);
+    state.setProperty ("formatVersion", 3, nullptr);
     state.setProperty ("presetName", currentPresetName_, nullptr);
     state.setProperty ("globalGainDb", globalGainDb_.load(), nullptr);
 
@@ -985,6 +1058,21 @@ void TriadAudioProcessor::encodeState (juce::ValueTree& state)
         sequence.setProperty ("a" + juce::String (i), sequencer_.isStepActive (i), nullptr);
         sequence.setProperty ("n" + juce::String (i), sequencer_.stepNote (i), nullptr);
         sequence.setProperty ("v" + juce::String (i), sequencer_.stepVelocity (i), nullptr);
+    }
+    sequence.setProperty("selectedPattern",sequencer_.selectedPattern(),nullptr);
+    sequence.setProperty("gate",sequencer_.gate(),nullptr);
+    for(int p=0;p<sequencer_.patternCount();++p) {
+        juce::ValueTree bank("BANK"); bank.setProperty("index",p,nullptr);
+        bank.setProperty("length",sequencer_.patternLength(p),nullptr);
+        for(int step=0;step<sequencer_.maximumSteps();++step) {
+            juce::ValueTree cell("STEP"); cell.setProperty("index",step,nullptr);
+            cell.setProperty("active",sequencer_.patternActive(p,step),nullptr);
+            cell.setProperty("velocity",sequencer_.patternVelocity(p,step),nullptr);
+            cell.setProperty("tie",sequencer_.patternTie(p,step),nullptr);
+            for(int n=0;n<sequencer_.polyphony();++n) cell.setProperty("n"+juce::String(n),sequencer_.patternNote(p,step,n),nullptr);
+            bank.addChild(cell,-1,nullptr);
+        }
+        sequence.addChild(bank,-1,nullptr);
     }
     state.addChild (sequence, -1, nullptr);
 }
@@ -1045,6 +1133,24 @@ void TriadAudioProcessor::decodeState (const juce::ValueTree& state)
             if (sequence.hasProperty ("v" + index))
                 sequencer_.setStepVelocity (i, (int) sequence.getProperty ("v" + index));
         }
+    }
+
+    if(sequence.isValid()) {
+        for(const auto& bank:sequence) {
+            const int p=(int)bank.getProperty("index",-1);
+            if(!bank.hasType("BANK") || p<0 || p>=sequencer_.patternCount()) continue;
+            sequencer_.setPatternLength(p,(int)bank.getProperty("length",16));
+            for(const auto& cell:bank) {
+                const int step=(int)cell.getProperty("index",-1);
+                if(!cell.hasType("STEP")) continue;
+                sequencer_.setPatternActive(p,step,(bool)cell.getProperty("active",false));
+                sequencer_.setPatternVelocity(p,step,(int)cell.getProperty("velocity",100));
+                sequencer_.setPatternTie(p,step,(bool)cell.getProperty("tie",false));
+                for(int n=0;n<sequencer_.polyphony();++n) sequencer_.setPatternNote(p,step,n,(int)cell.getProperty("n"+juce::String(n),-1));
+            }
+        }
+        sequencer_.selectPattern((int)sequence.getProperty("selectedPattern",0));
+        sequencer_.setGate((float)sequence.getProperty("gate",.55f));
     }
 
     if (state.hasProperty ("globalGainDb"))

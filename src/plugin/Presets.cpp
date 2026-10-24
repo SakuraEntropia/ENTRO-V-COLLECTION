@@ -2586,14 +2586,19 @@ std::vector<FactoryPreset> continuumPresets()
 
 std::vector<FactoryPreset> factoryPresetsFor (const std::string& instrumentId)
 {
-    if (instrumentId == "matriarch")
-        return matriarchPresets();
+    if (instrumentId == "matriarch" || instrumentId == "polybrute") {
+        auto result=instrumentId=="matriarch"?matriarchPresets():polyBrutePresets();
+        auto reference=analogReferencePresets(instrumentId);
+        result.insert(result.end(),std::make_move_iterator(reference.begin()),std::make_move_iterator(reference.end()));
+        return sortedPresets(std::move(result));
+    }
 
-    if (instrumentId == "polybrute")
-        return polyBrutePresets();
 
-    if (instrumentId == "moogone")
-        return onePresets();
+    if (instrumentId == "moogone") {
+        auto result=onePresets();auto reference=oneReferencePresets();
+        result.insert(result.end(),std::make_move_iterator(reference.begin()),std::make_move_iterator(reference.end()));
+        return sortedPresets(std::move(result));
+    }
 
     if (instrumentId == "continuum")
         return continuumPresets();
