@@ -1,3 +1,11 @@
+# Studio bank validation: 2026-10-24
+
+Source `f9de6ac` adds 64 Studio presets to each instrument (83 / 87 / 91 / 677 total). All 256 Studio presets receive metadata and audio checks, including every Studio Continuum patch. All 256 eight-second audition renders pass; all WAV hashes are distinct. Four rebuilt macOS arm64 VST3 bundles pass pluginval strictness 5. VST3/AU/standalone ZIP and native unsigned `.pkg` 0.2.1 have been generated. See [STUDIO-PRESETS.md](STUDIO-PRESETS.md) and [STUDIO-AUDIT.csv](STUDIO-AUDIT.csv).
+
+Eight local CTest suites pass. The new renderer regression covers enabled arps and Continuum expression. Actual DAW loading, fresh AU validation and hardware listening comparison remain unverified. Earlier logs below describe their own revisions.
+
+---
+
 # Current validation update: 2026-10-24
 
 The historical log below describes earlier builds and is not evidence for every later revision.

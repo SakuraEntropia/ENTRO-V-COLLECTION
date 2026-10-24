@@ -29,3 +29,11 @@ Renders all 256 additions as eight-second 48 kHz / 16-bit stereo WAVs and `audit
 Output is not peak-normalised during export. Audio checks reject non-finite samples, silence and clipping. Different sustain lengths and bass/percussive spectra still produce different average loudness. No listening comparison with physical instruments has been completed.
 
 Sources for the preceding hardware-reference work: [PRESET-REFERENCES.md](PRESET-REFERENCES.md). The Studio bank extends that sound-design direction with independent software patches; it does not add new exact factory reconstructions.
+
+## Local results
+
+All 256 full auditions pass finite/non-silent/unclipped checks. SHA-256 comparison finds 256 distinct WAV payloads. Exported measurements are in [STUDIO-AUDIT.csv](STUDIO-AUDIT.csv). Peak maxima: Matriarch 0.458, PolyBrute 0.397, One 0.254, Continuum 0.362. These figures apply to the documented test phrase, not every possible MIDI performance.
+
+All four macOS arm64 VST3 bundles pass pluginval strictness 5 (including its default GUI tests). AU and standalone bundles were rebuilt. New `.pkg` version: 0.2.1; no installation was performed. Cross-platform build for source `f9de6ac`: https://github.com/SakuraEntropia/ENTRO-V-COLLECTION/actions/runs/40090499646 (pending at the time of recording).
+
+The `triad_audition_smoke` regression renders one enabled arp per analog instrument plus an expressive Continuum pad, in addition to the existing engine/preset/UI/host tests.
