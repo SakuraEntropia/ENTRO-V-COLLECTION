@@ -152,10 +152,13 @@ public:
         g.setFont (juce::Font (juce::FontOptions (17.0f, juce::Font::bold)));
         g.drawText (host_.instrumentName().toUpperCase(), 70, 8, 320, 22,
                     juce::Justification::centredLeft);
-        const auto subtitle = id == "matriarch" ? "SEMI-MODULAR ANALOG SYNTHESIZER"
+        const auto* source=host_.apvts().getRawParameterValue("sample.program");
+        const int program=source?juce::jlimit(0,4,(int)std::round(source->load())):0;
+        const juce::String recordedNames[]{"", "RECORDED UPRIGHT KW", "RECORDED VIOLIN SECTION", "RECORDED CELLO SECTION", "RECORDED SOLO VIOLIN"};
+        const auto subtitle = program>0 ? recordedNames[program]+" / SYNTH FILTERS BYPASSED" : juce::String(id == "matriarch" ? "SEMI-MODULAR ANALOG SYNTHESIZER"
                               : (id == "polybrute" ? "SIX-VOICE ANALOG SYNTHESIZER"
                               : (id == "continuum" ? "CONTINUOUS SURFACE / EIGEN MATRIX"
-                                                   : "POLYPHONIC ANALOG SYNTHESIZER"));
+                                                   : "POLYPHONIC ANALOG SYNTHESIZER")));
         g.setColour (juce::Colour (0xff9a968d));
         g.setFont (juce::Font (juce::FontOptions (8.5f)).withExtraKerningFactor (0.16f));
         g.drawText (subtitle, 70, 27, 420, 12, juce::Justification::centredLeft);
@@ -190,6 +193,10 @@ public:
 
     void refresh()
     {
+        const auto* source=host_.apvts().getRawParameterValue("sample.program");
+        const int program=source?(int)std::round(source->load()):0;
+        if(program!=displayedProgram_){displayedProgram_=program;repaint();}
+
         if (std::abs (globalGain_.getValue() - (double) host_.globalGainDb()) > 0.05)
             globalGain_.setValue (host_.globalGainDb(), juce::dontSendNotification);
 
@@ -231,6 +238,7 @@ private:
     }
 
     EditorHost& host_;
+    int displayedProgram_=0;
     juce::ComboBox presetBox_;
     juce::TextButton initButton_, saveButton_, loadButton_, browseButton_, sequenceButton_;
     juce::TextButton zoomOutButton_, fitButton_, zoomInButton_;

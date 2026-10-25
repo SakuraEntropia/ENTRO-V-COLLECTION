@@ -10,6 +10,7 @@ if (APPLE AND NOT CMAKE_OSX_DEPLOYMENT_TARGET)
     set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Minimum macOS version" FORCE)
 endif()
 
+option(TRIAD_ENABLE_LTO "Enable release link-time optimization" ON)
 option(TRIAD_BUILD_TESTS "Build the deterministic engine test executable" ON)
 option(TRIAD_UNIVERSAL "Build macOS universal binaries" OFF)
 set(TRIAD_JUCE_PATH "" CACHE PATH "Path to a JUCE 9.0.4 checkout")
@@ -50,9 +51,11 @@ add_library(triad_engines STATIC
     src/engines/PolyBrute.cpp
     src/engines/One.cpp
     src/engines/Continuum.cpp
+    src/engines/SampledEngine.cpp
     src/engines/Factory.cpp
 )
-target_link_libraries(triad_engines PUBLIC triad_core)
+target_link_libraries(triad_engines PUBLIC triad_core ${CMAKE_DL_LIBS})
+target_compile_definitions(triad_engines PRIVATE TRIAD_SAMPLE_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/assets/samples")
 target_compile_features(triad_engines PUBLIC cxx_std_20)
 
 # ---------------------------------------------------------------------------
@@ -162,9 +165,12 @@ function(triad_add_instrument target product_name plugin_code instrument_kind)
             juce::juce_gui_extra
         PUBLIC
             juce::juce_recommended_config_flags
-            juce::juce_recommended_lto_flags
             juce::juce_recommended_warning_flags
     )
+
+    if(TRIAD_ENABLE_LTO)
+        target_link_libraries(${target} PUBLIC juce::juce_recommended_lto_flags)
+    endif()
 
     if (APPLE)
         set_target_properties(${target} PROPERTIES
@@ -177,6 +183,36 @@ triad_add_instrument(Matriarch "MATRIARCH V" Ma01 0)
 triad_add_instrument(PolyBrute "POLYBRUTE V" Pb02 1)
 triad_add_instrument(MoogOne "ONE V" Mo03 2)
 triad_add_instrument(Continuum "CONTINUUM V" Co04 3)
+
+# Recorded sources live inside each distributable bundle, resolved relative to its module.
+file(GLOB_RECURSE _sample_assets CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/assets/samples/*")
+foreach(_instrument Matriarch PolyBrute MoogOne Continuum)
+    if(_instrument STREQUAL "MoogOne")
+        set(_product "ONE V")
+    elseif(_instrument STREQUAL "PolyBrute")
+        set(_product "POLYBRUTE V")
+    elseif(_instrument STREQUAL "Matriarch")
+        set(_product "MATRIARCH V")
+    else()
+        set(_product "CONTINUUM V")
+    endif()
+    foreach(_format VST3 AU Standalone)
+        if(TARGET ${_instrument}_${_format})
+            if(_format STREQUAL "VST3")
+                set(_sample_dest "${CMAKE_CURRENT_BINARY_DIR}/${_instrument}_artefacts/$<CONFIG>/VST3/${_product}.vst3/Contents/Resources/EntroSamples")
+            elseif(_format STREQUAL "AU")
+                set(_sample_dest "${CMAKE_CURRENT_BINARY_DIR}/${_instrument}_artefacts/$<CONFIG>/AU/${_product}.component/Contents/Resources/EntroSamples")
+            elseif(APPLE)
+                set(_sample_dest "${CMAKE_CURRENT_BINARY_DIR}/${_instrument}_artefacts/$<CONFIG>/Standalone/${_product}.app/Contents/Resources/EntroSamples")
+            else()
+                set(_sample_dest "${CMAKE_CURRENT_BINARY_DIR}/${_instrument}_artefacts/$<CONFIG>/Standalone/EntroSamples")
+            endif()
+            set_property(TARGET ${_instrument}_${_format} APPEND PROPERTY LINK_DEPENDS "${_sample_assets}")
+            add_custom_command(TARGET ${_instrument}_${_format} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/assets/samples" "${_sample_dest}")
+        endif()
+    endforeach()
+endforeach()
 
 # ---------------------------------------------------------------------------
 # Deterministic, framework-independent tests.
@@ -230,4 +266,10 @@ if(TRIAD_BUILD_TESTS)
     add_executable(triad_signature_tests tests/SignatureTests.cpp src/plugin/StudioPresets.cpp src/plugin/SignaturePresets.cpp)
     target_link_libraries(triad_signature_tests PRIVATE triad_engines juce::juce_core)
     add_test(NAME triad_signature_timbres COMMAND triad_signature_tests)
+endif()
+
+if(TRIAD_BUILD_TESTS)
+    add_executable(triad_sample_tests tests/SampledTests.cpp src/plugin/Presets.cpp src/plugin/OneReferencePresets.cpp src/plugin/AnalogReferencePresets.cpp src/plugin/StudioPresets.cpp src/plugin/SignaturePresets.cpp)
+    target_link_libraries(triad_sample_tests PRIVATE triad_engines juce::juce_core)
+    add_test(NAME triad_sample_programs COMMAND triad_sample_tests)
 endif()

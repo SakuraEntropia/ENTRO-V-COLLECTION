@@ -1,0 +1,5 @@
+instrument,preset,peak,rms,dc,derivative_rms
+moogone,"ST - Violin Section [Sampled]",0.0723182,0.0102202,1.45517e-08,0.0010123
+moogone,"ST - Cello Section [Sampled]",0.0770059,0.0131963,-1.82917e-06,0.000868684
+moogone,"ST - Solo Violin [Sampled]",0.0836305,0.011937,6.02946e-07,0.00152885
+moogone,"KY - Upright KW [Sampled]",0.1155,0.0155838,-3.7955e-06,0.00103714

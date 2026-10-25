@@ -34,5 +34,19 @@ int main(){
     CHECK(s.patternNote(11,255,3)==87 && s.patternTie(11,255) && s.stepCount()==256);
     s.setPatternNote(11,255,3,92);p.getStateInformation(state);s.setPatternNote(11,255,3,21);p.setStateInformation(state.getData(),(int)state.getSize());CHECK(s.patternNote(11,255,3)==92);
     p.keyboardState().noteOn(1,60,.8f);midi.clear();allocations=0;tracking=true;p.processBlock(b,midi);tracking=false;CHECK(allocations==0);
+    set("sample.program",1);set("sample.gain",.7f);
+    p.getStateInformation(state);set("sample.program",0);p.setStateInformation(state.getData(),(int)state.getSize());
+    CHECK(std::abs(p.apvts().getRawParameterValue("sample.program")->load()-1)<.01f);
+    b.clear();midi.clear();midi.addEvent(juce::MidiMessage::noteOn(1,60,.9f),0);
+    allocations=0;tracking=true;p.processBlock(b,midi);tracking=false;CHECK(allocations==0);
+    CHECK(b.getMagnitude(0,b.getNumSamples())>.001f);
+    midi.clear();midi.addEvent(juce::MidiMessage::allSoundOff(1),0);b.clear();p.processBlock(b,midi);
+    CHECK(b.getMagnitude(0,b.getNumSamples())<1e-7f);
+    auto legacy=p.apvts().copyState();
+    for(const auto* id:{"sample.program","sample.gain"})legacy.removeChild(legacy.getChildWithProperty("id",id),nullptr);
+    juce::MemoryBlock legacyBinary;auto legacyXml=legacy.createXml();
+    juce::AudioProcessor::copyXmlToBinary(*legacyXml,legacyBinary);
+    p.setStateInformation(legacyBinary.getData(),(int)legacyBinary.getSize());
+    CHECK(p.apvts().getRawParameterValue("sample.program")->load()==0);
     std::puts("Host: external bus, large blocks, SysEx, allocation guard, full sequence state passed.");
 }

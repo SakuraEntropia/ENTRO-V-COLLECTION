@@ -1,0 +1,176 @@
+instrument,preset,peak,rms,dc,derivative_rms
+matriarch,"PD - Drone Cathedral",0.447865,0.134645,-0.000149401,0.0170098
+matriarch,"PD - Warm Analog Pad",0.246767,0.0515715,-2.8501e-06,0.00703651
+matriarch,"PD - Descending Echo Field Ref",0.250251,0.0585982,2.45299e-06,0.0027557
+matriarch,"PD - Dusk Canopy [Studio]",0.228227,0.0775943,1.23816e-06,0.00220508
+matriarch,"PD - Slow Tides [Studio]",0.25314,0.0873557,-3.75258e-05,0.0035396
+matriarch,"PD - Amber Cloud [Studio]",0.294933,0.103111,-7.95119e-05,0.00448169
+matriarch,"PD - Polar Choir [Studio]",0.315158,0.0926982,-0.000354277,0.00516529
+matriarch,"PD - Orbit Mist [Studio]",0.266356,0.0734487,5.16583e-06,0.00265896
+matriarch,"PD - Velvet Air [Studio]",0.26945,0.083505,-3.97157e-05,0.00445048
+matriarch,"PD - Glass Horizon [Studio]",0.318506,0.0876257,-6.42642e-05,0.00553967
+matriarch,"PD - Fifth Aurora [Studio]",0.314643,0.0856156,-0.0002504,0.00466732
+matriarch,"PD - Slow Tides [Stage]",0.27015,0.0976161,-5.22839e-05,0.00240514
+matriarch,"PD - Polar Choir [Stage]",0.307577,0.0937653,-0.000363497,0.00369826
+matriarch,"PD - Velvet Air [Stage]",0.255249,0.0843095,-3.51782e-05,0.00467827
+matriarch,"PD - Fifth Aurora [Stage]",0.232883,0.0686457,-6.44546e-08,0.00374368
+matriarch,"PD - Amber Architecture 1 [Signature]",0.245186,0.0758922,1.90281e-06,0.0028054
+matriarch,"PD - Amber Architecture 2 [Signature]",0.297494,0.100493,-6.64179e-05,0.00452127
+matriarch,"PD - Amber Architecture 3 [Signature]",0.250133,0.0790028,2.26734e-06,0.00347868
+matriarch,"PD - Amber Architecture 4 [Signature]",0.313423,0.102873,-8.27247e-05,0.00620685
+matriarch,"PD - Living Filaments 1 [Signature]",0.245518,0.0786893,2.19229e-06,0.00316624
+matriarch,"PD - Living Filaments 2 [Signature]",0.303187,0.103375,-8.21937e-05,0.00512904
+matriarch,"PD - Living Filaments 3 [Signature]",0.245304,0.0747716,3.90158e-06,0.00379033
+matriarch,"PD - Living Filaments 4 [Signature]",0.308636,0.101869,-8.34903e-05,0.00680939
+matriarch,"PD - Copper Panorama 1 [Signature]",0.247359,0.0757777,3.69013e-06,0.00343978
+matriarch,"PD - Copper Panorama 2 [Signature]",0.296489,0.101888,-7.97707e-05,0.00560803
+matriarch,"PD - Copper Panorama 3 [Signature]",0.245345,0.076569,4.56344e-06,0.00407804
+matriarch,"PD - Copper Panorama 4 [Signature]",0.319646,0.104722,-8.22686e-05,0.00736447
+matriarch,"PD - Resonant Silk 1 [Signature]",0.248377,0.0761889,-3.00661e-08,0.00371441
+matriarch,"PD - Resonant Silk 2 [Signature]",0.321257,0.103618,-9.1033e-05,0.0059953
+matriarch,"PD - Resonant Silk 3 [Signature]",0.261321,0.0775803,5.60847e-06,0.00436425
+matriarch,"PD - Resonant Silk 4 [Signature]",0.30783,0.10216,-7.58993e-05,0.00769597
+polybrute,"PD - Morph Pad",0.254195,0.0596119,-1.2478e-05,0.00168428
+polybrute,"PD - Chorus Pad",0.241611,0.0599231,-1.29473e-05,0.00160374
+polybrute,"PD - Warm Analog Pad",0.251349,0.0663993,-1.32504e-05,0.00177323
+polybrute,"PD - A to B Voyage Ref",0.202872,0.0424115,1.29552e-06,0.00122461
+polybrute,"PD - First Frost Ref",0.132851,0.0320342,1.65364e-06,0.000953101
+polybrute,"PD - Dusk Canopy [Studio]",0.378602,0.109077,0.000169957,0.00334141
+polybrute,"PD - Slow Tides [Studio]",0.354549,0.087312,-0.00014289,0.00449812
+polybrute,"PD - Amber Cloud [Studio]",0.339835,0.0629335,7.06204e-05,0.00397142
+polybrute,"PD - Polar Choir [Studio]",0.334515,0.0759118,-0.000126925,0.00539198
+polybrute,"PD - Orbit Mist [Studio]",0.23635,0.0545801,3.81471e-05,0.00239596
+polybrute,"PD - Velvet Air [Studio]",0.375753,0.112406,5.25498e-05,0.00539488
+polybrute,"PD - Glass Horizon [Studio]",0.287718,0.0577908,4.75411e-06,0.00244545
+polybrute,"PD - Fifth Aurora [Studio]",0.403057,0.101049,0.000169131,0.00560594
+polybrute,"PD - Slow Tides [Stage]",0.382948,0.0999674,-0.000256696,0.00675584
+polybrute,"PD - Polar Choir [Stage]",0.3812,0.0963704,-0.000207607,0.00611102
+polybrute,"PD - Velvet Air [Stage]",0.374721,0.0946636,-2.73606e-05,0.00520816
+polybrute,"PD - Fifth Aurora [Stage]",0.351399,0.0877768,0.000123142,0.00448089
+polybrute,"PD - Amber Architecture 1 [Signature]",0.397129,0.0971556,0.000218078,0.00596743
+polybrute,"PD - Amber Architecture 2 [Signature]",0.359622,0.0711335,5.57039e-05,0.00526022
+polybrute,"PD - Amber Architecture 3 [Signature]",0.282103,0.0629283,3.85906e-05,0.0044088
+polybrute,"PD - Amber Architecture 4 [Signature]",0.266992,0.0575343,9.95201e-06,0.00410617
+polybrute,"PD - Living Filaments 1 [Signature]",0.3987,0.0933344,0.000265622,0.00567838
+polybrute,"PD - Living Filaments 2 [Signature]",0.355622,0.065029,8.35294e-05,0.00479079
+polybrute,"PD - Living Filaments 3 [Signature]",0.255926,0.0573953,5.50947e-05,0.00388472
+polybrute,"PD - Living Filaments 4 [Signature]",0.270501,0.0530759,2.37856e-05,0.0035514
+polybrute,"PD - Copper Panorama 1 [Signature]",0.397414,0.0938224,0.000270289,0.00541957
+polybrute,"PD - Copper Panorama 2 [Signature]",0.354822,0.0639702,7.9551e-05,0.00434715
+polybrute,"PD - Copper Panorama 3 [Signature]",0.259381,0.0556246,5.08511e-05,0.0033777
+polybrute,"PD - Copper Panorama 4 [Signature]",0.274898,0.0524667,2.11422e-05,0.00301518
+polybrute,"PD - Resonant Silk 1 [Signature]",0.405068,0.0988242,0.000260784,0.00526333
+polybrute,"PD - Resonant Silk 2 [Signature]",0.35177,0.0686365,6.20162e-05,0.0040178
+polybrute,"PD - Resonant Silk 3 [Signature]",0.266492,0.0583692,3.50446e-05,0.00296803
+polybrute,"PD - Resonant Silk 4 [Signature]",0.280887,0.0561566,9.30649e-06,0.00257844
+moogone,"PD - Big Pad",0.37069,0.102875,-2.36834e-05,0.00255843
+moogone,"PD - Warm Analog Pad",0.39281,0.102744,-2.30381e-05,0.00259966
+moogone,"PD - Vintage Stringfield Ref",0.474646,0.117822,-3.02412e-05,0.00246124
+moogone,"PD - Beyond Mood Ref",0.43782,0.0614645,-0.000234534,0.00701677
+moogone,"PD - Lunar Dawn Ref",0.261685,0.0624999,-6.06523e-06,0.00396665
+moogone,"PD - Planet Waves Ref",0.401432,0.0939185,-0.000136716,0.00292839
+moogone,"PD - Dusk Canopy [Studio]",0.193018,0.0462958,5.77041e-07,0.00122503
+moogone,"PD - Slow Tides [Studio]",0.183682,0.0367808,-1.04923e-05,0.00147292
+moogone,"PD - Amber Cloud [Studio]",0.172879,0.031255,4.88614e-06,0.00155141
+moogone,"PD - Polar Choir [Studio]",0.307435,0.0742838,-3.88859e-05,0.00379049
+moogone,"PD - Orbit Mist [Studio]",0.168246,0.0309393,4.22997e-06,0.00118862
+moogone,"PD - Velvet Air [Studio]",0.215966,0.0492404,2.76548e-06,0.00217875
+moogone,"PD - Glass Horizon [Studio]",0.176462,0.0394734,2.17656e-06,0.00149352
+moogone,"PD - Fifth Aurora [Studio]",0.290347,0.0630644,3.29367e-05,0.00282161
+moogone,"PD - Slow Tides [Stage]",0.181383,0.0317831,-6.60075e-06,0.00142888
+moogone,"PD - Polar Choir [Stage]",0.228017,0.0524222,-1.23523e-05,0.00305181
+moogone,"PD - Velvet Air [Stage]",0.236113,0.0523415,2.16416e-06,0.00266595
+moogone,"PD - Fifth Aurora [Stage]",0.26871,0.0540033,2.18701e-05,0.00263777
+moogone,"PD - Ladder Vista Amber [Saw Atlas]",0.20003,0.0416997,-5.35731e-08,0.00341288
+moogone,"PD - Ladder Vista Pearl [Saw Atlas]",0.200425,0.0418638,-5.27382e-08,0.00364995
+moogone,"PD - Ladder Vista Cobalt [Saw Atlas]",0.200084,0.0419858,-6.10941e-08,0.00387913
+moogone,"PD - Ladder Vista Rose [Saw Atlas]",0.199013,0.0420866,-7.86688e-08,0.00412015
+moogone,"PD - Ladder Vista Silver [Saw Atlas]",0.198008,0.0422028,-5.81538e-08,0.00442087
+moogone,"PD - Ladder Vista Indigo [Saw Atlas]",0.197295,0.0423648,1.6091e-09,0.00482199
+moogone,"PD - Ladder Vista Gold [Saw Atlas]",0.196044,0.0424678,6.88072e-08,0.00522533
+moogone,"PD - Ladder Vista Crimson [Saw Atlas]",0.194189,0.042486,1.27023e-07,0.00564119
+moogone,"PD - Open Horizon Amber [Saw Atlas]",0.177826,0.0381166,-5.83865e-07,0.00301618
+moogone,"PD - Open Horizon Pearl [Saw Atlas]",0.178281,0.0385353,-4.62145e-07,0.00317754
+moogone,"PD - Open Horizon Cobalt [Saw Atlas]",0.178628,0.0388438,-3.61325e-07,0.0033599
+moogone,"PD - Open Horizon Rose [Saw Atlas]",0.178935,0.039098,-2.71487e-07,0.00358151
+moogone,"PD - Open Horizon Silver [Saw Atlas]",0.178365,0.0392195,-1.88206e-07,0.00384528
+moogone,"PD - Open Horizon Indigo [Saw Atlas]",0.177832,0.039332,-9.53028e-08,0.00418188
+moogone,"PD - Open Horizon Gold [Saw Atlas]",0.17659,0.0392888,-1.51216e-08,0.00453131
+moogone,"PD - Open Horizon Crimson [Saw Atlas]",0.175536,0.0391411,5.76673e-08,0.00491233
+moogone,"PD - Resonant Cathedral Amber [Saw Atlas]",0.178787,0.0388829,-4.28739e-07,0.00257758
+moogone,"PD - Resonant Cathedral Pearl [Saw Atlas]",0.180285,0.0393657,-2.82912e-07,0.00278927
+moogone,"PD - Resonant Cathedral Cobalt [Saw Atlas]",0.181004,0.0396648,-1.73696e-07,0.00303164
+moogone,"PD - Resonant Cathedral Rose [Saw Atlas]",0.180929,0.039824,-9.28256e-08,0.00331859
+moogone,"PD - Resonant Cathedral Silver [Saw Atlas]",0.181735,0.0397759,-3.07841e-08,0.00363131
+moogone,"PD - Resonant Cathedral Indigo [Saw Atlas]",0.181631,0.0396989,4.01451e-08,0.00400584
+moogone,"PD - Resonant Cathedral Gold [Saw Atlas]",0.181656,0.039576,1.02579e-07,0.00439937
+moogone,"PD - Resonant Cathedral Crimson [Saw Atlas]",0.181463,0.0394343,1.63737e-07,0.00483516
+moogone,"PD - Silk Continent Amber [Saw Atlas]",0.167321,0.0370496,-4.95322e-07,0.00235641
+moogone,"PD - Silk Continent Pearl [Saw Atlas]",0.168314,0.0375355,-3.37443e-07,0.00249986
+moogone,"PD - Silk Continent Cobalt [Saw Atlas]",0.171611,0.0378086,-2.10394e-07,0.00268313
+moogone,"PD - Silk Continent Rose [Saw Atlas]",0.174182,0.0379859,-1.08104e-07,0.00293264
+moogone,"PD - Silk Continent Silver [Saw Atlas]",0.175438,0.0380102,-3.47551e-08,0.00323071
+moogone,"PD - Silk Continent Indigo [Saw Atlas]",0.175679,0.0379872,3.35393e-08,0.00358565
+moogone,"PD - Silk Continent Gold [Saw Atlas]",0.175637,0.0379195,9.73999e-08,0.00396966
+moogone,"PD - Silk Continent Crimson [Saw Atlas]",0.175682,0.0378238,1.57574e-07,0.00440974
+moogone,"PD - Prismatic Saw Amber [Saw Atlas]",0.176812,0.0374904,-2.10969e-08,0.00311131
+moogone,"PD - Prismatic Saw Pearl [Saw Atlas]",0.17692,0.037382,1.08079e-08,0.00330082
+moogone,"PD - Prismatic Saw Cobalt [Saw Atlas]",0.176353,0.0372363,2.48614e-08,0.00348013
+moogone,"PD - Prismatic Saw Rose [Saw Atlas]",0.175522,0.0370654,3.13529e-08,0.00366608
+moogone,"PD - Prismatic Saw Silver [Saw Atlas]",0.174863,0.0368993,5.57786e-08,0.00390084
+moogone,"PD - Prismatic Saw Indigo [Saw Atlas]",0.17424,0.0367795,1.03411e-07,0.00422075
+moogone,"PD - Prismatic Saw Gold [Saw Atlas]",0.173343,0.0366404,1.46555e-07,0.0045408
+moogone,"PD - Prismatic Saw Crimson [Saw Atlas]",0.172151,0.0364752,1.8531e-07,0.0048719
+moogone,"PD - Fifth Skyline Amber [Saw Atlas]",0.168059,0.0353904,9.7944e-08,0.00258493
+moogone,"PD - Fifth Skyline Pearl [Saw Atlas]",0.169728,0.0354805,1.63616e-07,0.00278883
+moogone,"PD - Fifth Skyline Cobalt [Saw Atlas]",0.170433,0.0354815,2.04135e-07,0.00299901
+moogone,"PD - Fifth Skyline Rose [Saw Atlas]",0.17038,0.0354177,2.25901e-07,0.00322924
+moogone,"PD - Fifth Skyline Silver [Saw Atlas]",0.169695,0.035329,2.48408e-07,0.00349425
+moogone,"PD - Fifth Skyline Indigo [Saw Atlas]",0.168636,0.0352464,2.89381e-07,0.00382663
+moogone,"PD - Fifth Skyline Gold [Saw Atlas]",0.16793,0.0351329,3.25708e-07,0.00416628
+moogone,"PD - Fifth Skyline Crimson [Saw Atlas]",0.16693,0.0350103,3.58613e-07,0.00453004
+moogone,"PD - Moving Copper Amber [Saw Atlas]",0.155932,0.0332468,-2.19538e-07,0.00222705
+moogone,"PD - Moving Copper Pearl [Saw Atlas]",0.159072,0.0335472,-1.22098e-07,0.00239681
+moogone,"PD - Moving Copper Cobalt [Saw Atlas]",0.160908,0.0337047,-4.96806e-08,0.00259239
+moogone,"PD - Moving Copper Rose [Saw Atlas]",0.161967,0.0337933,2.6957e-09,0.00283012
+moogone,"PD - Moving Copper Silver [Saw Atlas]",0.162092,0.033788,4.6079e-08,0.00309886
+moogone,"PD - Moving Copper Indigo [Saw Atlas]",0.16154,0.0337695,9.32953e-08,0.00342167
+moogone,"PD - Moving Copper Gold [Saw Atlas]",0.161118,0.0337084,1.37567e-07,0.00376132
+moogone,"PD - Moving Copper Crimson [Saw Atlas]",0.160587,0.0336221,1.78659e-07,0.00413653
+moogone,"PD - Mono Anchor Amber [Saw Atlas]",0.147273,0.0312636,-2.63499e-07,0.00199897
+moogone,"PD - Mono Anchor Pearl [Saw Atlas]",0.150051,0.0317412,-1.61138e-07,0.00212418
+moogone,"PD - Mono Anchor Cobalt [Saw Atlas]",0.152662,0.0320278,-8.11844e-08,0.00228274
+moogone,"PD - Mono Anchor Rose [Saw Atlas]",0.154518,0.0322351,-1.42571e-08,0.00249873
+moogone,"PD - Mono Anchor Silver [Saw Atlas]",0.15532,0.0323137,3.54039e-08,0.00275673
+moogone,"PD - Mono Anchor Indigo [Saw Atlas]",0.155224,0.0323358,8.19743e-08,0.00306249
+moogone,"PD - Mono Anchor Gold [Saw Atlas]",0.154935,0.0323237,1.24942e-07,0.00339414
+moogone,"PD - Mono Anchor Crimson [Saw Atlas]",0.154811,0.0323013,1.65906e-07,0.00377646
+moogone,"PD - Cedar Saw [Rework]",0.218323,0.0495352,1.73753e-06,0.00269916
+continuum,"PD - Dusk Canopy [Studio]",0.298384,0.0653509,-1.09657e-07,0.00236515
+continuum,"PD - Slow Tides [Studio]",0.269969,0.0502963,-3.58976e-08,0.00428147
+continuum,"PD - Amber Cloud [Studio]",0.265023,0.0522039,-1.37217e-07,0.0052665
+continuum,"PD - Polar Choir [Studio]",0.313314,0.0573499,2.16494e-07,0.00668794
+continuum,"PD - Orbit Mist [Studio]",0.282174,0.0533267,-6.55178e-08,0.00470275
+continuum,"PD - Velvet Air [Studio]",0.25744,0.0501531,3.20052e-07,0.00224348
+continuum,"PD - Glass Horizon [Studio]",0.254478,0.050265,-3.42571e-07,0.00538357
+continuum,"PD - Fifth Aurora [Studio]",0.290003,0.0558968,-2.56346e-07,0.00582463
+continuum,"PD - Slow Tides [Stage]",0.238647,0.0531176,1.26682e-07,0.00441488
+continuum,"PD - Polar Choir [Stage]",0.283043,0.0607579,-2.65671e-07,0.00463186
+continuum,"PD - Velvet Air [Stage]",0.260114,0.0530986,1.88221e-07,0.00298787
+continuum,"PD - Fifth Aurora [Stage]",0.268125,0.0525072,-2.77672e-07,0.00624328
+continuum,"PD - Amber Architecture 1 [Signature]",0.34755,0.0664655,1.16798e-08,0.00511384
+continuum,"PD - Amber Architecture 2 [Signature]",0.359693,0.0683867,2.24161e-07,0.00572243
+continuum,"PD - Amber Architecture 3 [Signature]",0.331213,0.069145,2.23551e-07,0.00633637
+continuum,"PD - Amber Architecture 4 [Signature]",0.344389,0.067057,-4.17299e-07,0.00668712
+continuum,"PD - Living Filaments 1 [Signature]",0.36514,0.069441,2.05044e-07,0.0051726
+continuum,"PD - Living Filaments 2 [Signature]",0.313121,0.0692379,-1.20742e-08,0.00573634
+continuum,"PD - Living Filaments 3 [Signature]",0.348215,0.0671367,-1.94127e-07,0.00632453
+continuum,"PD - Living Filaments 4 [Signature]",0.31842,0.0646537,2.85155e-07,0.00662604
+continuum,"PD - Copper Panorama 1 [Signature]",0.2941,0.0625825,8.85955e-08,0.00330631
+continuum,"PD - Copper Panorama 2 [Signature]",0.282284,0.0592187,2.71073e-08,0.0034018
+continuum,"PD - Copper Panorama 3 [Signature]",0.290314,0.0574002,-2.46805e-07,0.00357236
+continuum,"PD - Copper Panorama 4 [Signature]",0.25648,0.0541669,4.78907e-08,0.00324178
+continuum,"PD - Resonant Silk 1 [Signature]",0.335808,0.0675778,-1.4715e-08,0.00536867
+continuum,"PD - Resonant Silk 2 [Signature]",0.338417,0.0661758,-2.23274e-08,0.005875
+continuum,"PD - Resonant Silk 3 [Signature]",0.323003,0.0639376,-6.39085e-08,0.00615655
+continuum,"PD - Resonant Silk 4 [Signature]",0.318723,0.0633178,1.19044e-07,0.00658092

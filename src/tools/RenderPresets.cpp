@@ -22,7 +22,7 @@ int main(int argc,char** argv){
         else return 2;
     }
     const std::string bank=argc>=3?argv[2]:"reference";
-    if(bank!="reference" && bank!="studio" && bank!="all" && bank!="smoke" && bank!="stage" && bank!="signature" && bank!="rework")return 2;
+    if(bank!="reference" && bank!="studio" && bank!="all" && bank!="smoke" && bank!="stage" && bank!="signature" && bank!="rework" && bank!="pads" && bank!="sampled")return 2;
     std::filesystem::path folder(argv[1]);std::filesystem::create_directories(folder);
     std::ofstream report(folder/"audit.csv");report<<"instrument,preset,peak,rms,dc,derivative_rms\n";
     int failures=0, rendered=0;
@@ -30,6 +30,8 @@ int main(int argc,char** argv){
         auto e=triad::makeEngine(kind);const auto& d=e->definition();
         if(!instrument.empty() && instrument!=d.id)continue;
         for(const auto& preset:triad::factoryPresetsFor(d.id)){
+            if(bank=="pads" && preset.category!="Pad")continue;
+            if(bank=="sampled" && !preset.name.endsWith("[Sampled]"))continue;
             if(bank=="reference" && !preset.name.endsWith("Ref"))continue;
             if(bank=="studio" && !preset.name.endsWith("[Studio]"))continue;
             if(bank=="stage" && !preset.name.endsWith("[Stage]"))continue;

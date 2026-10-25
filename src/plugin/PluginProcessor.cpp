@@ -1201,6 +1201,15 @@ void TriadAudioProcessor::setStateInformation (const void* data, int sizeInBytes
     if (instrument.isNotEmpty() && instrument != juce::String (engine_->definition().id))
         return;
 
+    // Older projects predate recorded sources. Missing nodes must reset to synthesis,
+    // rather than inherit the sample program that happened to be selected before load.
+    for (const auto& id : {"sample.program", "sample.gain"}) {
+        if (!state.getChildWithProperty("id",id).isValid()) {
+            juce::ValueTree parameter("PARAM");parameter.setProperty("id",id,nullptr);
+            parameter.setProperty("value",juce::String(id)=="sample.program"?0.0f:.65f,nullptr);
+            state.appendChild(parameter,nullptr);
+        }
+    }
     apvts_.replaceState (state);
     decodeState (state);
     readParameters();

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <set>
+#include <array>
 
 namespace triad
 {
@@ -2624,6 +2625,50 @@ std::vector<FactoryPreset> factoryPresetsFor (const std::string& instrumentId)
     append(stagePresets(instrumentId));
     append(signaturePresets(instrumentId));
     append(reworkPresets(instrumentId));
+    for (auto& p : result) {
+        if (!p.name.endsWith("[Atelier]") && !p.name.endsWith("[Rework]")) continue;
+        int program=0;
+        if(p.category=="Keyboard")program=1;
+        else if(p.category=="Strings")program=p.name.contains("Cello")?3:p.name.contains("Violin") || p.name.contains("Solo Bow") || p.name.contains("Silk Cantabile")?4:2;
+        if(program>0){p.values.emplace_back("sample.program",(float)program);p.values.emplace_back("sample.gain",.75f);}
+    }
+    for (const auto& item : std::array<std::pair<const char*,const char*>,4>{{
+        {"KY - Upright KW [Sampled]","Keyboard"},{"ST - Violin Section [Sampled]","Strings"},
+        {"ST - Cello Section [Sampled]","Strings"},{"ST - Solo Violin [Sampled]","Strings"}}}) {
+        FactoryPreset p;p.name=item.first;p.category=item.second;
+        p.values={{"sample.program",(float)(p.name.contains("Upright")?1:p.name.contains("Cello")?3:p.name.contains("Solo")?4:2)},{"sample.gain",.75f}};
+        result.push_back(std::move(p));
+    }
+    // Factory Pad contract: static filters, gentle resonance, no audio-rate filter routes.
+    for (auto& p : result) {
+        if (p.category != "Pad") continue;
+        auto set = [&p](const juce::String& key, float x) {
+            for (auto& item : p.values) if (item.first == key) { item.second=x; return; }
+            p.values.emplace_back(key,x);
+        };
+        p.morphB.clear();
+        if (instrumentId == "matriarch") {
+            set("mat.flt.res1",.06f);set("mat.flt.res2",.06f);set("mat.flt.envAmt",0);
+            set("mat.lfo.cutoffAmt",0);set("mat.lfo.pwAmt",0);
+            p.cables.erase(std::remove_if(p.cables.begin(),p.cables.end(),[](const auto& c){return c.second.contains("flt");}),p.cables.end());
+        } else if (instrumentId == "polybrute") {
+            set("poly.steiner.resonance",.06f);set("poly.ladder.resonance",.06f);
+            set("poly.steiner.envAmt",0);set("poly.ladder.envAmt",0);set("poly.lfo3.cutoffAmt",0);set("poly.steiner.fm",0);
+            set("poly.vcoA.metalizer",0);set("poly.vcoB.fm",0);set("poly.fx.dist.mix",0);
+            for(int slot=1;slot<=64;++slot)set("poly.mod.slot"+juce::String(slot)+".amount",0);
+        } else if (instrumentId == "moogone") {
+            for(int part=1;part<=3;++part){const auto q="one.p"+juce::String(part)+".";
+                set(q+"svf.mode",0);set(q+"svf.resonance",.04f);set(q+"ladder.resonance",.06f);
+                set(q+"svf.envAmt",0);set(q+"ladder.envAmt",0);set(q+"lfo3.cutoffAmt",0);set(q+"lfo2.pwmAmt",0);
+                set(q+"mix.ring",0);set(q+"vco3.fm",0);set(q+"fx.dist.mix",0);
+                set(q+"fx.delay.mix",0);set(q+"fx.chorus.mix",0);
+                for(int slot=1;slot<=8;++slot)set(q+"mod.slot"+juce::String(slot)+".amount",0);
+            }
+        } else if (instrumentId == "continuum") {
+            for(int f=1;f<=5;++f){auto q="con.flt"+juce::String(f)+".";set(q+"res",.06f);set(q+"env",0);}
+            p.matrix.erase(std::remove_if(p.matrix.begin(),p.matrix.end(),[](const auto& c){return c.destination>=5 && c.destination<=9;}),p.matrix.end());
+        }
+    }
     return sortedPresets(std::move(result));
 }
 

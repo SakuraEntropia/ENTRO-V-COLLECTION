@@ -1,0 +1,318 @@
+[
+  {
+    "source": "Strings/Violin Section/susVib/VlnEns_susVib_A2_v1.wav",
+    "sha256": "5b3ff9f991642a6dc2fdad56a7d94f581077d2c4082cc1ed89156737716ff22c"
+  },
+  {
+    "source": "Strings/Violin Section/susVib/VlnEns_susVib_A3_v1.wav",
+    "sha256": "72817a53dfd2eb61eca94658c14e1cab6017629ca2f27bab8e394c6675bfaad7"
+  },
+  {
+    "source": "Strings/Violin Section/susVib/VlnEns_susVib_B2_v1.wav",
+    "sha256": "1a873970a86da78ed8c9aa068303958496c34eee6fa94fcab39d499dbdfb7826"
+  },
+  {
+    "source": "Strings/Violin Section/susVib/VlnEns_susVib_B4_v1.wav",
+    "sha256": "ec4cea41ac77f251bf5f4158fe9cbeeae13755e3785106e505808de18fdddc0d"
+  },
+  {
+    "source": "Strings/Violin Section/susVib/VlnEns_susVib_C4_v1.wav",
+    "sha256": "c07edd5b2119fa1da2207aba996961b50dd616f69bbcf2300ab271bc6c16239f"
+  },
+  {
+    "source": "Strings/Violin Section/susVib/VlnEns_susVib_D3_v1.wav",
+    "sha256": "583e660bc5daa4e094aef5fc014fbb92751040be8741ed7a16847306a1fe0a99"
+  },
+  {
+    "source": "Strings/Violin Section/susVib/VlnEns_susVib_D5_v1.wav",
+    "sha256": "f8d870457826c94270b9c3ead8e8ec02cb7e6c4a3481cded055641b7fab7df62"
+  },
+  {
+    "source": "Strings/Violin Section/susVib/VlnEns_susVib_E4_v1.wav",
+    "sha256": "787fb4bcfb47d5c88ee1573c8db15f32d345386301be4a8eea6a825847413ae2"
+  },
+  {
+    "source": "Strings/Violin Section/susVib/VlnEns_susVib_F#3_v1.wav",
+    "sha256": "8dc13d197373f0d1fe1b0744de57796800bde372906d3667398c55d473a383ea"
+  },
+  {
+    "source": "Strings/Violin Section/susVib/VlnEns_susVib_G2_v1.wav",
+    "sha256": "feb96c5064fbef43087c495d61a9cab9f70ff1be5b22905147c1f86d5f89547c"
+  },
+  {
+    "source": "Strings/Violin Section/susVib/VlnEns_susVib_G4_v1.wav",
+    "sha256": "ed2a89cf254432d2af073699fa43ebfa16cfbc5552c7fc964a184fc434eaaa39"
+  },
+  {
+    "source": "Strings/Violin Section/susVib/VlnEns_susVib_A2_v2.wav",
+    "sha256": "db6bad06c78577a105f6c2a5dc5c7ac0643c36e6904742411f0506dd9d6fa84b"
+  },
+  {
+    "source": "Strings/Violin Section/susVib/VlnEns_susVib_A3_v2.wav",
+    "sha256": "3fc4a9e22037643fce11e755da72c61c664893f83e637c24a7b5c2d3824ab986"
+  },
+  {
+    "source": "Strings/Violin Section/susVib/VlnEns_susVib_B2_v2.wav",
+    "sha256": "a822fd195e60881afac5e0801d8d494b782a8f6787a08f3c711f5e00290b3fb6"
+  },
+  {
+    "source": "Strings/Violin Section/susVib/VlnEns_susVib_B4_v2.wav",
+    "sha256": "bdb85532f47e4ebd681f9617a415116e7e5aeb786dce2eeab5ab9b93c1b31644"
+  },
+  {
+    "source": "Strings/Violin Section/susVib/VlnEns_susVib_C4_v2.wav",
+    "sha256": "5857387b40c412f756ef281c1171247664432a4e5078c98142d595d15cd92ef9"
+  },
+  {
+    "source": "Strings/Violin Section/susVib/VlnEns_susVib_D3_v2.wav",
+    "sha256": "77893dbf1ea1be8c40ad756d16b916298e6b1b0742495e9853e020375592357c"
+  },
+  {
+    "source": "Strings/Violin Section/susVib/VlnEns_susVib_D5_v2.wav",
+    "sha256": "0c2ca9de723bed0a0968e32126b934f778cd678b367a29e7fde91004daf84daf"
+  },
+  {
+    "source": "Strings/Violin Section/susVib/VlnEns_susVib_E4_v2.wav",
+    "sha256": "030c09a631ebbc7304fc0b47bb5c346cd646e7451d9fdc531870f2534c60d9e9"
+  },
+  {
+    "source": "Strings/Violin Section/susVib/VlnEns_susVib_F#3_v2.wav",
+    "sha256": "d7bc6b4c259b9543de4fe66228ee107205b8f539c8d7c1de71f5781d45a14fc7"
+  },
+  {
+    "source": "Strings/Violin Section/susVib/VlnEns_susVib_G2_v2.wav",
+    "sha256": "c0b06a23f0245c042f0609dc0db704adc14bfc9ea8a34cb5c97d80096715a0e6"
+  },
+  {
+    "source": "Strings/Violin Section/susVib/VlnEns_susVib_G4_v2.wav",
+    "sha256": "a1d6d5a0397541692e2f88a0cd9820eabe90407784ee631aa3bfa74772637a65"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_A2_v1_1.wav",
+    "sha256": "c97a003184fdcb153d6b6c0bae8d82a90592a1b04b06bd7caaeda8b9776d5284"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_B1_v1_1.wav",
+    "sha256": "4f95c087c4b8d87ee591e9d39c3c9caf085c6f1b9125eac3ca9e4e637da628ee"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_B3_v1_1.wav",
+    "sha256": "bd25d66c1c4e73f5827bf3b931244e51ec8388594d8004529a762be81258097f"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_C1_v1_1.wav",
+    "sha256": "abdcea431f384e135c469b0f3e4ac2a437f282f521dc5bcbe22abc221536e8de"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_C3_v1_1.wav",
+    "sha256": "a614ee7ca821b44660236e47b89620cf914ec6ad27a99bc0d9764f47dbe512e1"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_D2_v1_1.wav",
+    "sha256": "e8640dec9febc6e39fcf06b19d2c95a85d5ff8c38f13c9879e69f551eaf38ab8"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_D4_v1_1.wav",
+    "sha256": "b4aa3a7fec1f0e783fa560f493868c17045feb271738e3d6834d1b00594b1c38"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_E1_v1_1.wav",
+    "sha256": "de31a61b02d4e1d5a79b8bc432b0f35fe2e434290ad34402cc0f2dd7dc278cde"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_E1_v1_2.wav",
+    "sha256": "3f8c250028d5364fc9c5584ad204d7a1d4c8c02ae41e90ad482e7b0d7d1bc674"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_E3_v1_1.wav",
+    "sha256": "d2f961e30bf64021cf4acbd88e0e7a1fd1840943ae78c62a711bcce3d109216e"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_F2_v1_1.wav",
+    "sha256": "162054eab4ba118924f8f8986cf1b17ccfd65211d1945743ffbae30b4953f901"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_F4_v1_1.wav",
+    "sha256": "a9888547b4b684c7649a882e693d61964848f18401a18e4646a8449b40c08bad"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_G1_v1_1.wav",
+    "sha256": "9e5d24e8e28d6c7f650f9bb2b33d43c13e341a8bd33124c64e23881378b181ba"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_G3_v1_1.wav",
+    "sha256": "8d658346b8d2054fd534b3222b5d7a23196d22a83a68c3a04ffb76b21853a3db"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_A2_v3_1.wav",
+    "sha256": "b7f226f19b9616abe5fa4a27ef50116667e19eb0127f30eacfa6d1a83e9149f0"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_B1_v3_1.wav",
+    "sha256": "8331a0e13f41243efab111f9b5e9185524c27ee48631269acecafc954ab7eaa8"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_B3_v3_1.wav",
+    "sha256": "1c8b571516ac503df871bbea74756dfc3813b4bc10a76921d231afb0175cdbf1"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_C1_v3_1.wav",
+    "sha256": "19195ab85ab71626bd11e7100febdaeeba1c237ff5887b934fd0ffd8dfad82cb"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_C3_v3_1.wav",
+    "sha256": "51e884d54eea3bf4ba7ee35289a09f15ddb6a52cd849248d01bf18477ccbd07b"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_D2_v3_1.wav",
+    "sha256": "fc946615cd6550570c8f05d61c0d59b9079bf9daba8bf25be7943487fea5a7ae"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_D4_v3_1.wav",
+    "sha256": "2ea7f580738dbcf143b9c9f72703071aa7a8f6bfa33cdd2c2e5da961df1805bb"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_E1_v3_1.wav",
+    "sha256": "ee190b95be4f2416b9f41d248d255a4d7067b722f9b21482b30bc9872a9bb0d1"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_E3_v3_1.wav",
+    "sha256": "24a7ffdc23087026c4ef2d421441253c71490df9cf0757e93ffb14b4e61481ef"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_F2_v3_1.wav",
+    "sha256": "d965197faf2e6ab8675f1d65505e5ba934a5ab769412d314bad94133e18f24d0"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_F4_v3_1.wav",
+    "sha256": "24ea4a0f892cb60c4a52d6a5b1ef8281e4e9a9f78b5f938e078da7cbbfd5ba19"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_G1_v3_1.wav",
+    "sha256": "e4c61d4ab855ec20ddb69ff608a1c066ff8a779ddd08d1dfe1d534d3a4563ad0"
+  },
+  {
+    "source": "Strings/Cello Section/susvib/susvib_G3_v3_1.wav",
+    "sha256": "17df597c259a849870aa25e9fbfa6093371851f83ba7b9deb9cb9e1ec11463a7"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_A3_p.wav",
+    "sha256": "8daa4ca0eba8a834814435047e36b47826e730a7796c325966323f53debc9e46"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_A4_p.wav",
+    "sha256": "0d05607b46b78690893006d5aa7923ac304c7fb497df1e96536dc88ac5ac487f"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_A5_p.wav",
+    "sha256": "204834bfb91ee62d53d3b2c9e9d37928617f643922f434323508a15a70ee591c"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_A6_p.wav",
+    "sha256": "0f212759660b2fb0d645b2089adbf4222eebc829927c1e002caa434ecd804f0b"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_C4_p.wav",
+    "sha256": "592ebf4404ccafc7164c13cc543911ba9a2fe5f5e70dbb200807e2ae37b25035"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_C5_p.wav",
+    "sha256": "77a2133b5f97e1ec0edb759c0c552fc3efa7caf4ce1e0a4aa22625cf4c9da130"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_C6_p.wav",
+    "sha256": "48039f28964328d0b8235b8d61e39b06f8d22f836a6940fa036fe7004fc58e6c"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_C7_p.wav",
+    "sha256": "02b077cecc5002156fb439c5e0edfb75dbed94a97502a0252e57a76930415889"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_E4_p.wav",
+    "sha256": "57c5aec0678a5d582d87ab33cd2f8954fea26ffd04c932eb6753d6a78e08736b"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_E5_p.wav",
+    "sha256": "c60c3bcfc64ea00ebf8d97b16f2876c892393839a017a945c5e557359b6369a4"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_E6_p.wav",
+    "sha256": "f1f0f8062eda1af6147852bf61b39e6b8734d4b0236737810c9d660297a34f0c"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_G3_p.wav",
+    "sha256": "c52d8ef3e2882984c09da1b7c7ef40b82e997bc78cfdd380fe167bbcb94b03de"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_G4_p.wav",
+    "sha256": "ad1ba8442a6b40919093c9c831a8171c7030f7e651fbe075ab87764665deef88"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_G5_p.wav",
+    "sha256": "537df6072b0922a0231a6b3fad117e84bcaaa3e60ca68c665776a83c9bd9062d"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_G6_p.wav",
+    "sha256": "eb40e796d0e40ff4a729fd93dc9436ac08b30de308a8191e944351fee49aef9d"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_A3_f.wav",
+    "sha256": "76934f3a85e4ba3b6518132c2fe6effa340c33fbb02f94e88c60b00073dc722f"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_A4_f.wav",
+    "sha256": "19e5374658351508a9e2c929e871a43caff41e62d5e3363ead6f88428a9ab863"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_A5_f.wav",
+    "sha256": "0558d79d23db55c710e664e6283b62619f5a582ce261a5c082700a0d01536627"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_A6_f.wav",
+    "sha256": "37f6cc2f12b1b443a77d3ee370178da4a002a2ac3b6529663cc7ee002728ddcf"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_C4_f.wav",
+    "sha256": "4169605b51a72454f11bc2c34efc66c1d9993fd2b7d5f097a025ef9d3a2dbdfa"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_C5_f.wav",
+    "sha256": "af72f852ef2892233699851dacf5f8d97d446822d8eb4ce9e0ec27d5a721b118"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_C6_f.wav",
+    "sha256": "7ec8e0c2dde75282a4aaacccc713c84faa3e84daa9cf43df45ffc0e209964d46"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_C7_f.wav",
+    "sha256": "f8223aed62911ef3f6937111bf3cdcc36fc25a636d4f99480b97029c4d28f393"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_E4_f.wav",
+    "sha256": "418512905f3294a23cf999f0587bf8e04d60192fe317ea8c80c150a85670eda2"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_E5_f.wav",
+    "sha256": "5c278e263fd59650190fc58294945cd291906eb1abd8293f728a96a878d1d478"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_E6_f.wav",
+    "sha256": "8d1712f5659274a83aa90807132084559633e4817027c8a5b5f40826b3d9bc84"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_G3_f.wav",
+    "sha256": "80bae3776b0ccd3d4774f47429e829c7764f5fe6061ff844a8affc6ac68b7899"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_G4_f.wav",
+    "sha256": "14e3ea3d5172722d4d2686bae5da3d603800a7a474fa295d98275a9410913822"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_G5_f.wav",
+    "sha256": "b5bb27541d6187e6eeb20baf50625ca35fc9d44c7f113936a9369bc7ce490a68"
+  },
+  {
+    "source": "Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_G6_f.wav",
+    "sha256": "68c49e55565810ea822866e3d39e51c1a5ad53cfa1a67bc25836ca7feac3fe0c"
+  }
+]

@@ -1,3 +1,7 @@
+# Clean Pad / Recorded Instruments — 2026-10-25
+
+Implementation and listening limitations: [CLEAN-PAD-SAMPLED.md](CLEAN-PAD-SAMPLED.md). Earlier entries below describe their recorded revisions, not the current sample playback engine.
+
 # One listening rework — 2026-10-25
 
 Three experimental presets and independent note-on oscillator phases. Nine CTest suites and all 238 One render audits pass. All four freshly installed AU bundles pass auval; all four VST3 bundles pass pluginval strictness 5. Prior bundles were backed up before replacement. Listening quality remains unapproved; see [ONE-REWORK.md](ONE-REWORK.md). Earlier validation below refers to its recorded revision.
