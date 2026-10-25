@@ -1,6 +1,6 @@
 # Coverage and honest status
 
-Updated 2026-10-24. This table is the source of truth for what exists in code, what automated tests exercise, and what remains unverified.
+Updated 2026-10-25. This table is the source of truth for what exists in code, what automated tests exercise, and what remains unverified.
 
 Legend:
 
@@ -77,7 +77,7 @@ Reference: original 6-voice PolyBrute, manual 3.0.1; firmware 3.1.1 differences 
 | Effects | Implemented, partial | distortion (4 types), chorus, stereo delay with sync/ping-pong, FDN reverb; not the proprietary algorithms or the full v3 effect list |
 | Morph performance pad | Implemented, M1 | lower-left 2D pad: X = morph A/B, Y = spread, Z = touch pressure/aftertouch; vertical pressure slider and mouse wheel are the non-touchpad fallback |
 | Sequencer / Motion | Partial | 64-step six-note editor with ties/velocity; no Motion recorder |
-| Factory presets | Implemented, categorized | 87 presets (64 Studio + six documented Ref studies) in Bass / Lead / Brass / Pad / Pluck / Keys / Organ / Arp / FX, incl. Reese, Acid, Supersaw and Hoover; not hardware preset data |
+| Factory presets | Implemented, categorized | 119 presets (64 Studio + 32 Stage + six documented Ref studies) in Bass / Lead / Brass / Pad / Pluck / Keys / Organ / Arp / FX, incl. Reese, Acid, Supersaw and Hoover; not hardware preset data |
 | Oversampling | Not implemented | PolyBLEP oscillators and host-rate nonlinear stages; hard sync is a phase reset without BLEP |
 
 ## ONE V
@@ -96,7 +96,7 @@ Reference: 2019 manual + 1.8.2 release notes; later firmware not audited page by
 | Effects | Implemented, partial | per-part distortion/chorus/delay/send + master FDN reverb; **not** an Eventide algorithm or equivalent claim |
 | Performance | Implemented, partial | pitch bend, wheels, aftertouch, sustain, glide, drift; per-part Poly/Mono/Unison, last-note priority, stack size and detune; no chord memory |
 | Arpeggiator / sequencer | Partial | host-wrapper arp uses part 1's arp parameters; one shared 64-step six-note sequencer; no independent per-part sequencers |
-| Factory presets | Implemented, categorized | 91 presets (64 Studio + 12 official-parameter Ref adaptations) in Bass / Lead / Brass / Pad / Pluck / Keys / Organ / Arp / Split / FX, incl. Reese, Acid and Supersaw; not hardware preset data |
+| Factory presets | Implemented, categorized | 123 presets (64 Studio + 32 Stage + 12 official-parameter Ref adaptations) in Bass / Lead / Brass / Pad / Pluck / Keys / Organ / Arp / Split / FX, incl. Reese, Acid and Supersaw; not hardware preset data |
 | External audio | Implemented | optional Instrument In bus, per-part external mixer level |
 
 ## Platform and delivery
@@ -104,9 +104,9 @@ Reference: 2019 manual + 1.8.2 release notes; later firmware not audited page by
 | Item | Status | Notes |
 |---|---|---|
 | macOS arm64 VST3 | Built, tested | pluginval 1.0.4 strictness 5, including GUI tests |
-| macOS AUv2 | Rebuilt | earlier builds passed auval; this changed revision has not been re-run through auval |
+| macOS AUv2 | Installed, tested | fresh auval passes for all four after the legacy/Stage update |
 | macOS standalone | Built, tested | launches; used for screenshots; audio device selection is JUCE's panel |
-| Windows x64 | Previous revision built in CI | main 309ea79 passed both platform jobs; this revision must be checked separately |
+| Windows x64 | Built, tested in CI | source 39e893e passed Windows build and all eight test suites; real Windows DAW loading remains unverified |
 | Universal binary | Supported, **not built** | `-DTRIAD_UNIVERSAL=ON`; only arm64 artifacts inspected |
 | Code signing | Ad-hoc only | no Developer ID; no notarisation |
 | DAW host test | **Not run** | pluginval and auval only; no Logic/Ableton/Reaper session recorded |
@@ -119,7 +119,7 @@ Reference: 2019 manual + 1.8.2 release notes; later firmware not audited page by
 2. Matriarch has 79 of the documented 90 patch points and a reduced sequencer.
 3. PolyBrute ribbon/Morphée CC sources, 64-step editor and 64 connections exist; Motion, full hardware source layout and calibration remain incomplete.
 4. Moog One's arpeggiator/sequencer remains shared across parts; chord memory is absent.
-5. This revision needs Windows CI verification; real-DAW loading remains unverified.
+5. Windows and macOS builds/tests pass CI; real-DAW loading remains unverified.
 6. No VST2, AAX, AUv3 or Linux builds.
 
 

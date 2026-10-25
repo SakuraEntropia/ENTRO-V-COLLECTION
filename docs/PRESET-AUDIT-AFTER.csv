@@ -1,0 +1,1067 @@
+instrument,preset,peak,rms,dc,derivative_rms
+matriarch,BA - Sub Bass,0.0595002,0.0113828,-1.78046e-07,0.000242577
+matriarch,BA - Rubber Bass,0.410012,0.0795577,0.000174482,0.00105703
+matriarch,BA - Reese Bass,0.410928,0.10314,0.000193188,0.00217886
+matriarch,BA - Acid Bass,0.216609,0.043374,2.25316e-05,0.00128713
+matriarch,BA - Velvet Sub [Studio],0.185937,0.0719695,7.61683e-06,0.000480178
+matriarch,BA - Rubber Transit [Studio],0.229986,0.0621098,-4.62112e-06,0.00105712
+matriarch,BA - Copper Pulse [Studio],0.243233,0.0722541,-3.05245e-06,0.00129015
+matriarch,BA - Broken Acid [Studio],0.285135,0.05816,-8.57463e-05,0.00175084
+matriarch,BA - Reese Current [Studio],0.192253,0.0563303,-3.41437e-06,0.000594687
+matriarch,BA - Roundwood [Studio],0.193621,0.0523801,-1.98535e-05,0.00150327
+matriarch,BA - Low Voltage [Studio],0.266443,0.0746794,-1.05746e-05,0.00182139
+matriarch,BA - Octave Furnace [Studio],0.293726,0.0811029,-0.000241429,0.0014538
+matriarch,BA - Rubber Transit [Stage],0.227501,0.0647685,4.02419e-05,0.000617912
+matriarch,BA - Broken Acid [Stage],0.238781,0.0483721,1.9119e-05,0.000967438
+matriarch,BA - Roundwood [Stage],0.29097,0.081292,-2.38957e-05,0.00202034
+matriarch,BA - Octave Furnace [Stage],0.300861,0.0729145,-0.000179765,0.0016727
+matriarch,LD - Sync Lead,0.222592,0.00922736,-1.427e-10,0.0125892
+matriarch,LD - Solo Saw,0.291784,0.0780604,4.0235e-05,0.0100768
+matriarch,LD - Supersaw Lead,0.167718,0.0439853,5.08255e-06,0.0063925
+matriarch,LD - Loose Mechanism Ref,0.302254,0.0992522,6.21878e-07,0.00514338
+matriarch,LD - Silk Portamento [Studio],0.216975,0.0685982,-1.04556e-05,0.00374773
+matriarch,LD - Pulse Rider [Studio],0.235663,0.0740016,1.2404e-05,0.00801608
+matriarch,LD - Brass Needle [Studio],0.239596,0.0788896,-1.68271e-05,0.00953617
+matriarch,LD - Sync Razor [Studio],0.267058,0.0663053,-0.000133232,0.0156149
+matriarch,LD - Wide Horizon [Studio],0.193849,0.0565002,-4.44528e-06,0.00415678
+matriarch,LD - Hollow Reed [Studio],0.213355,0.0606743,1.10758e-06,0.010535
+matriarch,LD - Ribbon Flame [Studio],0.226274,0.0712512,-1.49276e-05,0.012184
+matriarch,LD - Fifth Signal [Studio],0.27159,0.0711116,-0.000145383,0.0100345
+matriarch,LD - Pulse Rider [Stage],0.221002,0.0684643,-2.66213e-06,0.0048499
+matriarch,LD - Sync Razor [Stage],0.22646,0.076055,-1.28744e-06,0.00881555
+matriarch,LD - Hollow Reed [Stage],0.287724,0.0686587,-0.000102007,0.0138801
+matriarch,LD - Fifth Signal [Stage],0.343822,0.0609661,-3.02602e-07,0.0206481
+matriarch,BR - Paraphonic Brass,0.256069,0.0661186,4.28456e-05,0.00726279
+matriarch,PD - Drone Cathedral,0.428813,0.119876,-0.000179207,0.0176118
+matriarch,PD - Warm Analog Pad,0.225116,0.0467161,4.01605e-06,0.0066868
+matriarch,PD - Descending Echo Field Ref,0.227565,0.0501886,6.19e-06,0.00190289
+matriarch,PD - Dusk Canopy [Studio],0.229816,0.0754194,3.53929e-06,0.00256359
+matriarch,PD - Slow Tides [Studio],0.238701,0.075319,-1.28955e-05,0.00444728
+matriarch,PD - Amber Cloud [Studio],0.282144,0.0918834,-5.91652e-05,0.00542647
+matriarch,PD - Polar Choir [Studio],0.283252,0.0692758,-0.000145087,0.00821197
+matriarch,PD - Orbit Mist [Studio],0.256348,0.065583,5.14688e-06,0.00307855
+matriarch,PD - Velvet Air [Studio],0.238563,0.0671716,-1.57294e-05,0.0061744
+matriarch,PD - Glass Horizon [Studio],0.295389,0.0753837,-4.26507e-05,0.00772857
+matriarch,PD - Fifth Aurora [Studio],0.30187,0.0777837,-0.000187164,0.00573298
+matriarch,PD - Slow Tides [Stage],0.261751,0.0920313,-4.26113e-05,0.00306065
+matriarch,PD - Polar Choir [Stage],0.267532,0.0737213,-0.000171115,0.00474233
+matriarch,PD - Velvet Air [Stage],0.241481,0.0686184,-1.84431e-05,0.00649465
+matriarch,PD - Fifth Aurora [Stage],0.229199,0.0619169,2.06106e-06,0.00444201
+matriarch,STR - Slow Strings,0.255659,0.0565317,8.29527e-06,0.0103623
+matriarch,DO - Undersea Cable [Studio],0.127964,0.0555577,1.87588e-08,0.00193872
+matriarch,DO - Tidal Machine [Studio],0.157138,0.0538179,3.68674e-05,0.00257299
+matriarch,DO - Copper Planet [Studio],0.191624,0.0869185,-8.00724e-08,0.00431277
+matriarch,DO - Clockwork Fog [Studio],0.256017,0.0724163,-0.000237409,0.00618469
+matriarch,DO - Reese Nebula [Studio],0.149746,0.0559049,1.75336e-08,0.00214771
+matriarch,DO - Hollow Earth [Studio],0.194812,0.0474163,1.95284e-05,0.00337875
+matriarch,DO - Glass Current [Studio],0.219466,0.0819984,-2.13686e-07,0.00566143
+matriarch,DO - Fifth Monolith [Studio],0.267513,0.0739002,-0.00021851,0.00524548
+matriarch,DO - Tidal Machine [Stage],0.184903,0.0700169,2.39824e-08,0.00174302
+matriarch,DO - Clockwork Fog [Stage],0.24332,0.0796198,-0.00019406,0.00446086
+matriarch,DO - Hollow Earth [Stage],0.131676,0.0473403,-1.81478e-08,0.0021117
+matriarch,DO - Fifth Monolith [Stage],0.172155,0.0511194,7.95204e-06,0.00354666
+matriarch,PL - Analog Pluck,0.239768,0.00959047,4.41843e-07,0.00359433
+matriarch,PL - Muted Wire [Studio],0.158419,0.0113979,-3.36983e-08,0.000503688
+matriarch,PL - Pulse Pizzicato [Studio],0.408957,0.0143014,2.72648e-07,0.0166892
+matriarch,PL - Copper Harp [Studio],0.345888,0.0209363,3.8801e-07,0.0252907
+matriarch,PL - Sync Kalimba [Studio],0.451448,0.0302479,1.52771e-05,0.038501
+matriarch,PL - Stereo Droplets [Studio],0.284403,0.0135446,-1.74294e-08,0.015757
+matriarch,PL - Bamboo Spark [Studio],0.377503,0.0246545,3.47075e-07,0.0308445
+matriarch,PL - Crystal Pin [Studio],0.310276,0.0258661,7.84179e-08,0.0314233
+matriarch,PL - Fifth Koto [Studio],0.289631,0.0196517,-2.51125e-07,0.0180218
+matriarch,PL - Pulse Pizzicato [Stage],0.371252,0.0132533,-7.56306e-08,0.00461252
+matriarch,PL - Sync Kalimba [Stage],0.450162,0.0228345,1.22052e-06,0.024984
+matriarch,PL - Bamboo Spark [Stage],0.392542,0.0308739,-5.209e-08,0.0322434
+matriarch,PL - Fifth Koto [Stage],0.289474,0.0243496,-9.92229e-07,0.0236341
+matriarch,KY - Four Colour Keys Ref,0.119781,0.0245051,-2.15065e-10,0.00111312
+matriarch,KY - Felt Circuit [Studio],0.150439,0.0278802,-1.83712e-08,0.001221
+matriarch,KY - Suitcase Spark [Studio],0.179556,0.0241687,2.72868e-06,0.00402229
+matriarch,KY - Copper Tines [Studio],0.210334,0.0402628,9.71417e-08,0.00668994
+matriarch,KY - Digital Clav [Studio],0.455684,0.0605302,2.08614e-05,0.0705542
+matriarch,KY - Chorus Cabinet [Studio],0.111718,0.0249765,-1.08478e-08,0.0011145
+matriarch,KY - Hollow Celesta [Studio],0.385809,0.0336973,1.61422e-06,0.0349552
+matriarch,KY - Prism Keys [Studio],0.325264,0.0562015,2.79081e-07,0.0610932
+matriarch,KY - Octave Console [Studio],0.30903,0.0402652,-3.05519e-05,0.0236013
+matriarch,KY - Suitcase Spark [Stage],0.217991,0.0431692,-5.68308e-05,0.00404039
+matriarch,KY - Digital Clav [Stage],0.253246,0.0279542,-9.89362e-08,0.00907777
+matriarch,KY - Hollow Celesta [Stage],0.38852,0.0475652,1.16813e-06,0.0542747
+matriarch,KY - Octave Console [Stage],0.320243,0.0626216,3.55111e-07,0.0606502
+matriarch,OR - Organ,0.232286,0.110625,5.8644e-05,0.0134991
+matriarch,AR - Soft Clock [Studio],0.150249,0.0286409,-6.66524e-08,0.00242445
+matriarch,AR - Pulse Ladder [Studio],0.405338,0.0379733,4.61866e-06,0.0373521
+matriarch,AR - Copper Steps [Studio],0.353022,0.0527824,1.7463e-08,0.0538963
+matriarch,AR - Sync Runner [Studio],0.457847,0.0810201,0.00010552,0.107329
+matriarch,AR - Wide Cascade [Studio],0.300837,0.0298612,6.30789e-08,0.0256048
+matriarch,AR - Hollow Circuit [Studio],0.422182,0.0727054,-3.64176e-07,0.0950583
+matriarch,AR - Glass Pendulum [Studio],0.319148,0.059872,7.80482e-07,0.0805059
+matriarch,AR - Fifth Relay [Studio],0.32962,0.0538168,-7.74866e-06,0.0507887
+matriarch,AR - Pulse Ladder [Stage],0.389118,0.0511573,1.63034e-05,0.0440138
+matriarch,AR - Sync Runner [Stage],0.466787,0.0879057,1.85118e-07,0.0887707
+matriarch,AR - Hollow Circuit [Stage],0.472624,0.12513,0.000210819,0.157064
+matriarch,AR - Fifth Relay [Stage],0.354274,0.0874329,-1.22759e-07,0.108008
+matriarch,SEQ - Sequence Pluck,0.461557,0.0459838,-1.64576e-06,0.0161334
+matriarch,SQ - Night Circuit Ref,0.211072,0.0142284,1.42357e-06,0.00314212
+matriarch,FX - Space Drone,0.28047,0.0810434,2.12265e-06,0.0142708
+matriarch,FX - Submerged Radar [Studio],0.116492,0.0456451,1.36575e-08,0.00188624
+matriarch,FX - Pulse Beacon [Studio],0.137767,0.0389728,1.59215e-05,0.00272768
+matriarch,FX - Copper Satellites [Studio],0.165781,0.0644842,-1.74721e-08,0.00445619
+matriarch,FX - Sync Sparks [Studio],0.223722,0.0529542,-9.26506e-05,0.00682378
+matriarch,FX - Stereo Machinery [Studio],0.11996,0.0405401,2.08088e-08,0.00169784
+matriarch,FX - Hollow Transmission [Studio],0.148558,0.0358252,9.54829e-06,0.00355624
+matriarch,FX - Glass Collision [Studio],0.16687,0.0609523,-7.63498e-08,0.00542172
+matriarch,FX - Fifth Launch [Studio],0.221607,0.0574274,-0.000106686,0.00491036
+matriarch,FX - Pulse Beacon [Stage],0.209445,0.0597015,-9.38785e-05,0.0025245
+matriarch,FX - Sync Sparks [Stage],0.111358,0.0403399,2.71763e-08,0.00185023
+matriarch,FX - Hollow Transmission [Stage],0.160487,0.0375923,1.11152e-05,0.00404144
+matriarch,FX - Fifth Launch [Stage],0.170298,0.0714645,-9.92241e-09,0.00586161
+polybrute,BA - Metalizer Bass,0.298954,0.0433871,1.54857e-05,0.000590036
+polybrute,BA - Sub Bass,0.138614,0.0157566,2.0332e-07,0.000229384
+polybrute,BA - Reese Bass,0.303225,0.0600586,1.7459e-05,0.00111066
+polybrute,BA - Acid Bass,0.367585,0.0306925,-5.39557e-06,0.000807676
+polybrute,BA - Pulsed Landscape Ref,0.124874,0.0195581,1.31726e-05,0.00034487
+polybrute,BA - Velvet Sub [Studio],0.183112,0.0490434,3.81819e-05,0.000418534
+polybrute,BA - Rubber Transit [Studio],0.132329,0.0359196,-1.56068e-05,0.000868235
+polybrute,BA - Copper Pulse [Studio],0.179261,0.0378233,3.25044e-05,0.000744694
+polybrute,BA - Broken Acid [Studio],0.129879,0.030714,-7.76844e-06,0.00131359
+polybrute,BA - Reese Current [Studio],0.148519,0.0354932,2.17895e-05,0.000530655
+polybrute,BA - Roundwood [Studio],0.155295,0.0515452,2.40154e-06,0.00115375
+polybrute,BA - Low Voltage [Studio],0.15626,0.0417232,-3.8543e-06,0.000859687
+polybrute,BA - Octave Furnace [Studio],0.208554,0.0597128,9.06124e-05,0.0011781
+polybrute,BA - Rubber Transit [Stage],0.16784,0.0493671,-7.57189e-05,0.00151645
+polybrute,BA - Broken Acid [Stage],0.136342,0.0422714,-8.8715e-06,0.00132685
+polybrute,BA - Roundwood [Stage],0.109009,0.0308361,-8.08674e-06,0.000776154
+polybrute,BA - Octave Furnace [Stage],0.165699,0.0348454,-1.46327e-05,0.000536952
+polybrute,LD - Metalizer Mono,0.0270829,0.00765987,-1.31884e-08,0.000812933
+polybrute,LD - Blue Lead,0.314954,0.0553711,2.21462e-05,0.00611811
+polybrute,LD - Supersaw Lead,0.458377,0.0970714,1.49883e-05,0.0116565
+polybrute,LD - Hoover Lead,0.246865,0.0646183,2.14748e-06,0.0058174
+polybrute,LD - Juvenile Alloy Ref,0.21674,0.0482452,6.71451e-06,0.00559584
+polybrute,LD - Silk Portamento [Studio],0.168912,0.0484622,1.74741e-05,0.00294167
+polybrute,LD - Pulse Rider [Studio],0.127663,0.0411106,-2.74272e-05,0.00474628
+polybrute,LD - Brass Needle [Studio],0.137485,0.0380732,2.07295e-05,0.00410466
+polybrute,LD - Sync Razor [Studio],0.100204,0.0313555,-1.84213e-05,0.00551132
+polybrute,LD - Wide Horizon [Studio],0.117549,0.0277064,1.23674e-05,0.00232317
+polybrute,LD - Hollow Reed [Studio],0.132033,0.0450184,5.30439e-06,0.00519637
+polybrute,LD - Ribbon Flame [Studio],0.108654,0.0284678,1.06121e-06,0.00365388
+polybrute,LD - Fifth Signal [Studio],0.170964,0.0496074,4.11402e-05,0.00536687
+polybrute,LD - Pulse Rider [Stage],0.154209,0.0515513,-7.00075e-05,0.0077576
+polybrute,LD - Sync Razor [Stage],0.129382,0.046357,-2.79174e-05,0.00610823
+polybrute,LD - Hollow Reed [Stage],0.21986,0.0488569,1.60272e-05,0.00755162
+polybrute,LD - Fifth Signal [Stage],0.121983,0.0266706,-3.02058e-06,0.00322529
+polybrute,BR - Palace Brass,0.130501,0.0183374,1.56937e-06,0.00211438
+polybrute,PD - Morph Pad,0.216369,0.0503411,-7.98613e-06,0.0017196
+polybrute,PD - Chorus Pad,0.202313,0.0488824,-7.59313e-06,0.00151764
+polybrute,PD - Warm Analog Pad,0.218769,0.0540521,-7.55781e-06,0.00159743
+polybrute,PD - A to B Voyage Ref,0.165314,0.0355257,9.5934e-07,0.00121733
+polybrute,PD - First Frost Ref,0.147984,0.0326502,-1.99974e-07,0.00129398
+polybrute,PD - Dusk Canopy [Studio],0.396627,0.112023,0.000129435,0.0037874
+polybrute,PD - Slow Tides [Studio],0.315361,0.083006,-0.000143526,0.00618206
+polybrute,PD - Amber Cloud [Studio],0.352733,0.0681237,4.17662e-05,0.00491711
+polybrute,PD - Polar Choir [Studio],0.287007,0.0625394,-4.15847e-05,0.0081889
+polybrute,PD - Orbit Mist [Studio],0.253153,0.056252,3.43114e-05,0.00276687
+polybrute,PD - Velvet Air [Studio],0.321241,0.07694,-1.45196e-05,0.00609437
+polybrute,PD - Glass Horizon [Studio],0.311016,0.0621698,-1.97942e-05,0.0056634
+polybrute,PD - Fifth Aurora [Studio],0.368231,0.0754989,8.40265e-05,0.00583007
+polybrute,PD - Slow Tides [Stage],0.384941,0.0965107,-0.000264216,0.0101231
+polybrute,PD - Polar Choir [Stage],0.275493,0.0724445,-4.29423e-05,0.00899897
+polybrute,PD - Velvet Air [Stage],0.229172,0.0484605,1.03985e-05,0.00562349
+polybrute,PD - Fifth Aurora [Stage],0.309608,0.070198,3.93759e-05,0.00390905
+polybrute,DO - Undersea Cable [Studio],0.154878,0.0533864,-8.86392e-06,0.00241206
+polybrute,DO - Tidal Machine [Studio],0.186739,0.050497,-6.35849e-05,0.0036627
+polybrute,DO - Copper Planet [Studio],0.170695,0.0420442,1.99341e-05,0.00287807
+polybrute,DO - Clockwork Fog [Studio],0.145079,0.0378378,-1.69134e-05,0.00436638
+polybrute,DO - Reese Nebula [Studio],0.148013,0.0366907,2.51455e-05,0.00193216
+polybrute,DO - Hollow Earth [Studio],0.146102,0.0434821,5.36025e-06,0.00329511
+polybrute,DO - Glass Current [Studio],0.151819,0.0360883,-1.35467e-06,0.00407023
+polybrute,DO - Fifth Monolith [Studio],0.189757,0.0456965,3.09104e-05,0.00345585
+polybrute,DO - Tidal Machine [Stage],0.22008,0.0564522,-9.09261e-05,0.0057936
+polybrute,DO - Clockwork Fog [Stage],0.162019,0.0445695,-1.68186e-05,0.00498588
+polybrute,DO - Hollow Earth [Stage],0.135016,0.0280368,4.5698e-06,0.0033584
+polybrute,DO - Fifth Monolith [Stage],0.20483,0.0422727,2.67931e-05,0.00272127
+polybrute,PL - Analog Pluck,0.121708,0.00688508,-6.0363e-07,0.000726806
+polybrute,PL - Muted Wire [Studio],0.19248,0.0100821,-5.71385e-07,0.000692292
+polybrute,PL - Pulse Pizzicato [Studio],0.126635,0.00569795,3.88191e-07,0.00113336
+polybrute,PL - Copper Harp [Studio],0.140286,0.0106918,2.43708e-06,0.00107795
+polybrute,PL - Sync Kalimba [Studio],0.249317,0.0117043,1.62163e-06,0.018989
+polybrute,PL - Stereo Droplets [Studio],0.132353,0.0078001,1.38382e-06,0.000648008
+polybrute,PL - Bamboo Spark [Studio],0.183048,0.00808899,-7.77773e-07,0.00370152
+polybrute,PL - Crystal Pin [Studio],0.169685,0.0104288,3.57906e-07,0.0129795
+polybrute,PL - Fifth Koto [Studio],0.137653,0.0122878,8.35783e-07,0.00161114
+polybrute,PL - Pulse Pizzicato [Stage],0.119245,0.0105943,-1.78045e-06,0.0020886
+polybrute,PL - Sync Kalimba [Stage],0.252045,0.0138851,1.07134e-06,0.0156456
+polybrute,PL - Bamboo Spark [Stage],0.166998,0.00786732,-4.3446e-07,0.00444446
+polybrute,PL - Fifth Koto [Stage],0.0990131,0.00536078,-1.97218e-08,0.00181251
+polybrute,KY - Brute Keys,0.0998198,0.00909994,2.05978e-06,0.000759871
+polybrute,KY - Malleable Harp Ref,0.0658843,0.00695563,3.49164e-07,0.000619497
+polybrute,KY - Felt Circuit [Studio],0.183648,0.0270786,8.51631e-06,0.0017638
+polybrute,KY - Suitcase Spark [Studio],0.137155,0.0170018,-7.2104e-07,0.00290479
+polybrute,KY - Copper Tines [Studio],0.165007,0.0227092,1.04518e-05,0.00258558
+polybrute,KY - Digital Clav [Studio],0.258994,0.0234493,-1.73414e-06,0.0291984
+polybrute,KY - Chorus Cabinet [Studio],0.156651,0.0162832,4.39737e-06,0.00155733
+polybrute,KY - Hollow Celesta [Studio],0.125929,0.0256128,-3.17966e-06,0.0034895
+polybrute,KY - Prism Keys [Studio],0.18167,0.0224134,1.00064e-06,0.0275793
+polybrute,KY - Octave Console [Studio],0.170503,0.0286926,9.0459e-06,0.00380197
+polybrute,KY - Suitcase Spark [Stage],0.138989,0.03061,-2.42271e-05,0.00526358
+polybrute,KY - Digital Clav [Stage],0.236674,0.0309269,-5.21494e-06,0.0240272
+polybrute,KY - Hollow Celesta [Stage],0.123218,0.0172586,2.61057e-07,0.0031901
+polybrute,KY - Octave Console [Stage],0.102091,0.0151303,-5.59646e-07,0.00306381
+polybrute,OR - Organ,0.325009,0.0783299,-1.06962e-06,0.0083808
+polybrute,ARP - Glass Arp,0.13853,0.0128902,1.2443e-06,0.00226127
+polybrute,AR - Soft Clock [Studio],0.167234,0.0250231,4.25294e-06,0.00249162
+polybrute,AR - Pulse Ladder [Studio],0.125923,0.0152946,3.34145e-06,0.00477436
+polybrute,AR - Copper Steps [Studio],0.140587,0.0251235,1.22094e-05,0.00650496
+polybrute,AR - Sync Runner [Studio],0.163746,0.018531,-3.36112e-06,0.010783
+polybrute,AR - Wide Cascade [Studio],0.123473,0.0183264,6.87586e-06,0.00299934
+polybrute,AR - Hollow Circuit [Studio],0.216361,0.0283238,-8.18971e-06,0.0143782
+polybrute,AR - Glass Pendulum [Studio],0.168314,0.0217883,7.90323e-07,0.00948291
+polybrute,AR - Fifth Relay [Studio],0.158354,0.0359715,8.02981e-06,0.00798125
+polybrute,AR - Pulse Ladder [Stage],0.161054,0.040121,-5.53135e-05,0.0132027
+polybrute,AR - Sync Runner [Stage],0.19709,0.0422315,-1.89307e-05,0.0111765
+polybrute,AR - Hollow Circuit [Stage],0.239344,0.0283577,2.04919e-06,0.0183219
+polybrute,AR - Fifth Relay [Stage],0.123932,0.0226172,4.61862e-07,0.00739719
+polybrute,SQ - Diminished Night Ref,0.0997462,0.0153984,1.09692e-06,0.00222639
+polybrute,FX - Ribbon Drift,0.184104,0.0444726,-1.60143e-05,0.00281308
+polybrute,FX - Submerged Radar [Studio],0.178412,0.0456416,2.29408e-07,0.0023397
+polybrute,FX - Pulse Beacon [Studio],0.15075,0.0348994,-2.12313e-05,0.00356718
+polybrute,FX - Copper Satellites [Studio],0.159427,0.0339887,1.13602e-05,0.00295669
+polybrute,FX - Sync Sparks [Studio],0.148092,0.0298288,-9.979e-06,0.00468707
+polybrute,FX - Stereo Machinery [Studio],0.138233,0.0286479,6.92215e-06,0.0018418
+polybrute,FX - Hollow Transmission [Studio],0.148978,0.0334391,-5.75768e-06,0.00369132
+polybrute,FX - Glass Collision [Studio],0.139004,0.0294833,-2.18545e-06,0.00371938
+polybrute,FX - Fifth Launch [Studio],0.18529,0.0358074,1.46447e-05,0.00368246
+polybrute,FX - Pulse Beacon [Stage],0.198712,0.0466787,-5.44982e-05,0.00620179
+polybrute,FX - Sync Sparks [Stage],0.142149,0.0365849,-1.17666e-05,0.00556768
+polybrute,FX - Hollow Transmission [Stage],0.128759,0.0232524,2.39299e-07,0.00355699
+polybrute,FX - Fifth Launch [Stage],0.165684,0.0319202,7.04704e-06,0.00268341
+moogone,BA - One Bass,0.172099,0.0366388,1.45686e-05,0.000388919
+moogone,BA - Sub One,0.250479,0.0693781,0.000113634,0.000625452
+moogone,BA - Reese Bass,0.306949,0.0588156,3.03263e-05,0.000805081
+moogone,BA - Acid Bass,0.324035,0.0510614,3.29907e-06,0.0012353
+moogone,BA - Cinema Pulse Ref,0.334584,0.119756,8.32637e-05,0.00112927
+moogone,BA - Small Ladder Ref,0.448483,0.142857,0.000245247,0.000760491
+moogone,BA - Stacked Foundation Ref,0.348048,0.104186,-9.46431e-05,0.000721482
+moogone,BA - Velvet Sub [Studio],0.0916448,0.0261893,8.02791e-07,0.000169638
+moogone,BA - Rubber Transit [Studio],0.0749751,0.0159331,-5.07859e-07,0.000265857
+moogone,BA - Copper Pulse [Studio],0.0742327,0.0135001,1.48532e-06,0.000243978
+moogone,BA - Broken Acid [Studio],0.0633126,0.0163971,-1.75457e-07,0.0005119
+moogone,BA - Reese Current [Studio],0.0674735,0.0114572,5.79271e-07,0.000169109
+moogone,BA - Roundwood [Studio],0.0643258,0.0254003,1.3773e-06,0.000359174
+moogone,BA - Low Voltage [Studio],0.0641747,0.0155895,2.92882e-08,0.000187514
+moogone,BA - Octave Furnace [Studio],0.090819,0.0251278,4.33375e-06,0.00044361
+moogone,BA - Rubber Transit [Stage],0.0656287,0.0165204,-1.53854e-06,0.000259334
+moogone,BA - Broken Acid [Stage],0.0507668,0.0150815,-6.36993e-08,0.000459352
+moogone,BA - Roundwood [Stage],0.0455892,0.0165739,-6.4395e-08,0.000443212
+moogone,BA - Octave Furnace [Stage],0.0893769,0.0209294,2.68253e-06,0.000414028
+moogone,LD - One Lead,0.267262,0.0520856,3.71554e-05,0.005119
+moogone,LD - Supersaw Lead,0.270105,0.0484185,5.54701e-06,0.00557473
+moogone,LD - Sync Crest Ref,0.770129,0.0602337,-0.000106868,0.0212889
+moogone,LD - Silk Portamento [Studio],0.134037,0.0219505,2.82734e-07,0.000999905
+moogone,LD - Pulse Rider [Studio],0.0612394,0.0123601,-3.88194e-07,0.00152786
+moogone,LD - Brass Needle [Studio],0.070007,0.0114158,5.88513e-07,0.00155204
+moogone,LD - Sync Razor [Studio],0.0575751,0.020013,-1.05325e-06,0.00470131
+moogone,LD - Wide Horizon [Studio],0.104621,0.0126172,7.87452e-07,0.0010765
+moogone,LD - Hollow Reed [Studio],0.0618944,0.01832,3.21206e-07,0.00201845
+moogone,LD - Ribbon Flame [Studio],0.0638305,0.0121604,1.22995e-07,0.0011375
+moogone,LD - Fifth Signal [Studio],0.0775393,0.0216736,1.76521e-06,0.00259168
+moogone,LD - Pulse Rider [Stage],0.0558757,0.0146058,-7.35188e-07,0.00149992
+moogone,LD - Sync Razor [Stage],0.087814,0.0185242,-9.36748e-07,0.003447
+moogone,LD - Hollow Reed [Stage],0.0518152,0.0165458,4.36021e-07,0.00297998
+moogone,LD - Fifth Signal [Stage],0.075005,0.0191876,1.20283e-06,0.00247333
+moogone,BR - Poly Brass,0.269612,0.0494724,4.75409e-05,0.0041311
+moogone,BR - Dual Heritage Ref,0.232162,0.0484034,1.8603e-05,0.00121732
+moogone,PD - Big Pad,0.474005,0.116843,0.000114153,0.00335834
+moogone,PD - Warm Analog Pad,0.406396,0.107236,8.43251e-05,0.00294672
+moogone,PD - Vintage Stringfield Ref,0.395861,0.10345,3.65084e-05,0.00207152
+moogone,PD - Beyond Mood Ref,0.424115,0.0917663,-3.6591e-05,0.146827
+moogone,PD - Lunar Dawn Ref,0.47057,0.109584,6.40292e-05,0.00640686
+moogone,PD - Planet Waves Ref,0.647931,0.148845,-0.000112105,0.00489899
+moogone,PD - Dusk Canopy [Studio],0.198445,0.0419056,1.30223e-06,0.00110958
+moogone,PD - Slow Tides [Studio],0.122671,0.0214674,-2.42905e-06,0.00148112
+moogone,PD - Amber Cloud [Studio],0.124142,0.0185504,4.3999e-07,0.00152588
+moogone,PD - Polar Choir [Studio],0.16898,0.0373093,-4.30564e-06,0.00398046
+moogone,PD - Orbit Mist [Studio],0.134443,0.0194127,9.54945e-07,0.00103114
+moogone,PD - Velvet Air [Studio],0.149441,0.0324056,2.34219e-06,0.00216407
+moogone,PD - Glass Horizon [Studio],0.112549,0.0199205,9.40751e-07,0.00116505
+moogone,PD - Fifth Aurora [Studio],0.238288,0.0390369,1.52371e-05,0.00267649
+moogone,PD - Slow Tides [Stage],0.12703,0.0252575,-3.29709e-06,0.00155193
+moogone,PD - Polar Choir [Stage],0.149587,0.0330436,-2.09934e-06,0.00348069
+moogone,PD - Velvet Air [Stage],0.142363,0.0293553,2.09845e-06,0.00291977
+moogone,PD - Fifth Aurora [Stage],0.206502,0.0384044,1.70491e-05,0.00258216
+moogone,DO - Undersea Cable [Studio],0.052731,0.0120056,-5.51058e-07,0.000473907
+moogone,DO - Tidal Machine [Studio],0.0572903,0.0127333,-2.71888e-06,0.000623165
+moogone,DO - Copper Planet [Studio],0.05807,0.0113878,-1.13601e-07,0.000630537
+moogone,DO - Clockwork Fog [Studio],0.0745094,0.0237041,-2.0525e-06,0.00172664
+moogone,DO - Reese Nebula [Studio],0.051931,0.0109156,2.68293e-08,0.000507358
+moogone,DO - Hollow Earth [Studio],0.0745926,0.0176626,1.36693e-06,0.0010389
+moogone,DO - Glass Current [Studio],0.0738586,0.0132525,7.85985e-07,0.000695571
+moogone,DO - Fifth Monolith [Studio],0.108719,0.0237455,1.00813e-05,0.00126029
+moogone,DO - Tidal Machine [Stage],0.0547432,0.0132914,-2.78075e-06,0.000697272
+moogone,DO - Clockwork Fog [Stage],0.0658392,0.0193624,-1.58271e-06,0.00132516
+moogone,DO - Hollow Earth [Stage],0.0728203,0.0178894,1.34291e-06,0.00116351
+moogone,DO - Fifth Monolith [Stage],0.0825129,0.0168166,7.39299e-06,0.000937289
+moogone,PL - Analog Pluck,0.147055,0.010877,4.59409e-08,0.00107519
+moogone,PL - Muted Wire [Studio],0.134075,0.0068239,8.7738e-08,0.000336957
+moogone,PL - Pulse Pizzicato [Studio],0.160359,0.00701467,4.21978e-07,0.0109755
+moogone,PL - Copper Harp [Studio],0.151706,0.00756148,2.09984e-08,0.013121
+moogone,PL - Sync Kalimba [Studio],0.175231,0.0113608,2.84058e-07,0.0196993
+moogone,PL - Stereo Droplets [Studio],0.13621,0.00630773,3.17508e-08,0.0106135
+moogone,PL - Bamboo Spark [Studio],0.162212,0.0070602,-2.09103e-09,0.00632023
+moogone,PL - Crystal Pin [Studio],0.14466,0.00986852,-6.77022e-08,0.0175225
+moogone,PL - Fifth Koto [Studio],0.124053,0.00912314,-5.91407e-08,0.0128795
+moogone,PL - Pulse Pizzicato [Stage],0.144198,0.00583934,4.66379e-08,0.00530601
+moogone,PL - Sync Kalimba [Stage],0.118153,0.00787175,5.85841e-08,0.0120302
+moogone,PL - Bamboo Spark [Stage],0.140288,0.00923804,-4.39226e-08,0.015107
+moogone,PL - Fifth Koto [Stage],0.123648,0.00957493,-1.41368e-07,0.0147543
+moogone,KY - One Keys,0.151621,0.0245122,-2.87391e-06,0.00287901
+moogone,KY - Suitcase Bloom Ref,0.109343,0.0039612,-1.45488e-07,0.000216276
+moogone,KY - Ballad Harmonics Ref,0.174867,0.0259985,-1.05414e-05,0.0101051
+moogone,KY - Glass Assembly Ref,0.438597,0.080171,0.000176216,0.00922313
+moogone,KY - Felt Circuit [Studio],0.155111,0.0143114,1.57364e-07,0.000660854
+moogone,KY - Suitcase Spark [Studio],0.0684569,0.00800123,-1.6207e-07,0.00112692
+moogone,KY - Copper Tines [Studio],0.158327,0.00761023,2.33133e-07,0.00693363
+moogone,KY - Digital Clav [Studio],0.185043,0.0236622,4.82824e-07,0.0384877
+moogone,KY - Chorus Cabinet [Studio],0.131751,0.00616618,1.27759e-07,0.00290806
+moogone,KY - Hollow Celesta [Studio],0.100386,0.0135698,1.33417e-07,0.0078317
+moogone,KY - Prism Keys [Studio],0.15094,0.0207079,-9.48017e-08,0.0370666
+moogone,KY - Octave Console [Studio],0.140241,0.017167,3.51565e-07,0.0211728
+moogone,KY - Suitcase Spark [Stage],0.138899,0.00995061,-2.46289e-07,0.00302445
+moogone,KY - Digital Clav [Stage],0.128687,0.0169027,-2.83126e-08,0.023453
+moogone,KY - Hollow Celesta [Stage],0.154734,0.0156367,-4.29705e-09,0.0216845
+moogone,KY - Octave Console [Stage],0.143859,0.0170974,-1.2362e-08,0.0238786
+moogone,OR - Organ,0.287913,0.072342,3.54168e-06,0.110507
+moogone,ARP - Glass Arp,0.117228,0.0143122,1.11994e-06,0.00219317
+moogone,AR - Soft Clock [Studio],0.132093,0.0168405,4.93472e-07,0.00146911
+moogone,AR - Pulse Ladder [Studio],0.153919,0.0134876,4.50372e-07,0.0118823
+moogone,AR - Copper Steps [Studio],0.14704,0.0151527,4.64275e-07,0.0253732
+moogone,AR - Sync Runner [Studio],0.182336,0.0302206,2.2514e-06,0.0503178
+moogone,AR - Wide Cascade [Studio],0.131825,0.00929054,2.3788e-07,0.0114529
+moogone,AR - Hollow Circuit [Studio],0.0974412,0.0191351,7.0461e-08,0.0135536
+moogone,AR - Glass Pendulum [Studio],0.162166,0.0223681,-1.61282e-07,0.0389483
+moogone,AR - Fifth Relay [Studio],0.135722,0.024772,-9.16703e-07,0.0323849
+moogone,AR - Pulse Ladder [Stage],0.141987,0.0137899,-2.19699e-07,0.00575868
+moogone,AR - Sync Runner [Stage],0.129104,0.0206958,4.50813e-07,0.0303335
+moogone,AR - Hollow Circuit [Stage],0.147375,0.0242721,-3.37961e-07,0.0389896
+moogone,AR - Fifth Relay [Stage],0.137565,0.0247372,-1.76362e-06,0.0367288
+moogone,SPL - Three-Zone Split,0.265649,0.0590253,2.82584e-06,0.00392068
+moogone,FX - Deep Space,0.172384,0.0444611,3.2555e-05,0.0020903
+moogone,FX - Submerged Radar [Studio],0.0623761,0.0180221,4.59667e-08,0.000736126
+moogone,FX - Pulse Beacon [Studio],0.0648572,0.0111963,-3.07394e-07,0.000700695
+moogone,FX - Copper Satellites [Studio],0.0673553,0.00954528,3.06272e-07,0.000717728
+moogone,FX - Sync Sparks [Studio],0.0641702,0.0181368,-7.57914e-07,0.00188125
+moogone,FX - Stereo Machinery [Studio],0.0498825,0.00883254,1.65988e-07,0.000517526
+moogone,FX - Hollow Transmission [Studio],0.0791543,0.0177532,3.70896e-07,0.00126793
+moogone,FX - Glass Collision [Studio],0.0512558,0.0107963,1.19843e-07,0.000654379
+moogone,FX - Fifth Launch [Studio],0.0978122,0.0203855,1.9321e-06,0.00136199
+moogone,FX - Pulse Beacon [Stage],0.0624588,0.01298,-4.66153e-07,0.000911394
+moogone,FX - Sync Sparks [Stage],0.0623967,0.0167882,-6.46239e-07,0.00189039
+moogone,FX - Hollow Transmission [Stage],0.0671362,0.0154523,2.53975e-07,0.00138059
+moogone,FX - Fifth Launch [Stage],0.071572,0.0145589,1.04299e-06,0.00108325
+continuum,BA - Reese Surface,0.0812863,0.0178999,-1.28163e-09,0.000339237
+continuum,BA - Sub Surface,0.0670093,0.0153294,-1.38023e-08,0.000194273
+continuum,BA - Velvet Sub [Studio],0.110349,0.0260789,3.09134e-08,0.000367271
+continuum,BA - Rubber Transit [Studio],0.153373,0.0260274,-2.05657e-08,0.00113166
+continuum,BA - Copper Pulse [Studio],0.14338,0.0254481,-2.0278e-08,0.00132196
+continuum,BA - Broken Acid [Studio],0.164541,0.0254502,-2.31025e-08,0.00194276
+continuum,BA - Reese Current [Studio],0.153019,0.0243037,-2.67318e-08,0.00114774
+continuum,BA - Roundwood [Studio],0.131645,0.0215367,2.66743e-09,0.000356436
+continuum,BA - Low Voltage [Studio],0.162765,0.0217181,-2.47396e-08,0.00135146
+continuum,BA - Octave Furnace [Studio],0.149822,0.0260689,-1.55798e-08,0.00138372
+continuum,BA - Rubber Transit [Stage],0.115539,0.0246067,3.08413e-08,0.000946268
+continuum,BA - Broken Acid [Stage],0.126168,0.0204522,-4.18032e-09,0.00144848
+continuum,BA - Roundwood [Stage],0.12869,0.0205213,-1.32989e-08,0.000721597
+continuum,BA - Octave Furnace [Stage],0.10581,0.0210073,2.23448e-08,0.00124183
+continuum,LD - Silk Portamento [Studio],0.141067,0.0330139,-3.94192e-09,0.0020779
+continuum,LD - Pulse Rider [Studio],0.181217,0.029244,8.89679e-10,0.00484209
+continuum,LD - Brass Needle [Studio],0.200991,0.0302625,-7.66606e-10,0.00559882
+continuum,LD - Sync Razor [Studio],0.196811,0.0317474,-1.26643e-09,0.00762276
+continuum,LD - Wide Horizon [Studio],0.168467,0.0306823,4.4826e-10,0.0048727
+continuum,LD - Hollow Reed [Studio],0.161219,0.0253236,-1.43427e-09,0.00190442
+continuum,LD - Ribbon Flame [Studio],0.162296,0.0258844,8.90997e-10,0.00526948
+continuum,LD - Fifth Signal [Studio],0.179825,0.030037,7.98701e-09,0.00563393
+continuum,LD - Pulse Rider [Stage],0.167955,0.0265214,3.45527e-09,0.00353842
+continuum,LD - Sync Razor [Stage],0.195094,0.027633,-9.67015e-10,0.00660368
+continuum,LD - Hollow Reed [Stage],0.138978,0.028316,-2.70698e-09,0.0024271
+continuum,LD - Fifth Signal [Stage],0.152772,0.025078,1.84195e-09,0.00436046
+continuum,PD - Dusk Canopy [Studio],0.304738,0.0670783,-1.09075e-07,0.00250003
+continuum,PD - Slow Tides [Studio],0.319532,0.0542791,-3.40913e-08,0.00580633
+continuum,PD - Amber Cloud [Studio],0.293897,0.0542272,-1.34946e-07,0.0065999
+continuum,PD - Polar Choir [Studio],0.36077,0.0599787,2.04143e-07,0.00976561
+continuum,PD - Orbit Mist [Studio],0.295187,0.0556281,-6.374e-08,0.00584093
+continuum,PD - Velvet Air [Studio],0.259463,0.0506267,3.04767e-07,0.00234346
+continuum,PD - Glass Horizon [Studio],0.262959,0.0510223,-3.4526e-07,0.00666703
+continuum,PD - Fifth Aurora [Studio],0.294881,0.0570426,-2.50606e-07,0.00697552
+continuum,PD - Slow Tides [Stage],0.266034,0.0571587,1.23249e-07,0.00595136
+continuum,PD - Polar Choir [Stage],0.29473,0.0617553,-2.52429e-07,0.00664007
+continuum,PD - Velvet Air [Stage],0.265068,0.0537683,1.68558e-07,0.00314701
+continuum,PD - Fifth Aurora [Stage],0.276709,0.0538959,-2.68756e-07,0.00752562
+continuum,ST - Bowed Mood,0.0925585,0.0175469,-3.7263e-08,0.00102963
+continuum,ST - Harp,0.0373276,0.00369762,5.11929e-09,0.000204073
+continuum,ST - Bowed BiqBank,0.301343,0.04707,-1.03885e-07,0.00244861
+continuum,ST - Bowed Double Reed,0.301325,0.0470663,-1.03998e-07,0.00244843
+continuum,ST - Bowed KinBanjo,0.301325,0.0470663,-1.03998e-07,0.00244843
+continuum,ST - BuzzStrings,0.232273,0.0428445,-7.56329e-08,0.00329133
+continuum,ST - Cimbalom - Continuous,0.262687,0.0184051,8.9265e-09,0.00117211
+continuum,ST - Cimbalom - Z Pitch,0.262702,0.0184312,8.01122e-09,0.00117341
+continuum,ST - Country Resonator,0.232286,0.0428475,-7.51358e-08,0.00329155
+continuum,ST - Dulcimer Ghost,0.262687,0.0184051,8.9265e-09,0.00117211
+continuum,ST - Eastern Slider Ch1,0.272424,0.0483255,-8.24244e-08,0.00371515
+continuum,ST - Electric Guitar,0.262717,0.0185109,8.64583e-09,0.00117728
+continuum,ST - Electric Guitar Saturated,0.262702,0.0184312,8.01122e-09,0.00117341
+continuum,ST - Feedback String,0.253608,0.0447181,-7.58302e-08,0.00345186
+continuum,ST - Haegum,0.301343,0.047071,-1.04111e-07,0.00244865
+continuum,ST - Harmonic Break,0.233308,0.0428083,-7.87681e-08,0.00328976
+continuum,ST - Harmonic Viol,0.249201,0.04215,-7.17438e-08,0.00324614
+continuum,ST - Harmonoid Spark,0.269858,0.0475617,-8.27579e-08,0.00367162
+continuum,ST - Hoop Lute,0.262717,0.0185109,8.64583e-09,0.00117728
+continuum,ST - Hyper Pizz,0.281009,0.0479412,-8.01651e-08,0.00369099
+continuum,ST - Jupiter Mission,0.232286,0.0428486,-7.50204e-08,0.00329163
+continuum,ST - Karplus & ModMan,0.2372,0.0461755,-8.23559e-08,0.00354443
+continuum,ST - Kinetic Cabinet,0.266283,0.045018,-7.97122e-08,0.00346743
+continuum,ST - Kinetic Kokyu,0.263217,0.0487031,-8.88157e-08,0.00374095
+continuum,ST - Kinetic Soundboard,0.25708,0.0454138,-7.73857e-08,0.00349183
+continuum,ST - Kinetic WG AkouBass,0.237213,0.0461787,-8.15404e-08,0.00354467
+continuum,ST - Kinetic WG AkouBass - Var1,0.268821,0.0475922,-7.95513e-08,0.00367314
+continuum,ST - Koto,0.349327,0.0368928,3.84318e-08,0.00110182
+continuum,ST - Lap Steel,0.239171,0.0418148,-7.4442e-08,0.00322958
+continuum,ST - Melow Pedal Steel,0.241518,0.0424873,-7.39726e-08,0.00326736
+continuum,ST - MicroDelay WaveGuide v1,0.268821,0.0475897,-7.91742e-08,0.00367295
+continuum,ST - MicroDelay WaveGuide v2,0.250225,0.0421202,-7.42482e-08,0.00324505
+continuum,ST - MicroDelay WaveGuide v3,0.258139,0.0453745,-7.92393e-08,0.00348978
+continuum,ST - Model String Wind,0.242558,0.042455,-7.64421e-08,0.00326606
+continuum,ST - Mountain Slider,0.253608,0.0447169,-7.58034e-08,0.00345176
+continuum,ST - Mountain Slider Ch1,0.237213,0.0461787,-8.15404e-08,0.00354467
+continuum,ST - NGoni,0.254607,0.0446908,-7.76788e-08,0.00345079
+continuum,ST - NGoni - Kinetic,0.241533,0.0424909,-7.44717e-08,0.00326764
+continuum,ST - Northern Lights,0.266268,0.045014,-8.01719e-08,0.00346712
+continuum,ST - Plucked Soup Can,0.238253,0.0418483,-7.14174e-08,0.00323088
+continuum,ST - Pusher,0.266268,0.045014,-8.01719e-08,0.00346712
+continuum,ST - Resizable Guitar,0.262717,0.0184579,8.75951e-09,0.00117472
+continuum,ST - Resodynamic,0.2372,0.0461758,-8.23145e-08,0.00354445
+continuum,ST - Rhythm And Bass,0.237213,0.0461787,-8.15404e-08,0.00354467
+continuum,ST - Roto String,0.262086,0.0487322,-8.27541e-08,0.00374238
+continuum,ST - Rub,0.241533,0.0424919,-7.44066e-08,0.00326771
+continuum,ST - Rub String,0.2372,0.0461755,-8.23559e-08,0.00354443
+continuum,ST - SiTan,0.251474,0.0491438,-8.69717e-08,0.00377165
+continuum,ST - SiloString Pizz,0.254621,0.0446958,-7.91544e-08,0.00345118
+continuum,ST - Silver Mirror,0.237213,0.0461787,-8.15404e-08,0.00354467
+continuum,ST - SineBank FM String,0.222808,0.0432099,-7.68622e-08,0.00331737
+continuum,ST - Singing Bamboo,0.266268,0.045014,-8.01719e-08,0.00346712
+continuum,ST - Singing Bamboo 2,0.241533,0.0424909,-7.44717e-08,0.00326764
+continuum,ST - Sinseong-ri,0.253608,0.0447169,-7.58034e-08,0.00345176
+continuum,ST - SlideyPizz,0.248356,0.0457594,-8.21058e-08,0.00351564
+continuum,ST - Small Steel,0.250225,0.0421186,-7.41686e-08,0.00324493
+continuum,ST - Snap Bass,0.238239,0.0418432,-7.13489e-08,0.00323049
+continuum,ST - Snap String,0.262086,0.0487315,-8.27964e-08,0.00374233
+continuum,ST - Spiccato Tremolo Dual,0.233321,0.0428123,-7.92567e-08,0.00329006
+continuum,ST - Spiccato Tremolo Single,0.25021,0.0421146,-7.58219e-08,0.00324462
+continuum,ST - Squeaky Balloon String,0.238239,0.0418432,-7.13489e-08,0.00323049
+continuum,ST - Stellar Bowls,0.257052,0.0454066,-7.80345e-08,0.00349129
+continuum,ST - Stretch String m1 T,0.263217,0.0487031,-8.88157e-08,0.00374095
+continuum,ST - Stretch String m2 T,0.222808,0.0432105,-7.68356e-08,0.00331741
+continuum,ST - Stretch String m3 T,0.253608,0.0447169,-7.58034e-08,0.00345176
+continuum,ST - Stretch String v2 T,0.233321,0.0428116,-7.92258e-08,0.00329001
+continuum,ST - Strummed Gtr 3HRSolo,0.25021,0.0421146,-7.58219e-08,0.00324462
+continuum,ST - Strummed Gtr Rythm T 950,0.273557,0.0482962,-8.36004e-08,0.00371366
+continuum,ST - Sympathy String,0.263231,0.0487064,-8.7423e-08,0.0037412
+continuum,ST - Synchronous Orbits,0.250225,0.0421202,-7.42482e-08,0.00324505
+continuum,ST - Tap Sitar,0.262687,0.0184051,8.9265e-09,0.00117211
+continuum,ST - Tapestry,0.273557,0.0482967,-8.38805e-08,0.0037137
+continuum,ST - The Touch Guitar,0.262717,0.0185109,8.64583e-09,0.00117728
+continuum,ST - Tunable Tanpura,0.273557,0.0482967,-8.38805e-08,0.0037137
+continuum,ST - Uki Pizz 1,0.249216,0.0421556,-7.1852e-08,0.00324657
+continuum,ST - Uki Pizz 2,0.257052,0.0454066,-7.80345e-08,0.00349129
+continuum,ST - Uki Pizz w Snap,0.251474,0.0491438,-8.69717e-08,0.00377165
+continuum,ST - Vln Vla Cel Bass 1,0.222808,0.0432105,-7.68356e-08,0.00331741
+continuum,ST - Vln Vla Cel Bass 2,0.253608,0.0447169,-7.58034e-08,0.00345176
+continuum,ST - Vln Vla Cel Bass 2 Ch1,0.257066,0.0454102,-7.78167e-08,0.00349156
+continuum,ST - Vln Vla Cel Bass 3,0.281009,0.0479419,-8.01163e-08,0.00369104
+continuum,ST - Vln Vla Cel Bass 4,0.242558,0.042456,-7.63872e-08,0.00326614
+continuum,ST - Vln Vla Cel Bass Bridge,0.241518,0.0424873,-7.39726e-08,0.00326736
+continuum,ST - Vln Vla Cel Bass KeySwitch,0.254593,0.0446857,-7.76549e-08,0.00345041
+continuum,ST - VlnVlaVlcCbFull,0.237213,0.0461787,-8.15404e-08,0.00354467
+continuum,ST - VlnVlaVlcCbPlus,0.249216,0.0421541,-7.17422e-08,0.00324645
+continuum,ST - Waterphone Strings,0.268821,0.0475897,-7.91742e-08,0.00367295
+continuum,ST - xpStrings,0.223851,0.043174,-8.01425e-08,0.00331587
+continuum,ST - Soft Ensemble [Studio],0.321598,0.0705068,3.89974e-08,0.00263473
+continuum,ST - Pulse Section [Studio],0.301795,0.0568618,-5.41931e-09,0.00731918
+continuum,ST - Copper Bow [Studio],0.299986,0.055324,9.02089e-10,0.00817451
+continuum,ST - Tremolo Thread [Studio],0.361626,0.0585579,3.41062e-08,0.0113021
+continuum,ST - Wide Chamber [Studio],0.295417,0.0558727,-1.85283e-08,0.00729882
+continuum,ST - Hollow Viola [Studio],0.304394,0.0533121,2.34569e-08,0.00236704
+continuum,ST - Glass Rosin [Studio],0.244478,0.0493509,-1.86654e-08,0.00784207
+continuum,ST - Fifth Orchestra [Studio],0.300469,0.0571491,7.13778e-09,0.00836291
+continuum,ST - Pulse Section [Stage],0.301149,0.0581268,2.41218e-08,0.00752469
+continuum,ST - Tremolo Thread [Stage],0.27606,0.0599628,-5.37914e-09,0.00760777
+continuum,ST - Hollow Viola [Stage],0.286881,0.0529535,-6.8244e-10,0.00312366
+continuum,ST - Fifth Orchestra [Stage],0.301234,0.053901,-1.34878e-08,0.00918641
+continuum,WI - Wind,0.0450847,0.00959529,2.04659e-09,0.000684075
+continuum,WI - Double Reed,0.0242564,0.00386754,2.18011e-09,0.000646069
+continuum,WI - Bagpipes,0.108098,0.0207272,-9.57624e-10,0.00261689
+continuum,WI - Brass Mute,0.040613,0.00962774,8.8701e-10,0.000926161
+continuum,WI - Calliope,0.0950074,0.0180146,-1.76614e-09,0.00227464
+continuum,WI - Chinese Clarinet,0.0828177,0.0189894,-1.16218e-09,0.00197963
+continuum,WI - Clarinet,0.0800944,0.0201152,-1.37402e-09,0.00213506
+continuum,WI - Crumb Horn,0.0406105,0.00962136,8.80405e-10,0.000925384
+continuum,WI - Empyrean,0.108098,0.0207272,-9.57624e-10,0.00261689
+continuum,WI - Flip Tube,0.101603,0.0194801,-2.4316e-09,0.00245937
+continuum,WI - Fragaria Fields,0.10806,0.0206523,-1.59752e-09,0.00260752
+continuum,WI - French Sax,0.0398516,0.00975992,5.59179e-10,0.000944427
+continuum,WI - GrainSilo Woodwind,0.0951302,0.0182881,-1.66985e-09,0.00230879
+continuum,WI - Jemonica,0.108038,0.0205722,-1.29115e-09,0.00259754
+continuum,WI - Jenny Trumpet,0.040613,0.00962774,8.8701e-10,0.000926161
+continuum,WI - JennyDo,0.108012,0.0204919,-1.84954e-09,0.0025875
+continuum,WI - Jerrys Horn,0.040613,0.00962774,8.8701e-10,0.000926161
+continuum,WI - Metal Reed,0.101556,0.0194016,-1.65781e-09,0.0024496
+continuum,WI - MicroDelay PipeWG,0.0950885,0.0182245,-8.99163e-10,0.00230085
+continuum,WI - Miles,0.108038,0.0205722,-1.29115e-09,0.00259754
+continuum,WI - MilesBird,0.101523,0.0192591,-1.42125e-09,0.00243177
+continuum,WI - Morphing Reed,0.101648,0.0195482,-7.38607e-10,0.00246789
+continuum,WI - OvertoneWind,0.0950132,0.0180177,-1.57997e-09,0.00227502
+continuum,WI - PanPipe Solo,0.101535,0.0193282,-1.79007e-09,0.00244044
+continuum,WI - Panpipe Loops,0.101597,0.0194769,-1.79983e-09,0.00245899
+continuum,WI - Pipedreams,0.101597,0.0194769,-1.79983e-09,0.00245899
+continuum,WI - Saxmosis,0.0398516,0.00975778,5.94322e-10,0.000944251
+continuum,WI - Sine2Sax,0.0398491,0.00975511,9.35381e-10,0.000944023
+continuum,WI - SineBank Horn,0.0406105,0.00962136,8.80405e-10,0.000925384
+continuum,WI - Single Reed,0.101511,0.0192528,-1.71974e-09,0.00243101
+continuum,WI - Slide Wind,0.10806,0.0206523,-1.59752e-09,0.00260752
+continuum,WI - Slide Wind EM,0.101523,0.0192591,-1.42125e-09,0.00243177
+continuum,WI - Soprano Recorder,0.101541,0.0193314,-9.47517e-10,0.00244082
+continuum,WI - Space Flute,0.0475198,0.0127048,-9.84224e-10,0.00054771
+continuum,WI - Spinning Oboe,0.0345696,0.00780735,3.70289e-10,0.00109146
+continuum,WI - Spit Tube,0.101556,0.0194016,-1.65781e-09,0.0024496
+continuum,WI - Tin Whistle,0.101517,0.0192559,-1.54101e-09,0.00243139
+continuum,WI - Touch Reed T,0.095136,0.0182912,-1.36623e-09,0.00230917
+continuum,WI - VBrass 1,0.0406105,0.00962136,8.80405e-10,0.000925384
+continuum,WI - VBrass 2,0.0406105,0.00962136,8.80405e-10,0.000925384
+continuum,WI - Windtube Air Reed,0.101511,0.0192528,-1.71974e-09,0.00243101
+continuum,WI - Windtube Double Reed,0.0950885,0.0182245,-8.99163e-10,0.00230085
+continuum,WI - Windtube Single Reed,0.0950074,0.0180146,-1.76614e-09,0.00227464
+continuum,WI - Woodwind,0.101556,0.0194016,-1.65781e-09,0.0024496
+continuum,WI - ZawiFlute8,0.0490321,0.0134158,-6.62594e-10,0.000579752
+continuum,VO - Choir,0.0280061,0.0075782,1.50537e-07,0.000384435
+continuum,VO - Vowel,0.0233915,0.00508722,1.5517e-08,0.000342334
+continuum,VO - Additive Gnilham,0.106662,0.0262822,1.80286e-08,0.00163799
+continuum,VO - Additive Vocal 1,0.0956763,0.0228665,1.5786e-08,0.00152066
+continuum,VO - Additive Vocal 1 Transform,0.0956763,0.0228665,1.5786e-08,0.00152066
+continuum,VO - Choir on Kepler-452b,0.0956763,0.0228665,1.5786e-08,0.00152066
+continuum,VO - Choir-Ah,0.0956763,0.0228665,1.5786e-08,0.00152066
+continuum,VO - Distant Transmission Choir,0.0956763,0.0228665,1.5786e-08,0.00152066
+continuum,VO - Dual Spectra Voice,0.0956763,0.0228665,1.5786e-08,0.00152066
+continuum,VO - FOF FixRes,0.1141,0.0282345,1.97698e-08,0.0017598
+continuum,VO - FOF VariableRes,0.105336,0.0263364,1.9102e-08,0.00164144
+continuum,VO - Funny Voice,0.0956763,0.0228665,1.5786e-08,0.00152066
+continuum,VO - Instant Reich,0.10609,0.0261379,1.91169e-08,0.00162884
+continuum,VO - Jenny Voice,0.0956763,0.0228665,1.5786e-08,0.00152066
+continuum,VO - Kinetic - Vinyl,0.120779,0.0299699,2.12671e-08,0.00186795
+continuum,VO - Larynx Horn,0.040613,0.00962774,8.8701e-10,0.000926161
+continuum,VO - Lost Choir,0.0956763,0.0228665,1.5786e-08,0.00152066
+continuum,VO - Mahling 1,0.113097,0.0280065,2.01977e-08,0.00174541
+continuum,VO - Mahling 2,0.120705,0.029893,2.05283e-08,0.00186305
+continuum,VO - Mahling 3,0.106511,0.0263519,1.87594e-08,0.0016424
+continuum,VO - Mantra Voice,0.0956763,0.0228665,1.5786e-08,0.00152066
+continuum,VO - Morphing Voice,0.0956763,0.0228665,1.5786e-08,0.00152066
+continuum,VO - Mouth Sequence Ch1,0.121238,0.0298976,2.14775e-08,0.0018633
+continuum,VO - Ring Mod - Voice,0.0956822,0.0228696,1.6349e-08,0.00152083
+continuum,VO - Ring Mod - Voice - Var1,0.0956763,0.0228665,1.5786e-08,0.00152066
+continuum,VO - Ring Mod - Voice 1,0.0956763,0.0228665,1.5786e-08,0.00152066
+continuum,VO - Ring Mod - Voice 2,0.0956763,0.0228665,1.5786e-08,0.00152066
+continuum,VO - Should I Stay or Should I Go,0.1202,0.0300384,2.11782e-08,0.00187228
+continuum,VO - Singing Oscillators,0.106807,0.0264215,1.85774e-08,0.00164677
+continuum,VO - Tibetan Throat Stick,0.106055,0.0264098,1.88385e-08,0.00164613
+continuum,VO - Touch Voice T,0.0956763,0.0228665,1.5786e-08,0.00152066
+continuum,VO - Two Handed Voice,0.0956763,0.0228665,1.5786e-08,0.00152066
+continuum,VO - Vocalise,0.0956763,0.0228665,1.5786e-08,0.00152066
+continuum,VO - Vocalized Buzzard,0.0956763,0.0228665,1.5786e-08,0.00152066
+continuum,KY - LegacyDX EP,0.0602326,0.00856216,-9.35212e-10,0.000973807
+continuum,KY - Ice Calliope,0.0527178,0.0090901,2.49773e-10,0.00113398
+continuum,KY - Anthophila Organ,0.294078,0.0558259,9.68887e-09,0.00304495
+continuum,KY - Apiary,0.10071,0.0166168,-1.87786e-09,0.0010393
+continuum,KY - Electric Harpsychord,0.177381,0.0231591,2.15927e-08,0.00107151
+continuum,KY - FM DreamPiano,0.103255,0.0206919,-1.79667e-09,0.00130671
+continuum,KY - FM DreamPiano - Var1,0.103249,0.0206591,-2.51771e-09,0.0013053
+continuum,KY - Grinding Stone Calliope,0.10071,0.0166168,-1.87786e-09,0.0010393
+continuum,KY - Heavenly Corporation Ch1,0.0885806,0.0146752,-1.85407e-09,0.000916533
+continuum,KY - Jaymar Toy Piano,0.103243,0.0206377,-2.45392e-09,0.00130437
+continuum,KY - Jenerator T,0.0885806,0.0146505,-1.68013e-09,0.00091546
+continuum,KY - Kinetic - Clavinet,0.10071,0.0165944,-1.68462e-09,0.00103833
+continuum,KY - Kinetic - Clavinet - Var1,0.100715,0.0166408,-1.76074e-09,0.00104036
+continuum,KY - Kinetic Contioline,0.100715,0.0166408,-1.76074e-09,0.00104036
+continuum,KY - Morphing Church Organ,0.294078,0.0558336,9.12261e-09,0.00304522
+continuum,KY - Morphing Organ,0.294062,0.0558152,9.82765e-09,0.00304451
+continuum,KY - Music Box Because,0.0885806,0.0146505,-1.68013e-09,0.00091546
+continuum,KY - Music Box Because Ch1,0.0946431,0.0156095,-1.90216e-09,0.000976316
+continuum,KY - Musica Minima,0.10071,0.0166168,-1.87786e-09,0.0010393
+continuum,KY - Old Pad Machine,0.100715,0.0166408,-1.76074e-09,0.00104036
+continuum,KY - Organo Espressivo,0.294078,0.0558336,9.12261e-09,0.00304522
+continuum,KY - Organzilla,0.294062,0.0558152,9.82765e-09,0.00304451
+continuum,KY - PCS Fixed,0.10071,0.0166168,-1.87786e-09,0.0010393
+continuum,KY - Plane Tiv Organ,0.294078,0.0558336,9.12261e-09,0.00304522
+continuum,KY - Portable Reed,0.0946486,0.0156334,-1.19846e-09,0.00097737
+continuum,KY - Positiv Organ,0.294062,0.0558152,9.82765e-09,0.00304451
+continuum,KY - Quaverer,0.0885806,0.0146505,-1.68013e-09,0.00091546
+continuum,KY - Simple Organ,0.294046,0.0557972,9.51059e-09,0.00304382
+continuum,KY - Tine,0.0946486,0.0156334,-1.19846e-09,0.00097737
+continuum,KY - Vibrato Organ T,0.294062,0.0558152,9.82765e-09,0.00304451
+continuum,KY - Vintage Electro,0.0946486,0.0156334,-1.19846e-09,0.00097737
+continuum,CL - Clinical Oscillator 1,0.0713882,0.012639,7.61794e-10,0.00127287
+continuum,CL - Analog ADSR,0.0709656,0.0140963,1.16203e-09,0.00145589
+continuum,CL - Ambiant Analog,0.129202,0.0162205,4.52586e-10,0.0018779
+continuum,CL - Analog ADSR - Var1,0.113695,0.01429,7.39882e-10,0.0016541
+continuum,CL - Analog Overload,0.121448,0.0152317,9.19913e-10,0.00176356
+continuum,CL - Another Big One,0.121455,0.0152452,8.52711e-10,0.00176497
+continuum,CL - Arpeggiator 4 Step,0.113695,0.0142764,7.38187e-10,0.00165269
+continuum,CL - Arpeggiator Resonant,0.129202,0.0162019,5.3569e-10,0.00187598
+continuum,CL - Autocille,0.129208,0.0162277,1.24293e-09,0.00187866
+continuum,CL - Bass DistoSine,0.121462,0.0152591,9.13604e-10,0.00176642
+continuum,CL - Bass Monster,0.129202,0.0162142,6.76027e-10,0.00187725
+continuum,CL - Bass Pad,0.121462,0.0152591,9.13604e-10,0.00176642
+continuum,CL - Boson Particles,0.129202,0.0162142,6.76027e-10,0.00187725
+continuum,CL - CS80+Ladder,0.129208,0.0162277,1.24293e-09,0.00187866
+continuum,CL - CS80+Ladder II,0.113695,0.01429,7.39882e-10,0.0016541
+continuum,CL - CZ Dirt Bass,0.129202,0.0162019,5.3569e-10,0.00187598
+continuum,CL - CZ Dirt Bass - Var1,0.113695,0.01429,7.39882e-10,0.0016541
+continuum,CL - Celestial Following,0.121448,0.0152317,9.19913e-10,0.00176356
+continuum,CL - Chord Generator,0.121455,0.0152452,8.52711e-10,0.00176497
+continuum,CL - Chrono Z,0.113695,0.0142764,7.38187e-10,0.00165269
+continuum,CL - Clinical Oscillator 2,0.113688,0.0142625,7.26993e-10,0.00165124
+continuum,CL - CrossMod2,0.129202,0.0162019,5.3569e-10,0.00187598
+continuum,CL - CrossMod3,0.113695,0.01429,7.39882e-10,0.0016541
+continuum,CL - Dirty Oscillator v2,0.121448,0.0152317,9.19913e-10,0.00176356
+continuum,CL - Distortion Man,0.121455,0.0152452,8.52711e-10,0.00176497
+continuum,CL - Dual 24,0.113695,0.0142764,7.38187e-10,0.00165269
+continuum,CL - Dual Resonators,0.121448,0.0152317,9.19913e-10,0.00176356
+continuum,CL - Dual Sinespray,0.129202,0.0162142,6.76027e-10,0.00187725
+continuum,CL - Echo 8va,0.121462,0.0152591,9.13604e-10,0.00176642
+continuum,CL - FM 1,0.113695,0.0142764,7.38187e-10,0.00165269
+continuum,CL - FM 2,0.121448,0.0152317,9.19913e-10,0.00176356
+continuum,CL - FM Trails,0.121455,0.0152452,8.52711e-10,0.00176497
+continuum,CL - Follower,0.121455,0.0152452,8.52711e-10,0.00176497
+continuum,CL - Four Point FM,0.129202,0.0162142,6.76027e-10,0.00187725
+continuum,CL - Jenny Pulse,0.129208,0.0162277,1.24293e-09,0.00187866
+continuum,CL - Jenny Shepard Down,0.113695,0.01429,7.39882e-10,0.0016541
+continuum,CL - JennyBasicPad,0.121448,0.0152317,9.19913e-10,0.00176356
+continuum,CL - Kinetic - Dirty Osc,0.113695,0.0142764,7.38187e-10,0.00165269
+continuum,CL - Kinetic - Dirty Osc - Var1,0.113688,0.0142625,7.26993e-10,0.00165124
+continuum,CL - Kinetic - U-Bass,0.121448,0.0152317,9.19913e-10,0.00176356
+continuum,CL - Kinetic AnaSeq,0.129202,0.0162142,6.76027e-10,0.00187725
+continuum,CL - Kinetic SatPad,0.113695,0.01429,7.39882e-10,0.0016541
+continuum,CL - Ladder Bass,0.121448,0.0152317,9.19913e-10,0.00176356
+continuum,CL - Lain Heart,0.121455,0.0152452,8.52711e-10,0.00176497
+continuum,CL - Living Pad,0.121455,0.0152452,8.52711e-10,0.00176497
+continuum,CL - Music Box Bells,0.10764,0.0156324,-6.60402e-10,0.00133201
+continuum,CL - NFS Train 900,0.121448,0.0152317,9.19913e-10,0.00176356
+continuum,CL - Noisy Old Oscillator,0.113695,0.0142764,7.38187e-10,0.00165269
+continuum,CL - Notch Lightning,0.129202,0.0162019,5.3569e-10,0.00187598
+continuum,CL - Pleasantness,0.129208,0.0162277,1.24293e-09,0.00187866
+continuum,CL - Plutonium,0.113695,0.01429,7.39882e-10,0.0016541
+continuum,CL - Sawz,0.121448,0.0152317,9.19913e-10,0.00176356
+continuum,CL - Sine Chaser,0.129202,0.0162142,6.76027e-10,0.00187725
+continuum,CL - Sineysitus,0.129208,0.0162277,1.24293e-09,0.00187866
+continuum,CL - Square Bass,0.121462,0.0152591,9.13604e-10,0.00176642
+continuum,CL - Square FM,0.129202,0.0162142,6.76027e-10,0.00187725
+continuum,CL - Squaresville,0.121462,0.0152591,9.13604e-10,0.00176642
+continuum,CL - Synth 01 T,0.129202,0.0162142,6.76027e-10,0.00187725
+continuum,CL - Synth Brass,0.040613,0.00962774,8.8701e-10,0.000926161
+continuum,CL - Synth Lead 1,0.113688,0.0142625,7.26993e-10,0.00165124
+continuum,CL - Synth Lead 2,0.121448,0.0152317,9.19913e-10,0.00176356
+continuum,CL - Synth Lead 3,0.129202,0.0162142,6.76027e-10,0.00187725
+continuum,CL - Synth Lead 4,0.113695,0.01429,7.39882e-10,0.0016541
+continuum,CL - Synth Lead 5,0.121448,0.0152317,9.19913e-10,0.00176356
+continuum,CL - Synth Lead 6,0.129202,0.0162142,6.76027e-10,0.00187725
+continuum,CL - Three Saws,0.121462,0.0152591,9.13604e-10,0.00176642
+continuum,CL - Voice Jumper,0.0956822,0.0228688,1.63208e-08,0.00152079
+continuum,CL - Zwei Baende,0.113688,0.0142625,7.26993e-10,0.00165124
+continuum,CL - Zwei Baende with Noise,0.129202,0.0162019,5.3569e-10,0.00187598
+continuum,OT - Entanglement,0.0344233,0.00817159,5.09699e-08,0.000865244
+continuum,OT - Celestial Basin,0.0224816,0.00534389,2.00527e-07,0.000255523
+continuum,OT - Acrylic Clock,0.121925,0.0241625,5.47288e-09,0.00165868
+continuum,OT - Acrylic Clock 2,0.149823,0.0395995,6.39669e-08,0.00412441
+continuum,OT - Around the Periapsis,0.0888003,0.0177244,-6.68634e-09,0.00139343
+continuum,OT - Around the Periapsis Ch1,0.109193,0.0264226,3.60993e-08,0.00139129
+continuum,OT - Bacteria,0.117109,0.0220009,1.83422e-09,0.00226479
+continuum,OT - Bajaron Light Ship,0.114608,0.0227075,5.41832e-09,0.00155867
+continuum,OT - Beautiful Pursuit,0.117365,0.0213228,-1.51766e-08,0.00235921
+continuum,OT - Beautiful Pursuit Ch1,0.145677,0.0404881,4.5572e-08,0.00432839
+continuum,OT - Belle Isle,0.10764,0.0156485,-6.18969e-10,0.00133297
+continuum,OT - Bird Echoer,0.123015,0.0206991,2.12199e-09,0.00214778
+continuum,OT - Bird Whistler,0.128251,0.0356001,4.09557e-08,0.00380569
+continuum,OT - Bullroarer,0.139893,0.0372048,4.5517e-08,0.00333378
+continuum,OT - Buzzard,0.153868,0.0341369,5.19237e-08,0.00303586
+continuum,OT - Centrifuge,0.0828009,0.018835,-6.903e-09,0.00146741
+continuum,OT - Cork the Bottle,0.0887949,0.0177062,-6.94143e-09,0.00139212
+continuum,OT - Cowell Triangles,0.107746,0.0234439,2.25586e-08,0.00135578
+continuum,OT - CrossMod1,0.108815,0.023971,5.1784e-09,0.00164907
+continuum,OT - Cyncro Ecro,0.140989,0.0331511,4.36114e-08,0.00292617
+continuum,OT - Echo Star,0.109626,0.0205853,2.44554e-09,0.0021191
+continuum,OT - Electric Comb T,0.144103,0.031858,4.89826e-08,0.00325469
+continuum,OT - Electric Wazoo,0.129438,0.0342142,5.99154e-08,0.00289814
+continuum,OT - Explosion in A,0.130859,0.0220285,3.14573e-09,0.00228572
+continuum,OT - Explosion in A Minus,0.158414,0.0350822,6.03857e-08,0.00367381
+continuum,OT - Explosion in A.3,0.130983,0.0348179,4.20478e-08,0.00311984
+continuum,OT - Exposure Ensemble,0.155409,0.0351362,4.51774e-08,0.00316175
+continuum,OT - FDN Crazyness,0.144112,0.0318754,4.75839e-08,0.00325621
+continuum,OT - Falling Brook,0.128257,0.0227323,8.27812e-09,0.00144765
+continuum,OT - Fluter,0.0490321,0.0134158,-6.62594e-10,0.000579752
+continuum,OT - Flutter Blossom T,0.124846,0.0266592,3.0864e-08,0.00173444
+continuum,OT - FollowDly,0.114262,0.0248259,3.66871e-08,0.00130864
+continuum,OT - GaBuZoMeu,0.14098,0.0331449,4.30002e-08,0.00292569
+continuum,OT - Geiger Insects,0.0884746,0.0201269,-7.19946e-09,0.0015681
+continuum,OT - Ghost Moth,0.104653,0.0211037,-1.43107e-08,0.00232646
+continuum,OT - Glass Chorus,0.112249,0.0245597,2.83025e-08,0.00145877
+continuum,OT - Glass Chorus Reverse,0.112308,0.0275829,1.4966e-08,0.00142678
+continuum,OT - Golliclock,0.129438,0.0342142,5.99154e-08,0.00289814
+continuum,OT - Happy Birthday Ed 20,0.134766,0.0339679,4.98294e-08,0.00300069
+continuum,OT - Harman Morph,0.111481,0.0221076,2.20219e-08,0.00128029
+continuum,OT - Harmonic Board,0.107278,0.0212482,4.56014e-09,0.00145846
+continuum,OT - Harmonic Looper,0.143921,0.0362989,5.33914e-08,0.00320665
+continuum,OT - HarmonicSkin,0.165265,0.0373971,4.74603e-08,0.0033652
+continuum,OT - Helix T,0.120077,0.0200194,-1.6091e-08,0.00162242
+continuum,OT - Jenny Attack,0.112256,0.0245656,2.92256e-08,0.00145904
+continuum,OT - Jenny Dark Acid,0.129438,0.0342142,5.99154e-08,0.00289814
+continuum,OT - Jenny Dark Acid - Var1,0.100961,0.0201287,-7.76065e-09,0.00158271
+continuum,OT - Jenny FromTo,0.145685,0.0404918,4.61481e-08,0.00432875
+continuum,OT - Jenny FromTo - Var1,0.117419,0.0225494,7.91112e-09,0.00143855
+continuum,OT - Jenny Loops,0.103494,0.0258045,4.46257e-08,0.00146956
+continuum,OT - Jenny Random,0.13188,0.0348119,5.62722e-08,0.00362566
+continuum,OT - Jenny Shepard Down,0.104348,0.0206893,2.12057e-08,0.00119807
+continuum,OT - Jenny Shepard Down - Var1,0.14539,0.0362064,4.94162e-08,0.00367533
+continuum,OT - Jenny Shepard Up,0.145542,0.0328902,4.14591e-08,0.00295946
+continuum,OT - Kinetic - Overtones,0.121925,0.0241638,5.56942e-09,0.00165874
+continuum,OT - Kinetic Bowed FDN,0.155096,0.0269298,-1.13565e-08,0.00187584
+continuum,OT - Kinetic Disto Analog,0.134604,0.0351925,4.04484e-08,0.00359985
+continuum,OT - Kinetic Dragon,0.145533,0.0328822,4.25538e-08,0.00295883
+continuum,OT - Kinetic MicroMotor,0.163624,0.0362081,5.57089e-08,0.00369958
+continuum,OT - Kinetic Rubber Skin,0.125438,0.0241008,8.04159e-09,0.00153752
+continuum,OT - Kinetic-Wavebank Morph,0.14614,0.0322797,5.88756e-08,0.00275031
+continuum,OT - Lisithean Motor,0.0948789,0.0189169,-7.33723e-09,0.00148737
+continuum,OT - Lonely Data,0.116884,0.0249508,2.83678e-08,0.00162318
+continuum,OT - Lost Beacon,0.153859,0.0341199,5.23506e-08,0.00303454
+continuum,OT - M-220,0.114262,0.0248259,3.66871e-08,0.00130864
+continuum,OT - Major Vision,0.144803,0.0397743,4.99849e-08,0.00350268
+continuum,OT - Maple Key,0.134774,0.0339762,4.95973e-08,0.00300133
+continuum,OT - Martian Beach,0.116877,0.0249461,2.81603e-08,0.00162295
+continuum,OT - Martian Landing Pad,0.128257,0.0227323,8.27812e-09,0.00144765
+continuum,OT - Meccano,0.149918,0.0332372,3.98344e-08,0.00341436
+continuum,OT - Mini Shepard,0.155409,0.0351362,4.51774e-08,0.00316175
+continuum,OT - Mini Shepard Breathing,0.143929,0.0363041,5.22475e-08,0.00320706
+continuum,OT - Mini Shepard Resonant,0.105255,0.0260137,2.81859e-08,0.00154837
+continuum,OT - Mojo of FDN,0.100961,0.0201287,-7.76065e-09,0.00158271
+continuum,OT - Moon Witch,0.163633,0.0362399,5.53986e-08,0.00370234
+continuum,OT - Morphing Wavebank Pad 1,0.136983,0.0380484,4.41985e-08,0.00406746
+continuum,OT - Morphing Wavebank Pad 2,0.129838,0.0282163,4.25336e-08,0.00148766
+continuum,OT - Mr Kyte,0.127571,0.0279415,3.2554e-08,0.00165965
+continuum,OT - Mutate Looper,0.12486,0.0266684,3.09111e-08,0.00173491
+continuum,OT - Natural Law,0.16009,0.0376973,4.90491e-08,0.00332762
+continuum,OT - Octavator,0.107278,0.0212509,4.21789e-09,0.00145858
+continuum,OT - Octave Phases,0.143512,0.02947,1.88741e-08,0.00152563
+continuum,OT - Orchester,0.164184,0.03836,4.72183e-08,0.00411078
+continuum,OT - Overtones,0.11058,0.0275845,4.84165e-08,0.00157089
+continuum,OT - PCS Dandelion,0.134612,0.0351965,4.10416e-08,0.00360022
+continuum,OT - Pad Tie,0.109856,0.0199487,-1.38086e-08,0.0022072
+continuum,OT - Patville,0.104713,0.0263326,2.86297e-08,0.00171752
+continuum,OT - Phase Controled ModMan,0.119608,0.0243206,4.34812e-08,0.00138568
+continuum,OT - Philco Chromatic,0.104646,0.0211016,-1.41561e-08,0.00232624
+continuum,OT - Pinched FM,0.117412,0.0225458,8.26151e-09,0.00143836
+continuum,OT - Ping Pong,0.125755,0.0225761,-1.67593e-08,0.00181995
+continuum,OT - Polychromatic,0.134774,0.0339762,4.95973e-08,0.00300133
+continuum,OT - Pterodactyl,0.115769,0.025512,6.18044e-09,0.0017551
+continuum,OT - Pulse,0.118616,0.0235392,2.41284e-08,0.0013631
+continuum,OT - Random Fun,0.120077,0.0200194,-1.6091e-08,0.00162242
+continuum,OT - Random Texture,0.11821,0.0212126,-1.5989e-08,0.00171001
+continuum,OT - Random Trigger,0.16009,0.0376973,4.90491e-08,0.00332762
+continuum,OT - Razor Loops,0.131888,0.0348188,5.56588e-08,0.00362628
+continuum,OT - Rosin Oscillator,0.109626,0.0205853,2.44554e-09,0.0021191
+continuum,OT - Rubber Band Stars,0.119624,0.0295879,3.20729e-08,0.0017612
+continuum,OT - Scratching FDN,0.14352,0.0294958,1.69615e-08,0.0015266
+continuum,OT - Seasons Ch1,0.124106,0.0300599,4.13391e-08,0.00158276
+continuum,OT - Sequencer 1 Ch1,0.110652,0.0198487,-1.452e-08,0.00160005
+continuum,OT - Shimmer,0.146132,0.0322685,5.84032e-08,0.00274947
+continuum,OT - Simple and Nice,0.0884746,0.0201269,-7.19946e-09,0.0015681
+continuum,OT - Sine Wave T,0.0948843,0.0189262,-7.25531e-09,0.00148805
+continuum,OT - SinePhases,0.103501,0.0258077,4.44874e-08,0.00146971
+continuum,OT - SineSpray Rain via Surface,0.108808,0.0239687,5.76716e-09,0.00164893
+continuum,OT - Singing Noise,0.107753,0.0234466,2.25768e-08,0.00135591
+continuum,OT - Slip Zen,0.117365,0.0213228,-1.51766e-08,0.00235921
+continuum,OT - Slow Evolver,0.11821,0.0212126,-1.5989e-08,0.00171001
+continuum,OT - Sonogram,0.145399,0.0362116,5.0555e-08,0.00367579
+continuum,OT - Soundboard,0.111806,0.022555,-1.46138e-08,0.00248643
+continuum,OT - Space,0.110652,0.0198477,-1.46186e-08,0.00159998
+continuum,OT - Space Async,0.127564,0.0279314,3.26842e-08,0.0016592
+continuum,OT - Spectrum with MidiClock,0.112395,0.0187327,-1.51917e-08,0.00151812
+continuum,OT - Spiritus Subteranne,0.117412,0.0225458,8.26151e-09,0.00143836
+continuum,OT - Sputnik's Dream,0.109856,0.0199487,-1.38086e-08,0.0022072
+continuum,OT - Stasis Field T,0.164176,0.0383496,4.58161e-08,0.00410985
+continuum,OT - Sub-Harmonic Generator,0.140871,0.0372108,6.17344e-08,0.00387552
+continuum,OT - Submit Job to Mainframe,0.170215,0.0377917,4.44721e-08,0.00388249
+continuum,OT - SuperWave,0.116663,0.0282455,3.83973e-08,0.00148721
+continuum,OT - Sweet Triangle,0.0888003,0.0177157,-6.85186e-09,0.00139281
+continuum,OT - Swept Delay,0.0948789,0.0189169,-7.33723e-09,0.00148737
+continuum,OT - Swirl,0.136975,0.0380448,4.34014e-08,0.0040671
+continuum,OT - Synthetic Cathedral,0.119616,0.0243287,4.43255e-08,0.00138603
+continuum,OT - Tesla Coil,0.0887949,0.0177062,-6.94143e-09,0.00139212
+continuum,OT - Tesla's Dream,0.152906,0.0400267,4.6778e-08,0.00409444
+continuum,OT - The Long Goodbye,0.124106,0.0300599,4.13391e-08,0.00158276
+continuum,OT - The Slow Descent,0.112256,0.0245701,2.92869e-08,0.00145922
+continuum,OT - The Wind on Callisto,0.150546,0.0354186,4.50849e-08,0.00312647
+continuum,OT - Three Cycles,0.10185,0.0224287,4.85587e-09,0.00154296
+continuum,OT - Three Sines,0.124099,0.0300537,4.06396e-08,0.0015825
+continuum,OT - Through the Photodiode,0.160098,0.0377035,4.82609e-08,0.0033281
+continuum,OT - Tick Bodies,0.154414,0.036048,4.30625e-08,0.00386288
+continuum,OT - Transistor,0.147052,0.0389154,6.81189e-08,0.00329646
+continuum,OT - Transporter,0.130983,0.0348198,4.19625e-08,0.00311998
+continuum,OT - TriMod,0.101844,0.0224264,5.23077e-09,0.00154283
+continuum,OT - Unanswered Question,0.144103,0.031858,4.89826e-08,0.00325469
+continuum,OT - Unstable Wave,0.124584,0.0234173,2.07308e-09,0.00241057
+continuum,OT - Venusian Beach,0.143937,0.0363092,5.24361e-08,0.00320747
+continuum,OT - Victrola,0.152906,0.0400285,4.69294e-08,0.00409459
+continuum,OT - Victrola 2,0.100967,0.0201461,-7.72487e-09,0.00158396
+continuum,OT - Voice of the Woods,0.0956822,0.0228696,1.6349e-08,0.00152083
+continuum,OT - Voyager,0.124846,0.0266592,3.0864e-08,0.00173444
+continuum,OT - Waterphonie,0.136437,0.0241969,9.01108e-09,0.00154088
+continuum,OT - WaveShaped,0.136153,0.0338897,4.78078e-08,0.00343998
+continuum,OT - Whirligigs,0.124584,0.0234173,2.07308e-09,0.00241057
+continuum,OT - Wind Beach,0.124861,0.0226966,-1.55429e-08,0.00251118
+continuum,OT - Winter Skipping Pond,0.127775,0.0260035,4.70452e-08,0.00148144
+continuum,OT - Wobble Plate,0.119018,0.0299555,3.28323e-08,0.00195378
+continuum,OT - Zazipad,0.149823,0.0395995,6.39669e-08,0.00412441
+continuum,OT - Zipper,0.143937,0.0363092,5.24361e-08,0.00320747
+continuum,PE - Creaker,0.0507673,0.00832489,-1.97053e-11,0.000784911
+continuum,PE - Drum-Machine Windowed,0.0711002,0.00467312,-5.99598e-11,0.000605926
+continuum,PE - Drum-Set,0.0711002,0.00467312,-5.99598e-11,0.000605926
+continuum,PE - Icicles 1,0.0891009,0.00521469,-2.19865e-10,0.000637407
+continuum,PE - Icicles 2,0.0783567,0.00465819,-2.29044e-10,0.000567862
+continuum,PE - Jaw Stick 1,0.0891009,0.00520426,-1.0612e-10,0.000636351
+continuum,PE - Jaw Stick 2,0.0783567,0.00465819,-2.29044e-10,0.000567862
+continuum,PE - Kinetic - Kick,0.071096,0.00466221,-1.22663e-11,0.00060475
+continuum,PE - Metal Rainstick,0.0783567,0.00462332,-2.0637e-10,0.000564323
+continuum,PE - Resonant Drum 1,0.071096,0.00466221,-1.22663e-11,0.00060475
+continuum,PE - Resonant Drum 2,0.0711002,0.00467312,-5.99598e-11,0.000605926
+continuum,PE - Wind Drum,0.0711002,0.00467312,-5.99598e-11,0.000605926
+continuum,PT - Bowed Bells,0.0297934,0.00237035,1.59853e-10,0.000308343
+continuum,PT - Glass Harp,0.01515,0.00142145,1.04871e-09,0.000257277
+continuum,PT - Bell Rub,0.107633,0.0156158,-1.00146e-09,0.001331
+continuum,PT - Bells in the Fields,0.107633,0.0156158,-1.00146e-09,0.001331
+continuum,PT - Bells of Digul,0.107633,0.0156158,-1.00146e-09,0.001331
+continuum,PT - Bouncer,0.0998954,0.0109011,8.91236e-10,0.000753136
+continuum,PT - Carbon Marimba,0.10764,0.0156485,-6.18969e-10,0.00133297
+continuum,PT - Cumulus,0.0938773,0.0102601,7.07178e-10,0.000708475
+continuum,PT - Cycle Kalimba,0.0938827,0.0102828,5.50064e-10,0.000709583
+continuum,PT - Dolce Cristallo,0.0998954,0.0109226,8.38202e-10,0.000754173
+continuum,PT - Dolce Cristallo Space,0.0999008,0.0109453,4.96871e-10,0.000755282
+continuum,PT - Dripaphone,0.0999008,0.0109453,4.96871e-10,0.000755282
+continuum,PT - Dueling BiqBanks,0.0999008,0.0109453,4.96871e-10,0.000755282
+continuum,PT - Echo of a Marimba,0.10764,0.0156485,-6.18969e-10,0.00133297
+continuum,PT - FM Bell T,0.107633,0.0156158,-1.00146e-09,0.001331
+continuum,PT - FM Bells,0.107633,0.0156158,-1.00146e-09,0.001331
+continuum,PT - Gamelan Spinner,0.107633,0.0156158,-1.00146e-09,0.001331
+continuum,PT - Genie Bottle,0.0938773,0.0102601,7.07178e-10,0.000708475
+continuum,PT - Glas Pfeifen,0.0998954,0.0109226,8.38202e-10,0.000754173
+continuum,PT - Glass Rings,0.0878631,0.00966731,5.9936e-10,0.000666165
+continuum,PT - Grandfather Clock,0.0878577,0.00962018,2.51391e-10,0.00066387
+continuum,PT - Ishango Bone,0.0998954,0.0109011,8.91236e-10,0.000753136
+continuum,PT - JPR Marimba,0.10764,0.0156485,-6.18969e-10,0.00133297
+continuum,PT - Marlin Perkins 1,0.0878577,0.00962018,2.51391e-10,0.00066387
+continuum,PT - Marlin Perkins 2,0.0938773,0.0102601,7.07178e-10,0.000708475
+continuum,PT - Metal Bar,0.0998954,0.0109226,8.38202e-10,0.000754173
+continuum,PT - Metallic Glass,0.0999008,0.0109453,4.96871e-10,0.000755282
+continuum,PT - Metallic Pattern Gen,0.0999008,0.0109453,4.96871e-10,0.000755282
+continuum,PT - Mutable Bowl,0.0999008,0.0109453,4.96871e-10,0.000755282
+continuum,PT - Mutable Bowl.9,0.093888,0.0103062,5.08043e-10,0.000710728
+continuum,PT - OvertoneBar,0.0998954,0.0109226,8.38202e-10,0.000754173
+continuum,PT - Plinklies,0.0999008,0.0109453,4.96871e-10,0.000755282
+continuum,PT - Pluck Tine,0.0878631,0.00966731,5.9936e-10,0.000666165
+continuum,PT - Pulsar,0.0938773,0.0102601,7.07178e-10,0.000708475
+continuum,PT - Remembrance Bells,0.10764,0.0156324,-6.60402e-10,0.00133201
+continuum,PT - Sine Kalimba,0.0878577,0.00962018,2.51391e-10,0.00066387
+continuum,PT - Small Cloud Gamelan,0.114759,0.00998637,4.95906e-10,0.000837529
+continuum,PT - Spectral Marimba,0.10764,0.0156245,-7.38654e-10,0.00133154
+continuum,PT - Spinning Metal Rings,0.0998954,0.0109011,8.91236e-10,0.000753136
+continuum,PT - Spring Shimming Bell,0.10764,0.0156485,-6.18969e-10,0.00133297
+continuum,PT - Steel Pan Kalimba,0.0938773,0.0102601,7.07178e-10,0.000708475
+continuum,PT - Sympathetica,0.0998954,0.0109226,8.38202e-10,0.000754173
+continuum,PT - Tick Tube,0.093888,0.0103062,5.08043e-10,0.000710728
+continuum,PT - Timbre Morph,0.0938827,0.0102828,5.50064e-10,0.000709583
+continuum,PT - Tremolo Resonator,0.0938827,0.0102828,5.50064e-10,0.000709583
+continuum,PT - Tubular Bells,0.10764,0.0156324,-6.60402e-10,0.00133201
+continuum,PT - Uki Bells,0.107633,0.0156158,-1.00146e-09,0.001331
+continuum,PT - Zuie,0.0998954,0.0109011,8.91236e-10,0.000753136
+continuum,PT - mBiraski,0.093888,0.0103062,5.08043e-10,0.000710728
+continuum,PT - mBiraski Ch1,0.0878631,0.00964361,4.821e-10,0.000665017
+continuum,PR - Harmonic Resonator,0.0491008,0.00755979,2.61303e-09,0.000536062
+continuum,PR - Ambient Delay,0.108079,0.0157926,-1.08248e-08,0.00183733
+continuum,PR - Analog Echo,0.110442,0.0166069,-1.19176e-08,0.00193081
+continuum,PR - Analog Echo Ext,0.0967079,0.0144389,-9.72246e-09,0.00167894
+continuum,PR - Chorus1,0.096702,0.0144254,-9.71804e-09,0.00167747
+continuum,PR - Chorus2,0.103792,0.0155943,-1.07658e-08,0.00181316
+continuum,PR - Chorus3,0.108079,0.0158031,-1.08209e-08,0.00183846
+continuum,PR - Effect Modman,0.10994,0.0164135,-1.16809e-08,0.00190861
+continuum,PR - Effect Modman 1,0.101585,0.0148597,-1.06554e-08,0.00172863
+continuum,PR - FDN Base,0.0950718,0.0139021,-1.02402e-08,0.00161725
+continuum,PR - FDN Space,0.109934,0.0164006,-1.15143e-08,0.00190722
+continuum,PR - Flanger,0.103331,0.0154266,-1.07076e-08,0.00179382
+continuum,PR - Karplus Effect,0.110436,0.0166,-1.12537e-08,0.00193006
+continuum,PR - Kinetic Friction,0.0971503,0.0146088,-9.90976e-09,0.00169844
+continuum,PR - Leslie,0.0957033,0.0140769,-9.35411e-09,0.00163737
+continuum,PR - MtoStereo Delay,0.0971443,0.0145954,-1.01983e-08,0.00169699
+continuum,PR - Multitap,0.095066,0.013895,-1.02177e-08,0.00161647
+continuum,PR - Phaser,0.108801,0.016004,-1.11569e-08,0.00186159
+continuum,PR - Pitch Shifter,0.0967079,0.0144389,-9.72246e-09,0.00167894
+continuum,PR - RingMod Voice,0.0956763,0.0228665,1.5786e-08,0.00152066
+continuum,PR - Shaper,0.108801,0.016004,-1.11569e-08,0.00186159
+continuum,PR - The Satur,0.108807,0.016017,-1.16529e-08,0.00186299
+continuum,PR - Tuned Reverb,0.0967079,0.0144389,-9.72246e-09,0.00167894
+continuum,DO - Feelings Drone,0.0441215,0.0080615,-8.48136e-08,0.000515097
+continuum,DO - Bad Weather,0.0970743,0.0215409,3.41931e-08,0.00196621
+continuum,DO - Countdown,0.0970743,0.0215409,3.41931e-08,0.00196621
+continuum,DO - Drum-Machine,0.0711045,0.00468424,-8.47734e-11,0.000607125
+continuum,DO - Earthquake,0.0908518,0.0201537,3.19349e-08,0.00183962
+continuum,DO - Hal Dreams,0.0908462,0.0201525,3.16075e-08,0.0018395
+continuum,DO - Hals Meditation,0.103289,0.0229278,3.571e-08,0.00209276
+continuum,DO - Kinetic Evil Bell,0.10764,0.0156485,-6.18969e-10,0.00133297
+continuum,DO - Magic Carillon,0.107633,0.0156158,-1.00146e-09,0.001331
+continuum,DO - Magic Carillon - Var1,0.107633,0.0156158,-1.00146e-09,0.001331
+continuum,DO - Magic Carillon - Var2,0.107633,0.0156158,-1.00146e-09,0.001331
+continuum,DO - Roller,0.0908462,0.0201525,3.16075e-08,0.0018395
+continuum,DO - Rosetta Alarm,0.0970687,0.0215396,3.34668e-08,0.00196609
+continuum,DO - SineSpray Rain,0.103289,0.0229278,3.57227e-08,0.00209277
+continuum,DO - Splat,0.0908518,0.0201538,3.19296e-08,0.00183962
+continuum,DO - Throat Battle,0.0908462,0.0201525,3.16075e-08,0.0018395
+continuum,DO - Two Chords,0.0908462,0.0201525,3.16075e-08,0.0018395
+continuum,DO - TwoOneDrone,0.0908462,0.0201525,3.16075e-08,0.0018395
+continuum,DO - Undersea Cable [Studio],0.0884925,0.024115,-8.07649e-08,0.00126001
+continuum,DO - Tidal Machine [Studio],0.111161,0.0258544,-1.1695e-07,0.00222158
+continuum,DO - Copper Planet [Studio],0.131435,0.0289209,1.73785e-07,0.00288571
+continuum,DO - Clockwork Fog [Studio],0.167859,0.0342919,-4.41573e-08,0.00478097
+continuum,DO - Reese Nebula [Studio],0.141134,0.0289393,-1.88544e-07,0.00236131
+continuum,DO - Hollow Earth [Studio],0.123383,0.024989,9.89055e-09,0.00191164
+continuum,DO - Glass Current [Studio],0.13346,0.0273962,-1.58696e-07,0.00312212
+continuum,DO - Fifth Monolith [Studio],0.161379,0.0303159,2.45274e-07,0.00310745
+continuum,DO - Tidal Machine [Stage],0.131543,0.032681,6.01608e-08,0.00198959
+continuum,DO - Clockwork Fog [Stage],0.147006,0.0311174,-2.47135e-07,0.00335283
+continuum,DO - Hollow Earth [Stage],0.133204,0.027303,-1.10557e-07,0.0027663
+continuum,DO - Fifth Monolith [Stage],0.138949,0.0313322,-3.90623e-07,0.00263657
+continuum,MD - MPE 08 Voice,0.0438037,0.0065529,5.56689e-10,0.000821237
+continuum,MD - Kontakt 1 Mono,0.134403,0.0374202,-3.64383e-09,0.00151897
+continuum,MD - Kontakt 1 Perform,0.118287,0.0329187,-3.52318e-09,0.00133596
+continuum,MD - Kyma 1,0.11828,0.0328965,-3.11038e-09,0.0013353
+continuum,MD - Kyma 2 Round,0.11828,0.0328965,-3.11038e-09,0.0013353
+continuum,MD - Kyma 3 Initial Round,0.126347,0.0351493,-4.13205e-09,0.00142687
+continuum,MD - Kyma 4 Release Round,0.118287,0.0329084,-3.50507e-09,0.00133566
+continuum,MD - MPE 04 Voice,0.0956763,0.0228665,1.5786e-08,0.00152066
+continuum,MD - MPE 06 Voice,0.0956763,0.0228665,1.5786e-08,0.00152066
+continuum,MD - MPE 12 Voice,0.0956763,0.0228665,1.5786e-08,0.00152066
+continuum,MD - MPE+ 08 Voice,0.0956763,0.0228665,1.5786e-08,0.00152066
+continuum,MD - Omnisphere 1 Perform,0.11828,0.0328965,-3.11038e-09,0.0013353
+continuum,MD - Omnisphere 2 Round,0.11828,0.0328965,-3.11038e-09,0.0013353
+continuum,MD - Omnisphere 3 Initial Round,0.11828,0.0328965,-3.11038e-09,0.0013353
+continuum,MD - Omnisphere 4 Semitone,0.134403,0.0374035,-3.60818e-09,0.00151849
+continuum,MD - Omnisphere 5 Mono,0.126361,0.0351728,-4.37518e-09,0.00142759
+continuum,CV - CVC 10v Linear Z,0.118287,0.0329084,-3.50507e-09,0.00133566
+continuum,CV - CVC 10v Square Z,0.134403,0.0374035,-3.60818e-09,0.00151849
+continuum,CV - CVC 5v C0 Linear Z,0.118287,0.0329187,-3.52318e-09,0.00133596
+continuum,CV - CVC 5v C0 Square Z,0.11828,0.0328965,-3.11038e-09,0.0013353
+continuum,CV - CVC 5v C2 Linear Z,0.11828,0.0328965,-3.11038e-09,0.0013353
+continuum,CV - CVC 5v C2 Square Z,0.134403,0.0374035,-3.60818e-09,0.00151849
+continuum,CV - CVC 5v C4 Linear Z,0.134411,0.0374246,-4.39402e-09,0.00151912
+continuum,CV - CVC 5v C4 Square Z,0.126361,0.0351728,-4.37518e-09,0.00142759
+continuum,CV - CVC Buchla Linear Z,0.126354,0.035161,-3.63498e-09,0.00142722
+continuum,CV - CVC Buchla Square Z,0.126354,0.035161,-3.63498e-09,0.00142722
+continuum,CV - CVC Four Shape Generators,0.134403,0.0374129,-3.50763e-09,0.00151876
+continuum,CV - CVC Voyager Linear Z,0.126361,0.0351728,-4.37518e-09,0.00142759
+continuum,CV - CVC Voyager Square Z,0.118287,0.0329084,-3.50507e-09,0.00133566
+continuum,CV - CVC Y Shelf Linear Z,0.11828,0.0328965,-3.11038e-09,0.0013353
+continuum,CV - CVC Y Shelf Square Z,0.11828,0.0328965,-3.11038e-09,0.0013353
+continuum,USR - FollowDly,0.147357,0.0246862,2.52822e-09,0.0024745
+continuum,USR - CrossMod1,0.163053,0.0272195,2.86352e-09,0.00315166
+continuum,USR - Woodwind,0.159332,0.0272329,3.28815e-09,0.0030443
+continuum,USR - Jaymar Toy Piano,0.103249,0.0206591,-2.51771e-09,0.0013053
+continuum,USR - Snap Bass,0.149116,0.0251931,2.36033e-09,0.0028158
+continuum,USR - Bass Monster,0.16801,0.0286951,2.49173e-09,0.00294896
+continuum,USR - Choir,0.0956822,0.0228696,1.6349e-08,0.00152083
+continuum,USR - Cumulus,0.157403,0.0265321,2.32789e-09,0.00265986
+continuum,USR - Shimmer,0.147974,0.0252498,2.50686e-09,0.0025947
+continuum,USR - Living Pad,0.158922,0.0268192,3.15143e-09,0.0029408
+continuum,USR - Bowed Mood,0.155096,0.0269286,-1.15779e-08,0.00187578
+continuum,USR - Ishango Bone,0.167818,0.0282024,2.20293e-09,0.0028977
+continuum,USR - Marlin Perkins 1,0.149112,0.0257002,2.59462e-09,0.00281853
+continuum,USR - Mojo of FDN,0.167433,0.0283966,2.63484e-09,0.00284702
+continuum,USR - Zipper,0.159229,0.0274587,2.72193e-09,0.00301146
+continuum,USR - SineSpray Rain via Surface,0.163062,0.0272296,2.7082e-09,0.00315275
+continuum,PL - Muted Wire [Studio],0.076572,0.00741484,2.24301e-10,0.000363705
+continuum,PL - Pulse Pizzicato [Studio],0.07516,0.00734848,2.79528e-10,0.000366597
+continuum,PL - Copper Harp [Studio],0.0726908,0.00710382,2.26926e-10,0.000361277
+continuum,PL - Sync Kalimba [Studio],0.0717394,0.00715989,2.93543e-10,0.00036781
+continuum,PL - Stereo Droplets [Studio],0.0703746,0.00704893,6.25223e-11,0.00036347
+continuum,PL - Bamboo Spark [Studio],0.0699091,0.00748264,5.2579e-10,0.000384171
+continuum,PL - Crystal Pin [Studio],0.0803946,0.00576647,3.45842e-10,0.000319938
+continuum,PL - Fifth Koto [Studio],0.0666764,0.0059955,-1.00796e-10,0.000295196
+continuum,PL - Pulse Pizzicato [Stage],0.0789096,0.00652021,-2.25354e-10,0.00041524
+continuum,PL - Sync Kalimba [Stage],0.0663391,0.00585689,-1.20873e-10,0.00103808
+continuum,PL - Bamboo Spark [Stage],0.0789873,0.00673592,-6.50084e-11,0.000531082
+continuum,PL - Fifth Koto [Stage],0.0795367,0.00603986,-9.93522e-11,0.000608799
+continuum,KY - Felt Circuit [Studio],0.087476,0.0162854,-7.25889e-10,0.000830662
+continuum,KY - Suitcase Spark [Studio],0.0857433,0.0156035,-8.97726e-11,0.000808493
+continuum,KY - Copper Tines [Studio],0.0856735,0.0148411,-4.02521e-12,0.000784321
+continuum,KY - Digital Clav [Studio],0.0859989,0.0147578,2.21462e-10,0.00081021
+continuum,KY - Chorus Cabinet [Studio],0.0824456,0.0149557,3.98305e-10,0.000799099
+continuum,KY - Hollow Celesta [Studio],0.077023,0.0156407,-4.78491e-11,0.000848085
+continuum,KY - Prism Keys [Studio],0.103976,0.0137545,-5.23065e-10,0.000770257
+continuum,KY - Octave Console [Studio],0.0836449,0.0143156,-4.35763e-09,0.000711898
+continuum,KY - Suitcase Spark [Stage],0.0994635,0.0167949,-3.06906e-09,0.00100576
+continuum,KY - Digital Clav [Stage],0.0838857,0.0143586,1.25424e-09,0.00107716
+continuum,KY - Hollow Celesta [Stage],0.0838021,0.0130705,2.09379e-10,0.00219629
+continuum,KY - Octave Console [Stage],0.0982099,0.0158845,-1.32716e-09,0.00149065
+continuum,UT - Empty,0.0466752,0.0080492,4.99803e-10,0.000674835
+continuum,UT - Audio Through,0.168699,0.0286201,2.11901e-09,0.0030753
+continuum,UT - Basic Bowed Spring,0.155096,0.0269298,-1.13565e-08,0.00187584
+continuum,UT - Basic Jenny,0.148882,0.0252502,1.69653e-09,0.00276897
+continuum,UT - Basic Spring Bell,0.107633,0.0156158,-1.00146e-09,0.001331
+continuum,UT - BiqBank - Basic,0.147844,0.0249532,1.42952e-09,0.00256401
+continuum,UT - BiqGraph - Basic,0.173934,0.0294579,3.36534e-09,0.0034113
+continuum,UT - BiqMouth - Basic,0.157649,0.0270049,2.12674e-09,0.00270752
+continuum,UT - Filter - The Ladder,0.149112,0.0256911,2.43508e-09,0.00281762
+continuum,UT - HarMan - Basic,0.169046,0.0287072,2.59573e-09,0.00314818
+continuum,UT - JennyBasic FixRes,0.148707,0.0254686,2.31109e-09,0.00273682
+continuum,UT - Karplus - 1,0.148932,0.0253968,2.22915e-09,0.00278521
+continuum,UT - Karplus - 2,0.159402,0.0273761,2.31823e-09,0.00306053
+continuum,UT - Karplus - Pipe,0.168643,0.0284451,1.93861e-09,0.00305626
+continuum,UT - Kinetic - Bouncing,0.162984,0.0270796,3.52197e-09,0.00313501
+continuum,UT - Kinetic - Bowed Spring,0.155096,0.0269286,-1.15779e-08,0.00187578
+continuum,UT - Kinetic - Bowed Waveguide,0.155087,0.0269258,-1.27587e-08,0.00187561
+continuum,UT - Kinetic - Crackling Noise,0.14762,0.0252561,2.38874e-09,0.00253227
+continuum,UT - Kinetic - Filter,0.168367,0.0286588,3.07243e-09,0.00301384
+continuum,UT - Kinetic - Spring Bell,0.10764,0.0156485,-6.18969e-10,0.00133297
+continuum,UT - Kinetic - StickSlip Filter,0.148281,0.0252075,2.94635e-09,0.00265079
+continuum,UT - Kinetic - Tracker,0.170884,0.0288856,2.97136e-09,0.00328791
+continuum,UT - Kinetic - Vinyl,0.169196,0.029055,2.90871e-09,0.0031865
+continuum,UT - Kinetic - Waveguide,0.147974,0.0252589,2.35399e-09,0.00259556
+continuum,UT - Kinetic as Filter,0.173934,0.0294579,3.36534e-09,0.0034113
+continuum,UT - ModMan - Pulsed,0.160633,0.0270063,2.81359e-09,0.00307351
+continuum,UT - Noise - Out of Phase,0.159515,0.0275373,2.8135e-09,0.00307856
+continuum,UT - Noise - Pink,0.173934,0.0294663,3.38072e-09,0.00341218
+continuum,UT - Noise - White Stereo,0.157369,0.0263959,2.38782e-09,0.00264579
+continuum,UT - Noise - White at -35 RMS,0.148191,0.0249246,2.0262e-09,0.00262054
+continuum,UT - Osc - A440 at -35,0.173569,0.0291321,3.27647e-09,0.00337334
+continuum,UT - Osc - Formula Delay,0.159524,0.0275476,2.80021e-09,0.00307963
+continuum,UT - Osc - Pitch via Z,0.159117,0.0272977,1.90289e-09,0.0029938
+continuum,UT - Osc - Random Pitch,0.152884,0.0256343,2.57481e-09,0.00296815
+continuum,UT - Osc - Sine Wave,0.16762,0.0287141,2.26039e-09,0.00287911
+continuum,UT - Osc - Subtractive Synth,0.15894,0.0268396,2.23117e-09,0.00294288
+continuum,UT - Osc - Waveshaping,0.167873,0.028378,2.44643e-09,0.00291596
+continuum,UT - Ring Mod - Basic,0.149291,0.025642,3.24059e-09,0.00286646
+continuum,UT - SineBank - Basic,0.158975,0.0269782,2.46477e-09,0.00295852
+continuum,UT - SineSpray - Basic,0.168699,0.0286137,1.87355e-09,0.00307467
+continuum,UT - WaveBank – Basic,0.161062,0.0274776,2.689e-09,0.00312775
+continuum,FX - Submerged Radar [Studio],0.115813,0.0241953,1.36045e-10,0.00139732
+continuum,FX - Pulse Beacon [Studio],0.135477,0.0216247,-1.99352e-09,0.00261656
+continuum,FX - Copper Satellites [Studio],0.141794,0.0223462,9.24844e-09,0.00318852
+continuum,FX - Sync Sparks [Studio],0.139116,0.0246743,-1.24084e-09,0.00490232
+continuum,FX - Stereo Machinery [Studio],0.118405,0.0228394,-1.23268e-08,0.00274621
+continuum,FX - Hollow Transmission [Studio],0.130768,0.0211452,-4.36129e-09,0.00153225
+continuum,FX - Glass Collision [Studio],0.128675,0.0206323,-6.54422e-09,0.0033676
+continuum,FX - Fifth Launch [Studio],0.144664,0.023832,1.78232e-08,0.00347457
+continuum,FX - Pulse Beacon [Stage],0.141591,0.0217209,-4.08565e-09,0.00218294
+continuum,FX - Sync Sparks [Stage],0.139271,0.023463,-2.81763e-09,0.00461011
+continuum,FX - Hollow Transmission [Stage],0.126556,0.0242686,1.84603e-08,0.00206475
+continuum,FX - Fifth Launch [Stage],0.115043,0.0212274,-2.40027e-08,0.00284935

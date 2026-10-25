@@ -7,7 +7,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-BUILD_DIR="${ROOT}/../work/build-triad"
+BUILD_DIR="${ROOT}/../../work/build-triad"
 DO_INSTALL=0
 DO_ZIP=0
 

@@ -1,3 +1,17 @@
+# Cross-platform follow-up: 2026-10-25
+
+Source `39e893e` passed both macOS and Windows CI builds/tests in [run 40091957698](https://github.com/SakuraEntropia/ENTRO-V-COLLECTION/actions/runs/40091957698). All 12 installed local executable hashes were rechecked against the staged build and match. Preset totals: 115 / 119 / 123 / 709. Complete before/after and Stage audits are linked below. Actual Windows DAW loading has not been tested.
+
+---
+
+# Installed legacy/Stage update: 2026-10-24
+
+The current installed bank contains 115 / 119 / 123 / 709 presets (1,066 total). All final eight-second audits and all eight CTest suites pass. Every factory preset now receives audio testing. The four actual installed AU bundles pass fresh auval, and the four installed VST3 bundles pass pluginval strictness 5. Twelve installed bundles have verified signatures and executable hashes; the previous installed versions are backed up. Details and before/after measurements: [LEGACY-STAGE-PRESETS.md](LEGACY-STAGE-PRESETS.md).
+
+Earlier records below apply to their own revisions.
+
+---
+
 # Studio bank validation: 2026-10-24
 
 Source `f9de6ac` adds 64 Studio presets to each instrument (83 / 87 / 91 / 677 total). All 256 Studio presets receive metadata and audio checks, including every Studio Continuum patch. All 256 eight-second audition renders pass; all WAV hashes are distinct. Four rebuilt macOS arm64 VST3 bundles pass pluginval strictness 5. VST3/AU/standalone ZIP and native unsigned `.pkg` 0.2.1 have been generated. See [STUDIO-PRESETS.md](STUDIO-PRESETS.md) and [STUDIO-AUDIT.csv](STUDIO-AUDIT.csv).

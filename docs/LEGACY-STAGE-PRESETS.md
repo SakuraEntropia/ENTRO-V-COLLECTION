@@ -35,3 +35,15 @@ The full audit uses eight seconds per preset, including arps, PolyBrute A/B and 
 The user requests replacement of installed versions after each completed development batch. After tests and the final build pass, stage the four instruments and run `scripts/install-macos-current.py`. It signs and verifies all 12 bundles, backs up previous installed versions, then replaces VST3/AU/apps and checks executable hashes. DAW/standalone processes must be restarted to load the changed binaries. No user projects or DAW processes are closed automatically.
 
 The corrected One bank was separately re-rendered after the VCA mapping fix (123 patches). Its results replace the earlier One rows in the final combined audit. Previous Studio and new Stage One audition files were updated to match.
+
+## Final local results
+
+All 1,066 final eight-second auditions pass the finite/non-silent/unclipped checks. [Before](PRESET-AUDIT-BEFORE.csv) covers 938 presets; [after](PRESET-AUDIT-AFTER.csv) includes the final corrected One renders. [Stage results](STAGE-AUDIT.csv) cover the 128 additions; the existing Studio audit/One WAVs have also been refreshed.
+
+Representative RMS changes under the fixed test phrase: Rubber Bass 0.000687 → 0.0796; Matriarch Organ 0.000891 → 0.1106; Metalizer Mono 0.0000352 → 0.00766; Stacked Foundation 0.00160 → 0.1042; Clarinet 0.00343 → 0.0201. Different articulation and sustain lengths still have different average levels.
+
+Eight CTest suites pass, with every preset rendered by the factory test. All four installed AU bundles pass fresh auval; all four installed VST3 bundles pass pluginval strictness 5. All 12 installed bundles pass signature checks and match the staged executable hashes. Previous versions were backed up to the workspace install-backup directory. Current DAW processes were not closed; restart and reselect a factory preset to apply its corrected parameters in an existing session.
+
+Source revision: `39e893e`; cross-platform CI: https://github.com/SakuraEntropia/ENTRO-V-COLLECTION/actions/runs/40091957698. Local installer package version: 0.2.2 (ad-hoc application signatures).
+
+2026-10-25 follow-up: CI run 40091957698 completed successfully for both macOS and Windows. All 12 local installed executable hashes were compared again with the staged build and still match.
