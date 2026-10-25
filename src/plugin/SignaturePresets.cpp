@@ -197,4 +197,49 @@ std::vector<FactoryPreset> signaturePresets(const std::string& id) {
     }
     return result;
 }
+std::vector<FactoryPreset> reworkPresets(const std::string& id) {
+    if(id!="moogone")return {};
+    auto source=signaturePresets(id);std::vector<FactoryPreset> result;
+    for(const auto& pair:std::array<std::pair<const char*,const char*>,3>{{
+        {"PD - Resonant Cathedral Gold [Saw Atlas]","PD - Cedar Saw [Rework]"},
+        {"KY - Concert Hammer [Atelier]","KY - Hammer Body [Rework]"},
+        {"ST - Small String Section [Atelier]","ST - Bow Section [Rework]"}}}) {
+        auto it=std::find_if(source.begin(),source.end(),[&](const auto& p){return p.name==pair.first;});
+        if(it==source.end())continue;
+        auto p=*it;p.name=pair.second;auto& v=p.values;const bool piano=p.category=="Keyboard",pad=p.category=="Pad";
+        put(v,"one.master.volume",.6f);put(v,"one.master.drift",piano?.012f:.035f);
+        put(v,"one.master.reverbMix",piano?.08f:.1f);
+        for(int part=1;part<=3;++part){auto stem="one.p"+juce::String(part)+".";
+            put(v,stem+"enabled",part<3?1:0);put(v,stem+"level",part==1?.7f:piano?.15f:.42f);
+            put(v,stem+"pan",piano?(part==1?0:.12f):(part==1?-.38f:.48f));
+            put(v,stem+"fx.chorus.mix",0);put(v,stem+"fx.delay.mix",0);put(v,stem+"fx.reverb.send",.15f);
+            put(v,stem+"mix.ring",0);put(v,stem+"mix.noise",piano||pad?0:.002f);put(v,stem+"vco3.fm",0);
+            put(v,stem+"filters.routing",pad?0:1);put(v,stem+"filters.mix",pad?1:piano?.1f:.85f);
+            put(v,stem+"svf.mode",0);put(v,stem+"svf.slope",0);
+            put(v,stem+"svf.cutoff",pad?10000:piano?(part==1?1800:5500):6000);
+            put(v,stem+"ladder.cutoff",pad?(part==1?2400:3100):piano?4500:(part==1?2100:2800));
+            put(v,stem+"svf.resonance",.025f);put(v,stem+"ladder.resonance",pad?(part==1?.22f:.35f):.1f);
+            put(v,stem+"ladder.slope",3);put(v,stem+"ladder.drive",.045f);
+            put(v,stem+"svf.envAmt",piano?.52f:.1f);put(v,stem+"ladder.envAmt",piano?.15f:pad?.18f:.12f);
+            put(v,stem+"svf.keyTrack",.65f);put(v,stem+"ladder.keyTrack",.65f);
+            for(int osc=1;osc<=3;++osc){auto o=stem+"vco"+juce::String(osc)+".";
+                put(v,o+"waveAngle",piano?(part==1?.5f:.22f):pad?0:osc==1?0:.13f);put(v,o+"shape",0);
+                put(v,o+"level",osc==1?.65f:osc==2?(piano?.14f:.3f):piano?.045f:.055f);
+                put(v,o+"octave",piano && (part==2||osc>1)?2:1);
+                put(v,o+"tune",piano?(osc==3?7.08f:osc==2?.025f:0):(part==1?(osc==1?0:.065f):(osc==1?-.035f:.045f)));
+                put(v,o+"beatHz",0);if(osc>1)put(v,o+"sync",0);
+            }
+            const float a=piano?.002f:pad?.7f:(part==1?.2f:.31f);
+            const float d=piano?(part==1?5.5f:.14f):2.5f;
+            env(v,stem+"env3.",a,d,piano?0:pad?.75f:.85f,piano?.28f:pad?2.8f:.7f);
+            put(v,stem+"env3.velocity",piano?.95f:.55f);
+            env(v,stem+"env1.",piano?.001f:a,piano?.22f:2,piano?0:.45f,.2f);
+            env(v,stem+"env2.",piano?.001f:a,piano?.3f:2.4f,piano?0:.5f,.3f);
+            put(v,stem+"lfo1.rate",part==1?5.2f:5.35f);put(v,stem+"lfo1.pitchAmt",piano?0:pad?.0007f:.003f);
+            put(v,stem+"lfo1.fade",piano?0:.55f);put(v,stem+"lfo3.cutoffAmt",pad?.025f:0);
+            for(int slot=1;slot<=8;++slot)put(v,stem+"mod.slot"+juce::String(slot)+".amount",0);
+        }result.push_back(std::move(p));
+    }return result;
+}
+
 }

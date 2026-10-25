@@ -2623,6 +2623,7 @@ std::vector<FactoryPreset> factoryPresetsFor (const std::string& instrumentId)
     append(studioPresets(instrumentId));
     append(stagePresets(instrumentId));
     append(signaturePresets(instrumentId));
+    append(reworkPresets(instrumentId));
     return sortedPresets(std::move(result));
 }
 

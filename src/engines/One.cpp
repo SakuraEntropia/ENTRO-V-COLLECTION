@@ -991,7 +991,10 @@ void OneEngine::startVoice (int part, int note, float velocity, int channel,
 
     for (auto& oscillator : voice.oscillators)
     {
-        oscillator.reset (0.0);
+        // A hardware VCO is not phase-reset by a key press. Independent phases
+        // avoid identical, coherently summed attacks on every retrigger.
+        // The per-voice PRNG is seeded in prepare(), keeping renders reproducible.
+        oscillator.reset (voice.rng.nextUnipolar());
         oscillator.setFrequency (440.0);
     }
 

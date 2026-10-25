@@ -75,6 +75,19 @@ struct Fixture
     }
 };
 
+void independentPhaseOnRetrigger()
+{
+    Fixture f;f.cleanPitch();f.render(48000); // Settle parameter smoothers before comparison.
+    auto capture=[&]{
+        f.engine.processMidi({triad::MidiEventType::AllSoundOff});f.on(60);
+        std::vector<float> left(2048),right(2048);
+        f.engine.render(left.data(),right.data(),2048);return left;
+    };
+    const auto first=capture(),second=capture();double difference=0;
+    for(size_t i=0;i<first.size();++i)difference+=std::abs(first[i]-second[i]);
+    CHECK(difference>0.01); // VCO phase must not restart as the same waveform.
+}
+
 void sharedBudget()
 {
     Fixture f;
@@ -166,6 +179,7 @@ void sustainAndModeSwitches()
 
 int main()
 {
+    independentPhaseOnRetrigger();
     sharedBudget();
     if (failures != 0) return 1;
     monoAndUnison(); sustainAndModeSwitches();

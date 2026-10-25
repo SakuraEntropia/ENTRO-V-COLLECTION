@@ -1,3 +1,7 @@
+# One listening rework — 2026-10-25
+
+Three experimental presets and independent note-on oscillator phases. Nine CTest suites and all 238 One render audits pass. All four freshly installed AU bundles pass auval; all four VST3 bundles pass pluginval strictness 5. Prior bundles were backed up before replacement. Listening quality remains unapproved; see [ONE-REWORK.md](ONE-REWORK.md). Earlier validation below refers to its recorded revision.
+
 # Signature / Atelier / Saw Atlas installed update — 2026-10-25
 
 Source `ffb803e` adds 256 instrument-specific patches (163 / 167 / 235 / 757 total, 1,322 combined). All nine local CTest suites pass. All 256 long auditions pass and have distinct WAV payloads; One's pure-saw definitions, dry width/mono body, overtone retention and piano/string articulation receive additional checks. All four actual installed AU and VST3 bundles pass auval and pluginval strictness 5, respectively. Installer backups, bundle signatures, executable hashes and Launchpad refresh are verified. See [SIGNATURE-SOUNDS.md](SIGNATURE-SOUNDS.md), [SIGNATURE-AUDIT.csv](SIGNATURE-AUDIT.csv) and [SIGNATURE-QUALITY.txt](SIGNATURE-QUALITY.txt).

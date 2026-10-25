@@ -1,0 +1,239 @@
+instrument,preset,peak,rms,dc,derivative_rms
+moogone,"BA - One Bass",0.245133,0.0391248,2.1507e-05,0.000373692
+moogone,"BA - Sub One",0.244253,0.0536742,2.82422e-05,0.000437483
+moogone,"BA - Reese Bass",0.281937,0.0497443,1.32953e-05,0.000738766
+moogone,"BA - Acid Bass",0.332462,0.0369759,-2.85432e-06,0.00132215
+moogone,"BA - Cinema Pulse Ref",0.277936,0.0878364,-2.39766e-05,0.00070956
+moogone,"BA - Small Ladder Ref",0.258276,0.0673876,-2.89315e-05,0.000331597
+moogone,"BA - Stacked Foundation Ref",0.216055,0.0619718,-3.43847e-05,0.000626535
+moogone,"BA - Velvet Sub [Studio]",0.0535295,0.015852,3.92895e-08,0.000106049
+moogone,"BA - Rubber Transit [Studio]",0.0439926,0.0105189,-1.46091e-07,0.000235951
+moogone,"BA - Copper Pulse [Studio]",0.0503081,0.00974121,3.69656e-07,0.000248202
+moogone,"BA - Broken Acid [Studio]",0.0641957,0.0162724,-2.02727e-07,0.000512352
+moogone,"BA - Reese Current [Studio]",0.0436276,0.00992819,3.28462e-07,0.000173925
+moogone,"BA - Roundwood [Studio]",0.0475935,0.0161409,1.7483e-07,0.000314032
+moogone,"BA - Low Voltage [Studio]",0.0415102,0.0106498,5.6162e-08,0.000183752
+moogone,"BA - Octave Furnace [Studio]",0.0769426,0.0191309,1.33318e-06,0.000427501
+moogone,"BA - Rubber Transit [Stage]",0.0474594,0.0119248,-3.25179e-07,0.000236773
+moogone,"BA - Broken Acid [Stage]",0.0506514,0.0150453,-1.046e-07,0.000461851
+moogone,"BA - Roundwood [Stage]",0.0566186,0.0144428,1.61626e-07,0.000408812
+moogone,"BA - Octave Furnace [Stage]",0.0729187,0.0171078,9.51447e-07,0.000409623
+moogone,"BA - Velvet Sub [Signature]",0.0492291,0.0141564,8.33506e-10,0.000104771
+moogone,"BA - Rubber Transit [Signature]",0.049496,0.0126016,-2.63679e-07,0.000257349
+moogone,"BA - Copper Pulse [Signature]",0.0843424,0.013893,1.24554e-06,0.000367418
+moogone,"BA - Broken Acid [Signature]",0.0820294,0.0204563,-9.02513e-07,0.000831869
+moogone,"BA - Reese Current [Signature]",0.0425845,0.00899468,2.05262e-07,0.000143432
+moogone,"BA - Roundwood [Signature]",0.0583786,0.0187749,3.05504e-07,0.000422847
+moogone,"BA - Low Voltage [Signature]",0.0772833,0.0151504,1.62476e-07,0.00027703
+moogone,"BA - Octave Furnace [Signature]",0.130977,0.0347486,1.01802e-05,0.000865035
+moogone,"LD - One Lead",0.17312,0.0342357,5.30927e-07,0.00352209
+moogone,"LD - Supersaw Lead",0.250434,0.0482947,2.20339e-06,0.00557283
+moogone,"LD - Sync Crest Ref",0.418986,0.0655718,-3.98516e-05,0.0207873
+moogone,"LD - Silk Portamento [Studio]",0.060285,0.0206391,4.1995e-08,0.000940789
+moogone,"LD - Pulse Rider [Studio]",0.0472084,0.0130067,-4.90963e-07,0.00152926
+moogone,"LD - Brass Needle [Studio]",0.0519333,0.010968,3.92708e-07,0.00155776
+moogone,"LD - Sync Razor [Studio]",0.0580001,0.020087,-1.06704e-06,0.00468887
+moogone,"LD - Wide Horizon [Studio]",0.0665033,0.0108361,2.80239e-07,0.0010271
+moogone,"LD - Hollow Reed [Studio]",0.0573593,0.019074,1.4094e-07,0.00202378
+moogone,"LD - Ribbon Flame [Studio]",0.0489511,0.0115865,1.13397e-07,0.00113174
+moogone,"LD - Fifth Signal [Studio]",0.0760938,0.0217987,1.64963e-06,0.00259164
+moogone,"LD - Pulse Rider [Stage]",0.0528802,0.0143322,-6.65166e-07,0.00149686
+moogone,"LD - Sync Razor [Stage]",0.0764829,0.01854,-4.81768e-07,0.00348362
+moogone,"LD - Hollow Reed [Stage]",0.0547287,0.0163093,3.27541e-07,0.00265423
+moogone,"LD - Fifth Signal [Stage]",0.0747955,0.0192594,1.15065e-06,0.00247388
+moogone,"LD - Silk Portamento [Signature]",0.0495381,0.0167633,1.10737e-08,0.000776954
+moogone,"LD - Brass Needle [Signature]",0.0568351,0.0121776,4.98512e-07,0.00160922
+moogone,"LD - Wide Horizon [Signature]",0.0771837,0.0153346,6.22347e-07,0.00156372
+moogone,"LD - Ribbon Flame [Signature]",0.0907226,0.0205594,1.54394e-06,0.00252416
+moogone,"BR - Poly Brass",0.180314,0.0326418,6.79236e-06,0.00280916
+moogone,"BR - Dual Heritage Ref",0.205436,0.0454308,6.32784e-06,0.0011821
+moogone,"PD - Big Pad",0.352716,0.091036,-6.12015e-06,0.00280706
+moogone,"PD - Warm Analog Pad",0.323618,0.0842781,-8.67849e-06,0.00263049
+moogone,"PD - Vintage Stringfield Ref",0.437122,0.106986,-2.5878e-05,0.00220059
+moogone,"PD - Beyond Mood Ref",0.439241,0.0942372,-3.53818e-05,0.150117
+moogone,"PD - Lunar Dawn Ref",0.43434,0.0970442,-6.73427e-05,0.00634451
+moogone,"PD - Planet Waves Ref",0.60822,0.161207,-8.28124e-05,0.00536643
+moogone,"PD - Dusk Canopy [Studio]",0.169758,0.0389748,1.77567e-07,0.00110236
+moogone,"PD - Slow Tides [Studio]",0.117528,0.0248995,-4.21873e-06,0.00155256
+moogone,"PD - Amber Cloud [Studio]",0.133917,0.021899,1.59645e-06,0.00159088
+moogone,"PD - Polar Choir [Studio]",0.17706,0.0392091,-5.6361e-06,0.00400672
+moogone,"PD - Orbit Mist [Studio]",0.120341,0.0206926,1.41242e-06,0.0010743
+moogone,"PD - Velvet Air [Studio]",0.178988,0.0375063,2.30348e-06,0.00227839
+moogone,"PD - Glass Horizon [Studio]",0.114712,0.0232652,1.42826e-06,0.00120122
+moogone,"PD - Fifth Aurora [Studio]",0.210797,0.0447586,2.06877e-05,0.00269033
+moogone,"PD - Slow Tides [Stage]",0.148396,0.0271389,-4.95582e-06,0.00159405
+moogone,"PD - Polar Choir [Stage]",0.150053,0.0349826,-3.20739e-06,0.00351951
+moogone,"PD - Velvet Air [Stage]",0.14884,0.0320181,1.38373e-06,0.0025972
+moogone,"PD - Fifth Aurora [Stage]",0.18137,0.0383232,1.67057e-05,0.0025523
+moogone,"PD - Ladder Vista Amber [Saw Atlas]",0.163867,0.0347677,3.56109e-07,0.00382576
+moogone,"PD - Ladder Vista Pearl [Saw Atlas]",0.153359,0.0335031,3.49158e-07,0.0041423
+moogone,"PD - Ladder Vista Cobalt [Saw Atlas]",0.15318,0.0325419,3.83122e-07,0.00459074
+moogone,"PD - Ladder Vista Rose [Saw Atlas]",0.149492,0.0320335,5.26518e-07,0.00568551
+moogone,"PD - Ladder Vista Silver [Saw Atlas]",0.244538,0.0480299,-1.41846e-08,0.0314346
+moogone,"PD - Ladder Vista Indigo [Saw Atlas]",0.393453,0.0895752,4.22628e-07,0.08318
+moogone,"PD - Ladder Vista Gold [Saw Atlas]",0.473288,0.115271,1.47508e-07,0.127296
+moogone,"PD - Ladder Vista Crimson [Saw Atlas]",0.508798,0.126022,-2.96714e-06,0.160443
+moogone,"PD - Open Horizon Amber [Saw Atlas]",0.156095,0.0343443,-2.26764e-07,0.00322085
+moogone,"PD - Open Horizon Pearl [Saw Atlas]",0.153705,0.0339908,-1.6608e-07,0.00342975
+moogone,"PD - Open Horizon Cobalt [Saw Atlas]",0.148509,0.0336687,-1.07632e-07,0.00367761
+moogone,"PD - Open Horizon Rose [Saw Atlas]",0.149596,0.0334442,-3.89533e-08,0.00405826
+moogone,"PD - Open Horizon Silver [Saw Atlas]",0.180174,0.0353926,-3.09495e-08,0.0117947
+moogone,"PD - Open Horizon Indigo [Saw Atlas]",0.208638,0.0434346,8.5567e-08,0.0284567
+moogone,"PD - Open Horizon Gold [Saw Atlas]",0.23782,0.0505816,-1.02353e-07,0.0456986
+moogone,"PD - Open Horizon Crimson [Saw Atlas]",0.281462,0.054303,7.02526e-08,0.0586465
+moogone,"PD - Resonant Cathedral Amber [Saw Atlas]",0.131471,0.0307488,3.00332e-08,0.00278752
+moogone,"PD - Resonant Cathedral Pearl [Saw Atlas]",0.128449,0.0298746,1.39951e-07,0.00302258
+moogone,"PD - Resonant Cathedral Cobalt [Saw Atlas]",0.127074,0.0291916,2.4373e-07,0.00334761
+moogone,"PD - Resonant Cathedral Rose [Saw Atlas]",0.128886,0.0287338,3.55541e-07,0.00400975
+moogone,"PD - Resonant Cathedral Silver [Saw Atlas]",0.18873,0.035375,4.88034e-07,0.0188301
+moogone,"PD - Resonant Cathedral Indigo [Saw Atlas]",0.269702,0.0576578,4.05588e-07,0.0477623
+moogone,"PD - Resonant Cathedral Gold [Saw Atlas]",0.325325,0.0778049,9.03964e-07,0.0818075
+moogone,"PD - Resonant Cathedral Crimson [Saw Atlas]",0.44812,0.0905713,6.73672e-07,0.114966
+moogone,"PD - Silk Continent Amber [Saw Atlas]",0.136169,0.0310521,-1.5421e-07,0.00258372
+moogone,"PD - Silk Continent Pearl [Saw Atlas]",0.130271,0.030025,-6.00682e-08,0.00274757
+moogone,"PD - Silk Continent Cobalt [Saw Atlas]",0.125346,0.0291512,2.62869e-08,0.00298824
+moogone,"PD - Silk Continent Rose [Saw Atlas]",0.125915,0.0285297,1.25139e-07,0.00347381
+moogone,"PD - Silk Continent Silver [Saw Atlas]",0.168481,0.0318819,9.10201e-08,0.0141137
+moogone,"PD - Silk Continent Indigo [Saw Atlas]",0.236405,0.0470926,7.13429e-09,0.0367447
+moogone,"PD - Silk Continent Gold [Saw Atlas]",0.302976,0.0630845,3.37291e-07,0.064753
+moogone,"PD - Silk Continent Crimson [Saw Atlas]",0.352048,0.0774448,-1.3059e-06,0.0945754
+moogone,"PD - Prismatic Saw Amber [Saw Atlas]",0.142776,0.0313014,2.82123e-07,0.00347278
+moogone,"PD - Prismatic Saw Pearl [Saw Atlas]",0.132011,0.0299771,2.9541e-07,0.00372205
+moogone,"PD - Prismatic Saw Cobalt [Saw Atlas]",0.137911,0.0289345,3.24743e-07,0.00407904
+moogone,"PD - Prismatic Saw Rose [Saw Atlas]",0.139669,0.0282839,4.2245e-07,0.00494153
+moogone,"PD - Prismatic Saw Silver [Saw Atlas]",0.241312,0.0388507,6.98743e-07,0.0234953
+moogone,"PD - Prismatic Saw Indigo [Saw Atlas]",0.337314,0.0761946,-4.57068e-07,0.0698054
+moogone,"PD - Prismatic Saw Gold [Saw Atlas]",0.428431,0.0980905,-8.34175e-07,0.107601
+moogone,"PD - Prismatic Saw Crimson [Saw Atlas]",0.48803,0.108965,1.93237e-07,0.136256
+moogone,"PD - Fifth Skyline Amber [Saw Atlas]",0.138316,0.029693,2.59349e-07,0.00289483
+moogone,"PD - Fifth Skyline Pearl [Saw Atlas]",0.129395,0.0285359,2.712e-07,0.00314319
+moogone,"PD - Fifth Skyline Cobalt [Saw Atlas]",0.124335,0.0275993,2.95858e-07,0.00347323
+moogone,"PD - Fifth Skyline Rose [Saw Atlas]",0.128676,0.0269578,3.60398e-07,0.00413794
+moogone,"PD - Fifth Skyline Silver [Saw Atlas]",0.188434,0.0329636,2.47159e-07,0.0174142
+moogone,"PD - Fifth Skyline Indigo [Saw Atlas]",0.271816,0.0599267,1.99754e-08,0.0522214
+moogone,"PD - Fifth Skyline Gold [Saw Atlas]",0.361961,0.0778415,1.4501e-07,0.0797197
+moogone,"PD - Fifth Skyline Crimson [Saw Atlas]",0.414779,0.0890829,8.10129e-07,0.109201
+moogone,"PD - Moving Copper Amber [Saw Atlas]",0.130957,0.0280601,-3.07251e-09,0.00270629
+moogone,"PD - Moving Copper Pearl [Saw Atlas]",0.122565,0.0270305,5.51346e-08,0.0029474
+moogone,"PD - Moving Copper Cobalt [Saw Atlas]",0.119288,0.026191,1.14567e-07,0.00328903
+moogone,"PD - Moving Copper Rose [Saw Atlas]",0.18037,0.0271436,1.83078e-07,0.0098245
+moogone,"PD - Moving Copper Silver [Saw Atlas]",0.262937,0.0501824,1.22937e-07,0.0490228
+moogone,"PD - Moving Copper Indigo [Saw Atlas]",0.326488,0.0674603,4.402e-07,0.0778066
+moogone,"PD - Moving Copper Gold [Saw Atlas]",0.408331,0.0796627,4.48953e-07,0.105956
+moogone,"PD - Moving Copper Crimson [Saw Atlas]",0.410078,0.0839306,3.83503e-07,0.116759
+moogone,"PD - Mono Anchor Amber [Saw Atlas]",0.122576,0.0264931,-3.57449e-08,0.00218389
+moogone,"PD - Mono Anchor Pearl [Saw Atlas]",0.11803,0.0256764,2.56796e-08,0.00232053
+moogone,"PD - Mono Anchor Cobalt [Saw Atlas]",0.110931,0.0249704,8.32184e-08,0.00252109
+moogone,"PD - Mono Anchor Rose [Saw Atlas]",0.109504,0.0244765,1.49236e-07,0.00290864
+moogone,"PD - Mono Anchor Silver [Saw Atlas]",0.145383,0.0260744,2.26846e-07,0.0091988
+moogone,"PD - Mono Anchor Indigo [Saw Atlas]",0.203854,0.0387413,2.44904e-07,0.0278643
+moogone,"PD - Mono Anchor Gold [Saw Atlas]",0.28143,0.0545376,-4.44001e-08,0.0586258
+moogone,"PD - Mono Anchor Crimson [Saw Atlas]",0.29349,0.0633142,-8.82874e-08,0.0731511
+moogone,"PD - Cedar Saw [Rework]",0.181369,0.03344,1.87168e-06,0.00328283
+moogone,"ST - Solo Bow [Atelier]",0.173116,0.0398662,2.51918e-06,0.00259099
+moogone,"ST - Rosin Violin [Atelier]",0.175057,0.0405598,2.77387e-06,0.00294684
+moogone,"ST - Chamber Violin [Atelier]",0.159397,0.0404897,1.71124e-06,0.003272
+moogone,"ST - Silk Cantabile [Atelier]",0.162491,0.041105,1.88501e-06,0.00357309
+moogone,"ST - Dark Cello [Atelier]",0.145725,0.0398163,1.67863e-06,0.00208815
+moogone,"ST - Wood Cello [Atelier]",0.151921,0.0400499,1.31324e-06,0.00233851
+moogone,"ST - Chamber Cello [Atelier]",0.16422,0.041193,7.8272e-07,0.0026141
+moogone,"ST - Cello Harmonics [Atelier]",0.167979,0.0418674,1.77908e-06,0.0028561
+moogone,"ST - Small String Section [Atelier]",0.194713,0.0411558,2.61714e-06,0.0029415
+moogone,"ST - Wide Orchestral Strings [Atelier]",0.194029,0.0411739,2.28081e-06,0.0033202
+moogone,"ST - Muted Chamber Strings [Atelier]",0.197259,0.042799,3.19074e-06,0.00370792
+moogone,"ST - Cinema Bow Section [Atelier]",0.205828,0.0433908,4.04608e-06,0.00396003
+moogone,"ST - Bow Section [Rework]",0.21551,0.0434443,4.46396e-06,0.00248653
+moogone,"WI - Concert Flute [Atelier]",0.0821818,0.0228592,5.03396e-10,0.00102457
+moogone,"WI - Breathy Alto Flute [Atelier]",0.0813857,0.0230274,5.26122e-10,0.00103865
+moogone,"WI - Wooden Flute [Atelier]",0.0758419,0.0225518,-2.9645e-09,0.00102312
+moogone,"WI - Air Harmonics [Atelier]",0.0767524,0.0227558,-3.6179e-09,0.00103954
+moogone,"WI - Chalumeau Clarinet [Atelier]",0.0914225,0.025914,7.42747e-09,0.00183025
+moogone,"WI - Solo Clarinet [Atelier]",0.0883348,0.0255383,-5.82145e-09,0.00202342
+moogone,"WI - Reed Chamber [Atelier]",0.087916,0.0258438,-7.96986e-09,0.00221398
+moogone,"WI - Warm Bass Clarinet [Atelier]",0.0875736,0.026152,-8.82296e-09,0.00239242
+moogone,"KY - Felt Grand [Atelier]",0.0626416,0.012946,1.54003e-07,0.000674961
+moogone,"KY - Concert Hammer [Atelier]",0.0630025,0.014232,1.14488e-07,0.000746949
+moogone,"KY - Studio Upright [Atelier]",0.0655973,0.015299,1.22331e-07,0.0008069
+moogone,"KY - Bright Stage Piano [Atelier]",0.0774386,0.016219,5.81736e-07,0.000869263
+moogone,"KY - Hammer Body [Rework]",0.0631154,0.0158232,-5.96958e-08,0.000743325
+moogone,"DO - Undersea Cable [Studio]",0.0519231,0.0149402,-4.80421e-07,0.000591486
+moogone,"DO - Tidal Machine [Studio]",0.0604332,0.0134091,-2.8186e-06,0.000646
+moogone,"DO - Copper Planet [Studio]",0.0645423,0.0116018,-1.83985e-07,0.000641245
+moogone,"DO - Clockwork Fog [Studio]",0.0740043,0.023984,-2.40228e-06,0.00174065
+moogone,"DO - Reese Nebula [Studio]",0.0485141,0.0109305,5.47988e-08,0.000508612
+moogone,"DO - Hollow Earth [Studio]",0.0777897,0.0205599,1.56746e-06,0.00112385
+moogone,"DO - Glass Current [Studio]",0.0648609,0.0134236,1.12431e-06,0.000697616
+moogone,"DO - Fifth Monolith [Studio]",0.100597,0.0237206,1.02075e-05,0.00125768
+moogone,"DO - Tidal Machine [Stage]",0.0641305,0.0133057,-2.91517e-06,0.000698744
+moogone,"DO - Clockwork Fog [Stage]",0.0646844,0.0194432,-1.83065e-06,0.00133105
+moogone,"DO - Hollow Earth [Stage]",0.0785105,0.0192516,1.23032e-06,0.00129938
+moogone,"DO - Fifth Monolith [Stage]",0.0761307,0.0165613,7.50574e-06,0.000921461
+moogone,"PL - Analog Pluck",0.1354,0.00750676,2.09537e-07,0.000804507
+moogone,"PL - Muted Wire [Studio]",0.0826123,0.00489601,2.99228e-08,0.000255118
+moogone,"PL - Pulse Pizzicato [Studio]",0.156648,0.00657082,3.59832e-07,0.0109635
+moogone,"PL - Copper Harp [Studio]",0.138247,0.00736747,6.31354e-08,0.0132105
+moogone,"PL - Sync Kalimba [Studio]",0.178147,0.0113586,2.25173e-07,0.0196985
+moogone,"PL - Stereo Droplets [Studio]",0.129259,0.00623502,1.62408e-08,0.0109305
+moogone,"PL - Bamboo Spark [Studio]",0.136054,0.00578608,-2.74239e-08,0.00630574
+moogone,"PL - Crystal Pin [Studio]",0.137708,0.00970098,-2.80539e-08,0.0175343
+moogone,"PL - Fifth Koto [Studio]",0.12486,0.00856009,-2.52856e-07,0.0136007
+moogone,"PL - Pulse Pizzicato [Stage]",0.14183,0.00501783,9.37592e-08,0.00532484
+moogone,"PL - Sync Kalimba [Stage]",0.118784,0.00787299,4.03167e-08,0.012028
+moogone,"PL - Bamboo Spark [Stage]",0.145201,0.00917707,-1.04036e-07,0.0150985
+moogone,"PL - Fifth Koto [Stage]",0.130634,0.00936955,-3.27394e-07,0.0153233
+moogone,"PL - Concert Harp [Atelier]",0.0529704,0.00869079,5.34069e-08,0.000453951
+moogone,"PL - Muted Nylon [Atelier]",0.0594939,0.00971676,1.5084e-07,0.000523044
+moogone,"PL - Resonant Koto [Atelier]",0.0653994,0.0106048,-1.76631e-07,0.000565988
+moogone,"PL - Bright Wire Harp [Atelier]",0.0667924,0.0114445,-1.97493e-07,0.000611383
+moogone,"KY - One Keys",0.187626,0.0328343,6.72701e-06,0.00301761
+moogone,"KY - Suitcase Bloom Ref",0.112868,0.00398523,-1.51165e-07,0.000212928
+moogone,"KY - Ballad Harmonics Ref",0.198057,0.0272188,-9.67188e-06,0.0108956
+moogone,"KY - Glass Assembly Ref",0.311954,0.0801772,-1.16445e-05,0.0088548
+moogone,"KY - Felt Circuit [Studio]",0.074264,0.00903113,4.74905e-08,0.000892506
+moogone,"KY - Suitcase Spark [Studio]",0.0519827,0.00641906,-3.1187e-08,0.00111445
+moogone,"KY - Copper Tines [Studio]",0.124575,0.00682056,9.07708e-08,0.00713804
+moogone,"KY - Digital Clav [Studio]",0.182361,0.023686,4.52342e-07,0.0385091
+moogone,"KY - Chorus Cabinet [Studio]",0.0966085,0.0058036,7.20322e-08,0.00312721
+moogone,"KY - Hollow Celesta [Studio]",0.088653,0.0101031,-2.92044e-08,0.00785516
+moogone,"KY - Prism Keys [Studio]",0.127856,0.0206408,-9.30127e-08,0.0370725
+moogone,"KY - Octave Console [Studio]",0.132203,0.0164116,-1.14889e-07,0.0221949
+moogone,"KY - Suitcase Spark [Stage]",0.135744,0.00885424,-2.4107e-08,0.00311571
+moogone,"KY - Digital Clav [Stage]",0.127623,0.0168934,-2.87305e-08,0.0234646
+moogone,"KY - Hollow Celesta [Stage]",0.144271,0.0155189,-1.92374e-07,0.0216978
+moogone,"KY - Octave Console [Stage]",0.130388,0.0172445,-2.28185e-07,0.0245285
+moogone,"KY - Warm Tines [Atelier]",0.0541901,0.010677,4.93567e-08,0.000550126
+moogone,"KY - Glass Suitcase [Atelier]",0.0630124,0.0118847,2.55842e-07,0.000631254
+moogone,"KY - Bark Reed Keys [Atelier]",0.0650676,0.0128941,8.63563e-08,0.000684836
+moogone,"KY - Copper Electric [Atelier]",0.0707112,0.0138106,-2.45276e-07,0.000732329
+moogone,"OR - Organ",0.253357,0.0722222,-1.84061e-06,0.110574
+moogone,"ARP - Glass Arp",0.121957,0.0166065,1.66973e-08,0.00232784
+moogone,"AR - Soft Clock [Studio]",0.0819457,0.0109609,1.65171e-07,0.00100063
+moogone,"AR - Pulse Ladder [Studio]",0.152627,0.0107977,5.95751e-07,0.0118578
+moogone,"AR - Copper Steps [Studio]",0.138287,0.0145767,3.0652e-07,0.0255054
+moogone,"AR - Sync Runner [Studio]",0.183428,0.0302542,1.6595e-06,0.0503779
+moogone,"AR - Wide Cascade [Studio]",0.116784,0.00857327,9.82936e-08,0.0116134
+moogone,"AR - Hollow Circuit [Studio]",0.0928715,0.0142401,-9.03098e-08,0.0133703
+moogone,"AR - Glass Pendulum [Studio]",0.147146,0.0216257,-2.46741e-07,0.0388342
+moogone,"AR - Fifth Relay [Studio]",0.133661,0.0227783,-1.80006e-06,0.0336262
+moogone,"AR - Pulse Ladder [Stage]",0.145859,0.0110107,2.23696e-07,0.00568505
+moogone,"AR - Sync Runner [Stage]",0.127071,0.0207088,2.91977e-07,0.030272
+moogone,"AR - Hollow Circuit [Stage]",0.148878,0.02385,-6.02027e-07,0.038799
+moogone,"AR - Fifth Relay [Stage]",0.134883,0.023828,-2.33169e-06,0.0374987
+moogone,"AR - Soft Clock [Signature]",0.0693974,0.00889218,8.88484e-08,0.000800879
+moogone,"AR - Copper Steps [Signature]",0.098998,0.00937291,1.7511e-07,0.0135879
+moogone,"AR - Wide Cascade [Signature]",0.111426,0.00982827,2.62622e-07,0.00944203
+moogone,"AR - Glass Pendulum [Signature]",0.181408,0.0245802,-5.123e-07,0.0421533
+moogone,"SPL - Three-Zone Split",0.225498,0.0510745,2.4988e-06,0.00329149
+moogone,"FX - Deep Space",0.22645,0.0525353,2.45711e-05,0.00211447
+moogone,"FX - Submerged Radar [Studio]",0.0608878,0.0180007,5.00303e-09,0.000745669
+moogone,"FX - Pulse Beacon [Studio]",0.048165,0.0112298,-3.91016e-07,0.00070318
+moogone,"FX - Copper Satellites [Studio]",0.0509603,0.00958989,2.38505e-07,0.000720873
+moogone,"FX - Sync Sparks [Studio]",0.0637624,0.0181427,-7.52698e-07,0.00187851
+moogone,"FX - Stereo Machinery [Studio]",0.0435344,0.00913345,1.904e-07,0.000531177
+moogone,"FX - Hollow Transmission [Studio]",0.0679088,0.0176075,1.98368e-07,0.00127544
+moogone,"FX - Glass Collision [Studio]",0.0602534,0.0112192,1.52492e-07,0.000674395
+moogone,"FX - Fifth Launch [Studio]",0.104426,0.0210854,2.28164e-06,0.00138703
+moogone,"FX - Pulse Beacon [Stage]",0.0616946,0.0123223,-4.16421e-07,0.000901854
+moogone,"FX - Sync Sparks [Stage]",0.0587374,0.0168185,-6.36303e-07,0.00189632
+moogone,"FX - Hollow Transmission [Stage]",0.075003,0.0161013,7.62789e-08,0.00137739
+moogone,"FX - Fifth Launch [Stage]",0.0714153,0.0149546,1.14424e-06,0.00109088

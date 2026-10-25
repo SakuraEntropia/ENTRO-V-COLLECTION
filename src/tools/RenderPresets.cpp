@@ -14,7 +14,7 @@ void wav(const std::filesystem::path& path,const std::vector<float>& l,const std
     for(size_t i=0;i<l.size();++i){word(f,(uint16_t)(int16_t)std::lround(std::clamp(l[i],-1.f,1.f)*32767),2);word(f,(uint16_t)(int16_t)std::lround(std::clamp(r[i],-1.f,1.f)*32767),2);}
 }
 int main(int argc,char** argv){
-    if(argc<2 || argc>5){std::cerr<<"usage: triad_render_presets OUTPUT_DIRECTORY [reference|studio|stage|signature|all|smoke] [--audit-only] [--instrument=ID]\n";return 2;}
+    if(argc<2 || argc>5){std::cerr<<"usage: triad_render_presets OUTPUT_DIRECTORY [reference|studio|stage|signature|rework|all|smoke] [--audit-only] [--instrument=ID]\n";return 2;}
     bool auditOnly=false;std::string instrument;
     for(int i=3;i<argc;++i){const std::string option=argv[i];
         if(option=="--audit-only")auditOnly=true;
@@ -22,7 +22,7 @@ int main(int argc,char** argv){
         else return 2;
     }
     const std::string bank=argc>=3?argv[2]:"reference";
-    if(bank!="reference" && bank!="studio" && bank!="all" && bank!="smoke" && bank!="stage" && bank!="signature")return 2;
+    if(bank!="reference" && bank!="studio" && bank!="all" && bank!="smoke" && bank!="stage" && bank!="signature" && bank!="rework")return 2;
     std::filesystem::path folder(argv[1]);std::filesystem::create_directories(folder);
     std::ofstream report(folder/"audit.csv");report<<"instrument,preset,peak,rms,dc,derivative_rms\n";
     int failures=0, rendered=0;
@@ -33,6 +33,7 @@ int main(int argc,char** argv){
             if(bank=="reference" && !preset.name.endsWith("Ref"))continue;
             if(bank=="studio" && !preset.name.endsWith("[Studio]"))continue;
             if(bank=="stage" && !preset.name.endsWith("[Stage]"))continue;
+            if(bank=="rework" && !preset.name.endsWith("[Rework]"))continue;
             if(bank=="signature" && !preset.name.endsWith("[Signature]") && !preset.name.endsWith("[Atelier]") && !preset.name.endsWith("[Saw Atlas]"))continue;
             if(bank=="smoke" && (!preset.name.endsWith("[Studio]") || preset.category!=(d.id=="continuum"?"Pad":"Arp")))continue;
             ++rendered;
