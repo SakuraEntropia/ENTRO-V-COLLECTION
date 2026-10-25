@@ -69,6 +69,7 @@ def main():
         for temp in staged:
             if temp.exists():
                 shutil.rmtree(temp)
+    subprocess.run([sys.executable, str(ROOT / "scripts/refresh-macos-apps.py")], check=True)
     print("Previous versions:", backup)
     print("Restart the DAW/standalone process to load the installed binaries.")
 

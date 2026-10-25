@@ -97,3 +97,9 @@ assets are committed so CI does not need those tools.
 ## Install after each validated batch
 
 User preference: replace installed versions after each completed batch. Build and test, stage using `package-macos.sh`, then run `python3 scripts/install-macos-current.py` with permission to update user plugin folders and /Applications. This backs up previous versions and verifies signatures/hashes. Preserve user DAW sessions; never stop them automatically.
+
+### Launchpad / icon registration
+
+`install-macos-current.py` now calls `refresh-macos-apps.py` after verifying the installed binaries. `ditto` retains bundle directory timestamps, which can leave an old icon cache key across repeated updates with the same bundle version. The helper touches only the four installed app bundles, removes registrations of this collection's copies inside the task workspace, and force-registers `/Applications` copies. No backup/build app files are deleted.
+
+For a visible stale Launchpad icon, run `python3 scripts/refresh-macos-apps.py --restart-dock`. This refreshes Dock without deleting Launchpad databases or resetting icon order. It does not close DAWs. Registration changes require the current desktop user's LaunchServices context. Use the existing permission flow for app-directory writes.
