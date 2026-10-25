@@ -1,3 +1,11 @@
+# Signature / Atelier / Saw Atlas installed update — 2026-10-25
+
+Source `ffb803e` adds 256 instrument-specific patches (163 / 167 / 235 / 757 total, 1,322 combined). All nine local CTest suites pass. All 256 long auditions pass and have distinct WAV payloads; One's pure-saw definitions, dry width/mono body, overtone retention and piano/string articulation receive additional checks. All four actual installed AU and VST3 bundles pass auval and pluginval strictness 5, respectively. Installer backups, bundle signatures, executable hashes and Launchpad refresh are verified. See [SIGNATURE-SOUNDS.md](SIGNATURE-SOUNDS.md), [SIGNATURE-AUDIT.csv](SIGNATURE-AUDIT.csv) and [SIGNATURE-QUALITY.txt](SIGNATURE-QUALITY.txt).
+
+Current cross-platform CI: https://github.com/SakuraEntropia/ENTRO-V-COLLECTION/actions/runs/40173487114. Prior records below apply to their own revisions.
+
+---
+
 # Cross-platform follow-up: 2026-10-25
 
 Source `39e893e` passed both macOS and Windows CI builds/tests in [run 40091957698](https://github.com/SakuraEntropia/ENTRO-V-COLLECTION/actions/runs/40091957698). All 12 installed local executable hashes were rechecked against the staged build and match. Preset totals: 115 / 119 / 123 / 709. Complete before/after and Stage audits are linked below. Actual Windows DAW loading has not been tested.

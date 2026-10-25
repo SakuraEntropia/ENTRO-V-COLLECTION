@@ -36,3 +36,13 @@ Atelier contains four variants of piano, electric piano, solo violin, cello, str
 The factory suite validates metadata and renders every preset. The signature suite checks 64 pure-saw pad definitions, dry side/mid width and mono body, a measured overtone/fundamental ratio, piano velocity/decay and sustained bowed strings. This is objective signal validation, not a substitute for listening or comparison against hardware/acoustic recordings. No acoustic-fidelity or professional listening certification is claimed.
 
 `triad_render_presets OUTPUT signature` exports all 256 additions at 48 kHz / 16 bit stereo. Existing banks remain available. Install only after tests, full build and validators pass; use the established backup/replacement and Launchpad refresh helpers.
+
+## Verified installed result
+
+All 256 final eight-second renders are finite, non-silent and unclipped, with 256 distinct WAV payloads. Measurements are in [SIGNATURE-AUDIT.csv](SIGNATURE-AUDIT.csv). The complete bank contains 1,322 presets and all entries pass factory metadata/audio tests. All nine CTest suites pass.
+
+One dry-pad checks measured a minimum side/mid RMS ratio of 0.2478 over all 64 pads; representative harmonic checks retain substantial overtones (minimum measured overtone/fundamental energy ratio 3.705 across eight selected structures). Mono body, piano velocity/decay and string sustain checks pass; see [SIGNATURE-QUALITY.txt](SIGNATURE-QUALITY.txt). These readings describe this test setup rather than a universal timbre or listening-quality score.
+
+The four actual installed AU bundles pass fresh auval; all four installed VST3 bundles pass pluginval strictness 5. All 12 bundle signatures and installed executable hashes were verified by the installation helper, previous versions were backed up, and Launchpad registrations were refreshed. The native installer package is 0.2.3. Existing DAW processes/projects were preserved; restart the DAW and reselect a factory patch to apply its updated definition.
+
+Source revision `ffb803e`; cross-platform build: https://github.com/SakuraEntropia/ENTRO-V-COLLECTION/actions/runs/40173487114 (in progress when recorded).

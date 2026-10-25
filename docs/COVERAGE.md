@@ -77,7 +77,7 @@ Reference: original 6-voice PolyBrute, manual 3.0.1; firmware 3.1.1 differences 
 | Effects | Implemented, partial | distortion (4 types), chorus, stereo delay with sync/ping-pong, FDN reverb; not the proprietary algorithms or the full v3 effect list |
 | Morph performance pad | Implemented, M1 | lower-left 2D pad: X = morph A/B, Y = spread, Z = touch pressure/aftertouch; vertical pressure slider and mouse wheel are the non-touchpad fallback |
 | Sequencer / Motion | Partial | 64-step six-note editor with ties/velocity; no Motion recorder |
-| Factory presets | Implemented, categorized | 119 presets (64 Studio + 32 Stage + six documented Ref studies) in Bass / Lead / Brass / Pad / Pluck / Keys / Organ / Arp / FX, incl. Reese, Acid, Supersaw and Hoover; not hardware preset data |
+| Factory presets | Implemented, categorized | 167 presets (including 48 Atelier/Signature, 64 Studio, 32 Stage and six Ref studies) in Bass / Lead / Brass / Pad / Pluck / Keys / Organ / Arp / FX, incl. Reese, Acid, Supersaw and Hoover; not hardware preset data |
 | Oversampling | Not implemented | PolyBLEP oscillators and host-rate nonlinear stages; hard sync is a phase reset without BLEP |
 
 ## ONE V
@@ -96,7 +96,7 @@ Reference: 2019 manual + 1.8.2 release notes; later firmware not audited page by
 | Effects | Implemented, partial | per-part distortion/chorus/delay/send + master FDN reverb; **not** an Eventide algorithm or equivalent claim |
 | Performance | Implemented, partial | pitch bend, wheels, aftertouch, sustain, glide, drift; per-part Poly/Mono/Unison, last-note priority, stack size and detune; no chord memory |
 | Arpeggiator / sequencer | Partial | host-wrapper arp uses part 1's arp parameters; one shared 64-step six-note sequencer; no independent per-part sequencers |
-| Factory presets | Implemented, categorized | 123 presets (64 Studio + 32 Stage + 12 official-parameter Ref adaptations) in Bass / Lead / Brass / Pad / Pluck / Keys / Organ / Arp / Split / FX, incl. Reese, Acid and Supersaw; not hardware preset data |
+| Factory presets | Implemented, categorized | 235 presets (including 64 Saw Atlas, 32 Atelier, 16 Signature and 12 Ref adaptations) in Bass / Lead / Brass / Pad / Pluck / Keys / Organ / Arp / Split / FX, incl. Reese, Acid and Supersaw; not hardware preset data |
 | External audio | Implemented | optional Instrument In bus, per-part external mixer level |
 
 ## Platform and delivery
@@ -152,3 +152,5 @@ All four banks now include 64 Studio patches each; see [STUDIO-PRESETS.md](STUDI
 Legacy patch repairs and 32 Stage additions per instrument are described in [LEGACY-STAGE-PRESETS.md](LEGACY-STAGE-PRESETS.md). Preset audio testing now covers every entry.
 
 Official catalog research and 256 new acoustic/signature/saw-pad studies: [SIGNATURE-SOUNDS.md](SIGNATURE-SOUNDS.md). Totals are now 1,322 presets. New One pad tests validate dry width, mono body and harmonics; this does not certify hardware or acoustic fidelity.
+
+Installed signature update: nine tests pass; all 256 long auditions pass; all four installed AU/VST3 bundles pass validation. New source ffb803e is running cross-platform CI separately from the previous successful 39e893e run.
