@@ -259,6 +259,9 @@ void verifyPanel (PanelHost& host, PanelBase& panel)
     }
     for (const auto& p : host.definition().params)
     {
+        // Recorded sources are selected through factory presets/host automation;
+        // they are software additions, not controls on the physical hardware panel.
+        if (p.id == "sample.program" || p.id == "sample.gain") continue;
         if (p.id.starts_with ("one.p") && ! p.id.starts_with ("one.p" + std::to_string (host.selectedPart()) + ".")) continue;
         require (bound.contains (p.id), "Missing UI parameter: " + juce::String (p.id));
     }
