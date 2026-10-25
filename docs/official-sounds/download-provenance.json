@@ -1,0 +1,20 @@
+[
+  {
+    "resource": "polybrute-connect.pkg",
+    "source": "https://www.arturia.com/api/download/products/polybrute-connect/soft/PolyBrute_Connect__3_1_1_1188.pkg",
+    "bytes": 366002950,
+    "sha256": "a82349c30e3e23260f6f61e95cd159abd1aa5daa3423e0b992aad06f28629b1d"
+  },
+  {
+    "resource": "haken-1081-library.zip",
+    "source": "https://www.hakenaudio.com/editor-and-firmware",
+    "bytes": 196679781,
+    "sha256": "7c9d7d79dea1f4fb1ab3ee3db4b7e81280fc2d45be8902f9372f06ad0ed4f646"
+  },
+  {
+    "resource": "haken-cookbook.pdf",
+    "source": "https://www.hakenaudio.com/user-guides",
+    "bytes": 49026639,
+    "sha256": "7eed218a530afe04d5edcf97ec9bc26ea61077ccac4361503951960d6c70a86e"
+  }
+]

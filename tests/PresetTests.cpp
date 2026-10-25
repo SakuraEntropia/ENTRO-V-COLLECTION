@@ -38,6 +38,7 @@ int main()
         int bassCount = 0;
         int studioCount = 0;
         int stageCount = 0;
+        int signatureCount = 0;
         std::set<std::vector<int>> woodwindSignatures;
         std::set<std::vector<std::pair<juce::String, float>>> studioSignatures;
         bool hasReese = false;
@@ -51,6 +52,10 @@ int main()
 
         for (const auto& preset : presets)
         {
+            if(preset.name.endsWith("[Signature]") || preset.name.endsWith("[Atelier]") || preset.name.endsWith("[Saw Atlas]")){
+                ++signatureCount;
+                check(studioSignatures.insert(preset.values).second,"duplicate new-bank payload",preset.name);
+            }
             if (preset.name.endsWith("[Stage]")) {
                 ++stageCount;
                 check(studioSignatures.insert(preset.values).second, "duplicate Stage parameter payload", preset.name);
@@ -129,6 +134,7 @@ int main()
             }
         }
 
+        check(signatureCount == (definition.id=="moogone"?112:48),"signature bank count mismatch",definition.id);
         check(stageCount == 32, "expected 32 Stage patches", definition.id);
         check(studioCount == 64, "expected 64 Studio patches", definition.id);
         check (presets.size() >= 12, "too few factory presets", definition.id);

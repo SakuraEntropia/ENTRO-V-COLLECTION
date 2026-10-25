@@ -28,7 +28,7 @@ jobs:
           MoogOne_VST3 MoogOne_AU MoogOne_Standalone
           Continuum_VST3 Continuum_AU Continuum_Standalone
           triad_tests triad_preset_tests triad_panel_tests
-          triad_onevoice_tests triad_sequencer_tests triad_polybrutemod_tests triad_host_tests triad_render_presets
+          triad_onevoice_tests triad_sequencer_tests triad_polybrutemod_tests triad_host_tests triad_render_presets triad_signature_tests
 
       - name: Engine tests
         run: ctest --test-dir "${{ runner.temp }}/build" --output-on-failure
@@ -65,7 +65,7 @@ jobs:
           MoogOne_VST3 MoogOne_Standalone
           Continuum_VST3 Continuum_Standalone
           triad_tests triad_preset_tests triad_panel_tests
-          triad_onevoice_tests triad_sequencer_tests triad_polybrutemod_tests triad_host_tests triad_render_presets
+          triad_onevoice_tests triad_sequencer_tests triad_polybrutemod_tests triad_host_tests triad_render_presets triad_signature_tests
 
       - name: Engine tests
         run: ctest --test-dir "${{ runner.temp }}\build" -C Release --output-on-failure

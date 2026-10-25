@@ -114,3 +114,7 @@ The quick preset combo in the header remains available and shows the same catego
 - No per-preset macro assignments; our engine parameters are directly automatable instead.
 - No third-party bank/author folders; only a factory bank and user `.triadpreset` files.
 - Bank size is much smaller than Serum/Pigments; the design prioritises playable, verified sounds over count.
+
+## Atelier / Signature / Saw Atlas — 2026-10-25
+
+All four instruments add 32 acoustic synthesis studies. One adds 64 pure-saw stereo resonant pads, plus 16 signature bass/lead/arp patches. Each other instrument adds 16 signature pads. Search `Atelier`, `Signature`, or `Saw Atlas`. Four totals: 163 / 167 / 235 / 757. Official factory-resource inventories and design limits are documented in [SIGNATURE-SOUNDS.md](SIGNATURE-SOUNDS.md).

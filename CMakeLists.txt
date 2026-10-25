@@ -73,7 +73,7 @@ add_library(triad_ui STATIC
     src/ui/Editor.cpp
     src/plugin/Presets.cpp
     src/plugin/OneReferencePresets.cpp
-    src/plugin/AnalogReferencePresets.cpp src/plugin/StudioPresets.cpp
+    src/plugin/AnalogReferencePresets.cpp src/plugin/StudioPresets.cpp src/plugin/SignaturePresets.cpp
 )
 target_link_libraries(triad_ui
     PUBLIC
@@ -188,7 +188,7 @@ if (TRIAD_BUILD_TESTS)
     target_compile_features(triad_tests PRIVATE cxx_std_20)
     add_test(NAME triad_engine_contracts COMMAND triad_tests)
 
-    add_executable(triad_preset_tests tests/PresetTests.cpp src/plugin/Presets.cpp src/plugin/OneReferencePresets.cpp src/plugin/AnalogReferencePresets.cpp src/plugin/StudioPresets.cpp)
+    add_executable(triad_preset_tests tests/PresetTests.cpp src/plugin/Presets.cpp src/plugin/OneReferencePresets.cpp src/plugin/AnalogReferencePresets.cpp src/plugin/StudioPresets.cpp src/plugin/SignaturePresets.cpp)
     target_include_directories(triad_preset_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
     target_link_libraries(triad_preset_tests PRIVATE triad_engines juce::juce_core)
     target_compile_features(triad_preset_tests PRIVATE cxx_std_20)
@@ -219,9 +219,15 @@ if(TRIAD_BUILD_TESTS)
     target_link_libraries(triad_host_tests PRIVATE Matriarch)
     add_test(NAME triad_host_contracts COMMAND triad_host_tests)
 endif()
-add_executable(triad_render_presets src/tools/RenderPresets.cpp src/plugin/Presets.cpp src/plugin/OneReferencePresets.cpp src/plugin/AnalogReferencePresets.cpp src/plugin/StudioPresets.cpp)
+add_executable(triad_render_presets src/tools/RenderPresets.cpp src/plugin/Presets.cpp src/plugin/OneReferencePresets.cpp src/plugin/AnalogReferencePresets.cpp src/plugin/StudioPresets.cpp src/plugin/SignaturePresets.cpp)
 target_link_libraries(triad_render_presets PRIVATE triad_engines juce::juce_core)
 
 if(TRIAD_BUILD_TESTS)
     add_test(NAME triad_audition_smoke COMMAND triad_render_presets "${CMAKE_CURRENT_BINARY_DIR}/audition-smoke" smoke)
+endif()
+
+if(TRIAD_BUILD_TESTS)
+    add_executable(triad_signature_tests tests/SignatureTests.cpp src/plugin/StudioPresets.cpp src/plugin/SignaturePresets.cpp)
+    target_link_libraries(triad_signature_tests PRIVATE triad_engines juce::juce_core)
+    add_test(NAME triad_signature_timbres COMMAND triad_signature_tests)
 endif()

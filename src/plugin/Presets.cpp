@@ -2622,6 +2622,7 @@ std::vector<FactoryPreset> factoryPresetsFor (const std::string& instrumentId)
     append(instrumentId == "moogone" ? oneReferencePresets() : analogReferencePresets(instrumentId));
     append(studioPresets(instrumentId));
     append(stagePresets(instrumentId));
+    append(signaturePresets(instrumentId));
     return sortedPresets(std::move(result));
 }
 

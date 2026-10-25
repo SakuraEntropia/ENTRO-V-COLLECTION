@@ -1,0 +1,1 @@
+64 pure-saw pads: minimum dry side/mid=0.247787, minimum overtone/fundamental=3.70536; piano velocity/decay and string sustain passed.

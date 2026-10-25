@@ -14,10 +14,10 @@ Legend:
 
 | Instrument | Parameters | Patch points | Factory presets | MIDI handling |
 |---|---:|---:|---:|---|
-| MATRIARCH V | 65 | 79 | 115 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
-| POLYBRUTE V | 286 | 0 | 119 | same |
-| ONE V | 427 | 0 | 123 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
-| CONTINUUM V | 204 | 0 (16×22 matrix) | 709 | MPE per-note pitch bend / CC74 / pressure; internal 3D surface |
+| MATRIARCH V | 65 | 79 | 163 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
+| POLYBRUTE V | 286 | 0 | 167 | same |
+| ONE V | 427 | 0 | 235 | notes, overlap, sustain, bend, wheel, pressure, all-notes-off |
+| CONTINUUM V | 204 | 0 (16×22 matrix) | 757 | MPE per-note pitch bend / CC74 / pressure; internal 3D surface |
 
 All parameters have stable string IDs, natural-unit ranges and group metadata. All are saved in the APVTS tree and exposed to host automation.
 
@@ -37,7 +37,7 @@ All parameters have stable string IDs, natural-unit ranges and group metadata. A
 | MIDI event offsets | Implemented | render is split at event sample offsets |
 | Keyboard UI | Implemented | Matriarch F1–F5; PolyBrute/One 61 keys C2–C7; wheels send bend/CC1 |
 | Panel layout | Implemented, documented | Matriarch single-row manual order; PolyBrute three-row synth block; One left/centre/right sections (see `docs/LAYOUT.md`) |
-| Presets | Implemented, tested | 115 / 119 / 123 / 709 presets; all IDs/ranges validated by `triad_preset_tests` |
+| Presets | Implemented, tested | 163 / 167 / 235 / 757 presets; all IDs/ranges validated by `triad_preset_tests` |
 | Patch cables | Implemented (Matriarch) | click output → input, right-click clears; saved in state |
 | Sequencer/arpeggiator | Partial | banked poly step editor via SEQ: Matriarch 12 × 256 × 4 notes; PolyBrute/One 64 × 6 notes. Ties, velocity, gate, host transport. No hardware recording/ratchets/Motion automation |
 
@@ -150,3 +150,5 @@ Reference: [Haken Continuum / EaganMatrix public documentation](https://www.hake
 All four banks now include 64 Studio patches each; see [STUDIO-PRESETS.md](STUDIO-PRESETS.md). The preceding Windows/macOS code revision passed CI run 40070850199.
 
 Legacy patch repairs and 32 Stage additions per instrument are described in [LEGACY-STAGE-PRESETS.md](LEGACY-STAGE-PRESETS.md). Preset audio testing now covers every entry.
+
+Official catalog research and 256 new acoustic/signature/saw-pad studies: [SIGNATURE-SOUNDS.md](SIGNATURE-SOUNDS.md). Totals are now 1,322 presets. New One pad tests validate dry width, mono body and harmonics; this does not certify hardware or acoustic fidelity.
