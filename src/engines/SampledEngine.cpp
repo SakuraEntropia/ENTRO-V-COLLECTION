@@ -11,6 +11,11 @@
 #else
 #include <dlfcn.h>
 #endif
+#if defined(_WIN32)
+// windows.h defines min/max as macros; JUCE/STL uses the real functions.
+#undef min
+#undef max
+#endif
 namespace triad {
 namespace {
 std::recursive_mutex& fontMutex(){static auto* mutex=new std::recursive_mutex;return *mutex;}
